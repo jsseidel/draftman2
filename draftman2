@@ -2,4 +2,4 @@
 
 # Run environment checks, etc, here
 
-python3 $(pwd)/draftman.py
+python3 /home/att/git/draftman2/draftman.py
