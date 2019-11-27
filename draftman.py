@@ -5,20 +5,15 @@ from gi.repository import Gtk
 import os
 import signal
 import sys
-from handlers.AppWindowHandlerRouter import AppWindowHandlerRouter
+from AppWindowSignalHandler import AppWindowSignalHandler
 from lib.Project import Project
 
 def main():
-    p = Project()
-    (rv, reason) = p.new('/home/att/tmp', 'foo')
-    if not rv:
-        print ("Cannot create project: %s\n" % reason)
-        sys.exit(1)
-
+    project = None
     signal.signal(signal.SIGINT, signal.SIG_DFL)
     builder = Gtk.Builder()
     builder.add_from_file('%s/draftman2.glade' % os.path.dirname(os.path.realpath(__file__)))
-    builder.connect_signals(AppWindowHandlerRouter())
+    builder.connect_signals(AppWindowSignalHandler(project))
     app_window = builder.get_object('appWindow')
     app_window.show_all()
     Gtk.main()

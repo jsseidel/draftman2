@@ -35,6 +35,7 @@
                         <property name="can_focus">False</property>
                         <property name="label" translatable="yes">New project...</property>
                         <property name="use_underline">True</property>
+                        <signal name="activate" handler="onNew" swapped="no"/>
                       </object>
                     </child>
                     <child>
@@ -43,6 +44,7 @@
                         <property name="can_focus">False</property>
                         <property name="label" translatable="yes">Open project dir...</property>
                         <property name="use_underline">True</property>
+                        <signal name="activate" handler="onOpen" swapped="no"/>
                       </object>
                     </child>
                     <child>
@@ -131,6 +133,7 @@
                         <property name="can_focus">False</property>
                         <property name="label" translatable="yes">Add...</property>
                         <property name="use_underline">True</property>
+                        <signal name="activate" handler="onAdd" swapped="no"/>
                       </object>
                     </child>
                     <child>
