@@ -1,0 +1,5 @@
+#!/bin/bash
+
+# Run environment checks, etc, here
+
+python3 $(pwd)/draftman.py
