@@ -1,0 +1,14 @@
+% THIS IS A DRAFTMAN2 PROJECT FILE. IT CONTAINS THE
+% INTERNAL DRAFT DATABASE. YOU MAY EDIT THIS FILE WHEN
+% DRAFTMAN2 IS NOT RUNNING. OTHERWISE YOUR CHANGES MAY
+% BE OVERWRITTEN.
+preamble notes.md|Preamble Notes|0
+prologue.md|Prologue|1
+Chapter 1/scene1.md|First scene|1
+Chapter 1/scene2.md|Second scene|1
+Chapter 1/scene3.md|Third scene|1
+Chapter 2/scene1.md|First scene|1
+Chapter 2/scene2.md|Second scene|1
+Chapter 2/scene3.md|Third scene|1
+epilogue.md/Epilogue|1
+
