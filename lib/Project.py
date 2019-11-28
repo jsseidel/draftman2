@@ -4,8 +4,11 @@ Project
 This class represents a draftman2 project and maintains state about the project
 for the lifetime of the running draftman2 instance.
 """
+import gi
+gi.require_version('Gtk', '3.0')
+from gi.repository import Gtk
 
-from pathlib import Path
+from pathlib import Path, PurePath
 
 class Project:
     def __validate_project(self, path):
@@ -28,14 +31,31 @@ class Project:
         self.project_path = ""
         self.notes_path= ""
         self.draft_path = ""
+        self.draft_master = ""
         self.backups_path = ""
         self.is_loaded = False
 
+    def __str__(self):
+        return ("name=%s\nproject=%s\nnotes=%s\ndraft=%s\n"
+                "draftmaster=%s\nbackups=%s\n" % (self.name, self.project_path,
+                    self.notes_path, self.draft_path, self.draft_master,
+                    self.backups_path))
+
     def open(self, path):
-        p = Path(path)
         (rv, reason) = self.__validate_project(path)
         if not rv:
             return (rv, reason)
+
+        p = PurePath(path)
+        self.name = p.name
+        self.project_path = p
+        self.notes_path = p / 'notes.md'
+        self.draft_path = p / 'draft'
+        self.draft_master = p / 'draft.txt'
+        self.backups_path = p
+        self.is_loaded = True
+
+        print(str(self))
 
         return (True, "OK")
 
@@ -76,4 +96,24 @@ class Project:
             return (True, "OK")
         except:
             return (False, "Something went wrong creating %s." % str(project_dir))
+
+    def choose_new_project(self, app_window):
+        return "OK"
+
+    def choose_project_directory(self, app_window):
+        dialog = Gtk.FileChooserDialog(
+                "Select project directory", app_window,
+            Gtk.FileChooserAction.SELECT_FOLDER,
+            (Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL,
+             "Select", Gtk.ResponseType.OK))
+        dialog.set_default_size(800, 400)
+
+        response = dialog.run()
+        rv = ""
+        if response == Gtk.ResponseType.OK:
+            rv = dialog.get_filename()
+
+        dialog.destroy()
+
+        return rv
 

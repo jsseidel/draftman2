@@ -13,7 +13,8 @@ from lib.Project import Project
 
 class AppWindowSignalHandler:
 
-    def __init__(self, project):
+    def __init__(self, builder, project):
+        self.builder = builder
         self.project = project
 
     # User closed the appwindow
@@ -34,8 +35,10 @@ class AppWindowSignalHandler:
 
     # User selected New
     def onNew(self, *args):
-        print("Create a new project")
+        self.project.choose_new_project(self.builder.get_object('appWindow'))
 
     # User selected Open
     def onOpen(self, *args):
-        print("Open a project")
+        path = self.project.choose_project_directory(self.builder.get_object('appWindow'))
+        if path != "":
+            self.project.open(path)
