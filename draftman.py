@@ -7,6 +7,7 @@ import signal
 import sys
 from AppWindowSignalHandler import AppWindowSignalHandler
 from lib.Project import Project
+from lib.Draftmaster import Draftmaster
 
 def main():
     signal.signal(signal.SIGINT, signal.SIG_DFL)

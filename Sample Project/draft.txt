@@ -7,8 +7,8 @@ prologue.md|Prologue|1
 Chapter 1/scene1.md|First scene|1
 Chapter 1/scene2.md|Second scene|1
 Chapter 1/scene3.md|Third scene|1
+Chapter 1/Sub Chapter 1/scene1.md|Third scene|1
 Chapter 2/scene1.md|First scene|1
 Chapter 2/scene2.md|Second scene|1
-Chapter 2/scene3.md|Third scene|1
-epilogue.md/Epilogue|1
-
+Chapter 2/Sub Chapter 1/scene1.md|Third scene|1
+epilogue.md|Epilogue|1

@@ -11,6 +11,8 @@ from pathlib import Path, PurePath
 from lib.Message import Message
 import sys
 
+from lib.Draftmaster import Draftmaster
+
 class Project:
     def __validate_project(self, path):
         p = Path(path)
@@ -55,8 +57,6 @@ class Project:
         self.draft_master = p / 'draft.txt'
         self.backups_path = p
         self.is_loaded = True
-
-        print(str(self))
 
         return (True, "OK")
 
@@ -103,8 +103,6 @@ class Project:
             self.backups_path = p
             self.is_loaded = True
 
-            print(str(self))
-
             return (True, "OK")
         except Exception as e:
             return (False, "Something went wrong creating %s:\n%s" % (str(project_dir), str(e)))
@@ -127,9 +125,9 @@ class Project:
 
         return "OK"
 
-    def choose_project_directory(self, app_window):
+    def choose_project_directory(self, builder):
         dialog = Gtk.FileChooserDialog(
-                "Select project directory", app_window,
+                "Select project directory", builder.get_object('appWindow'),
             Gtk.FileChooserAction.SELECT_FOLDER,
             (Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL,
              "Select", Gtk.ResponseType.OK))
@@ -139,6 +137,26 @@ class Project:
         rv = ""
         if response == Gtk.ResponseType.OK:
             rv = dialog.get_filename()
+
+            #####
+            ### DEBUG DEBUG DEBUG
+            #####
+            dm = Draftmaster()
+            tree_view = builder.get_object('treeViewProject')
+            (is_ok, reason, store) = dm.get_tree_store('%s/%s' % (rv,'/draft.txt'))
+            if not is_ok:
+                print(reason)
+            else:
+                print(str(store))
+            tree_view.set_model(store)
+            col = Gtk.TreeViewColumn('thing')
+            tree_view.append_column(col)
+            cell = Gtk.CellRendererText()
+            col.pack_start(cell, True)
+            col.add_attribute(cell, 'text', 0)
+            #####
+            ### DEBUG DEBUG DEBUG
+            #####
 
         dialog.destroy()
 

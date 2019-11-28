@@ -39,6 +39,6 @@ class AppWindowSignalHandler:
 
     # User selected Open
     def onOpen(self, *args):
-        path = self.project.choose_project_directory(self.builder.get_object('appWindow'))
+        path = self.project.choose_project_directory(self.builder)
         if path != "":
             self.project.open(path)
