@@ -25,7 +25,6 @@ def main():
     app_window = builder.get_object('appWindow')
     builder.connect_signals(AppWindowSignalHandler(builder, project))
 
-
     app_window.show_all()
     Gtk.main()
 

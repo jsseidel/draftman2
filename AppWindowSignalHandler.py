@@ -35,7 +35,7 @@ class AppWindowSignalHandler:
 
     # User selected New
     def onNew(self, *args):
-        self.project.choose_new_project(self.builder.get_object('appWindow'))
+        self.project.choose_new_project(self.builder)
 
     # User selected Open
     def onOpen(self, *args):

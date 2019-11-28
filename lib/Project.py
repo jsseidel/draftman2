@@ -7,8 +7,9 @@ for the lifetime of the running draftman2 instance.
 import gi
 gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk
-
 from pathlib import Path, PurePath
+from lib.Message import Message
+import sys
 
 class Project:
     def __validate_project(self, path):
@@ -71,8 +72,8 @@ class Project:
             project_dir.mkdir()
         except FileExistsError:
             return (False, "%s already exists." % str(project_dir))
-        except:
-            return (False, "Something went wrong creating %s." % str(project_dir))
+        except Exception as e:
+            return (False, "Something went wrong creating %s:\n%s" % (str(project_dir), str(e)))
 
         # Create the other parts of the project
         try:
@@ -94,10 +95,25 @@ class Project:
                 f.write("\nHappy writing.\n")
 
             return (True, "OK")
-        except:
-            return (False, "Something went wrong creating %s." % str(project_dir))
+        except Exception as e:
+            return (False, "Something went wrong creating %s:\n%s" % (str(project_dir), str(e)))
 
-    def choose_new_project(self, app_window):
+    def choose_new_project(self, builder):
+        app_window = builder.get_object('appWindow')
+        entry_project_name = builder.get_object('entryProjectName')
+        dialog = builder.get_object('fileChooserProjectDirectory')
+        dialog.set_default_size(800, 400)
+        dialog.set_transient_for(app_window)
+        dialog.set_modal(True)
+        response = dialog.run()
+        if response == Gtk.ResponseType.OK:
+            (rv, reason) = self.new(dialog.get_filename(), entry_project_name.get_text())
+            if not rv:
+                m = Message()
+                m.warning(app_window, "Unable to create project", reason)
+
+        dialog.destroy()
+
         return "OK"
 
     def choose_project_directory(self, app_window):
