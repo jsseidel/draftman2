@@ -143,13 +143,13 @@ class Project:
             #####
             dm = Draftmaster()
             tree_view = builder.get_object('treeViewProject')
-            (is_ok, reason, store) = dm.get_tree_store('%s/%s' % (rv,'/draft.txt'))
+            (is_ok, reason, store) = dm.get_tree_store('%s/%s' % (rv,'/draft.yaml'))
             if not is_ok:
                 print(reason)
             else:
                 print(str(store))
             tree_view.set_model(store)
-            col = Gtk.TreeViewColumn('thing')
+            col = Gtk.TreeViewColumn('Title')
             tree_view.append_column(col)
             cell = Gtk.CellRendererText()
             col.pack_start(cell, True)
