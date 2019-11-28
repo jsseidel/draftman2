@@ -94,6 +94,17 @@ class Project:
                 f.write("# %s notes\n" % name)
                 f.write("\nHappy writing.\n")
 
+            p = PurePath(project_dir)
+            self.name = p.name
+            self.project_path = p
+            self.notes_path = p / 'notes.md'
+            self.draft_path = p / 'draft'
+            self.draft_master = p / 'draft.txt'
+            self.backups_path = p
+            self.is_loaded = True
+
+            print(str(self))
+
             return (True, "OK")
         except Exception as e:
             return (False, "Something went wrong creating %s:\n%s" % (str(project_dir), str(e)))
