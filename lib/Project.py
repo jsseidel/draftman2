@@ -11,17 +11,29 @@ from pathlib import Path, PurePath
 from lib.Message import Message
 import sys
 
-from lib.Draftmaster import Draftmaster
+DEFAULT_NEW_PROJECT="""# THIS IS A DRAFTMAN2 PROJECT FILE. IT CONTAINS THE
+# INTERNAL DRAFT DATABASE. YOU MAY EDIT THIS FILE WHEN
+# DRAFTMAN2 IS NOT RUNNING. OTHERWISE YOUR CHANGES MAY
+# BE OVERWRITTEN.
+project:
+keeper:
+  - type: 'trash'
+    path: 'trash'
+    title: 'Trash'
+    compile: False
+    contents: []
+"""
 
 class Project:
     def __validate_project(self, path):
         p = Path(path)
         if not p.exists() or not p.is_dir():
-            return (False, "%s either doesn't exist or isn't a directory." % path)
+            return (False, "%s either doesn't exist or isn't a directory." %
+                    path)
 
         # Now, we look for all the items we expect to find in a draftman2
-        # project.
-        must_haves = ['draft.txt', 'draft', 'notes.md', 'trash']
+        # project (which isn't much).
+        must_haves = ['keeper.yaml', 'keeper']
         for item in must_haves:
             q = p / item
             if not q.exists():
@@ -32,17 +44,15 @@ class Project:
     def __init__(self):
         self.name = ""
         self.project_path = ""
-        self.notes_path= ""
-        self.draft_path = ""
-        self.draft_master = ""
+        self.keeper_path = ""
+        self.keeper_yaml = ""
         self.backups_path = ""
         self.is_loaded = False
 
     def __str__(self):
-        return ("name=%s\nproject=%s\nnotes=%s\ndraft=%s\n"
-                "draftmaster=%s\nbackups=%s\n" % (self.name, self.project_path,
-                    self.notes_path, self.draft_path, self.draft_master,
-                    self.backups_path))
+        return ("name=%s\nproject=%s\nkeeper=%s\n"
+                "keeper_yaml=%s\nbackups=%s\n" % (self.name, self.project_path,
+                    self.keeper_path, self.keeper_yaml, self.backups_path))
 
     def open(self, path):
         (rv, reason) = self.__validate_project(path)
@@ -52,9 +62,8 @@ class Project:
         p = PurePath(path)
         self.name = p.name
         self.project_path = p
-        self.notes_path = p / 'notes.md'
-        self.draft_path = p / 'draft'
-        self.draft_master = p / 'draft.txt'
+        self.keeper_path = p / 'keeper'
+        self.keeper_yaml = p / 'keeper.yaml'
         self.backups_path = p
         self.is_loaded = True
 
@@ -77,29 +86,18 @@ class Project:
 
         # Create the other parts of the project
         try:
-            proj_piece = project_dir / 'draft'
-            proj_piece.mkdir()
-            proj_piece = project_dir / 'trash'
+            proj_piece = project_dir / 'keeper'
             proj_piece.mkdir()
 
-            proj_piece = project_dir / 'draft.txt'
+            proj_piece = project_dir / 'keeper.yaml'
             with open(str(proj_piece), "w") as f:
-                f.write("% THIS IS A DRAFTMAN2 PROJECT FILE. IT CONTAINS THE\n"
-                    "% INTERNAL DRAFT DATABASE. YOU MAY EDIT THIS FILE WHEN\n"
-                    "% DRAFTMAN2 IS NOT RUNNING. OTHERWISE YOUR CHANGES MAY\n"
-                    "% BE OVERWRITTEN.\n")
-
-            proj_piece = project_dir / 'notes.md'
-            with open(str(proj_piece), "w") as f:
-                f.write("# %s notes\n" % name)
-                f.write("\nHappy writing.\n")
+                f.write(DEFAULT_NEW_PROJECT)
 
             p = PurePath(project_dir)
             self.name = p.name
             self.project_path = p
-            self.notes_path = p / 'notes.md'
-            self.draft_path = p / 'draft'
-            self.draft_master = p / 'draft.txt'
+            self.keeper_path = p / 'keeper'
+            self.keeper_yaml = p / 'keeper.yaml'
             self.backups_path = p
             self.is_loaded = True
 
@@ -107,58 +105,4 @@ class Project:
         except Exception as e:
             return (False, "Something went wrong creating %s:\n%s" % (str(project_dir), str(e)))
 
-    def choose_new_project(self, builder):
-        app_window = builder.get_object('appWindow')
-        entry_project_name = builder.get_object('entryProjectName')
-        dialog = builder.get_object('fileChooserProjectDirectory')
-        dialog.set_default_size(800, 400)
-        dialog.set_transient_for(app_window)
-        dialog.set_modal(True)
-        response = dialog.run()
-        if response == Gtk.ResponseType.OK:
-            (rv, reason) = self.new(dialog.get_filename(), entry_project_name.get_text())
-            if not rv:
-                m = Message()
-                m.warning(app_window, "Unable to create project", reason)
-
-        dialog.destroy()
-
-        return "OK"
-
-    def choose_project_directory(self, builder):
-        dialog = Gtk.FileChooserDialog(
-                "Select project directory", builder.get_object('appWindow'),
-            Gtk.FileChooserAction.SELECT_FOLDER,
-            (Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL,
-             "Select", Gtk.ResponseType.OK))
-        dialog.set_default_size(800, 400)
-
-        response = dialog.run()
-        rv = ""
-        if response == Gtk.ResponseType.OK:
-            rv = dialog.get_filename()
-
-            #####
-            ### DEBUG DEBUG DEBUG
-            #####
-            dm = Draftmaster()
-            tree_view = builder.get_object('treeViewProject')
-            (is_ok, reason, store) = dm.get_tree_store('%s/%s' % (rv,'/draft.yaml'))
-            if not is_ok:
-                print(reason)
-            else:
-                print(str(store))
-            tree_view.set_model(store)
-            col = Gtk.TreeViewColumn('Title')
-            tree_view.append_column(col)
-            cell = Gtk.CellRendererText()
-            col.pack_start(cell, True)
-            col.add_attribute(cell, 'text', 0)
-            #####
-            ### DEBUG DEBUG DEBUG
-            #####
-
-        dialog.destroy()
-
-        return rv
 
