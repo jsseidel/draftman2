@@ -1,0 +1,83 @@
+# THIS IS A DRAFTMAN2 PROJECT FILE. IT CONTAINS THE
+# INTERNAL DRAFT DATABASE. YOU MAY EDIT THIS FILE WHEN
+# DRAFTMAN2 IS NOT RUNNING. OTHERWISE YOUR CHANGES MAY
+# BE OVERWRITTEN.
+project:
+  editor: '/usr/bin/typora'
+  backups: '/home/jsseidel/git/draftman2/Sample Project'
+keeper:
+  - type: 'file'
+    path: 'preamble notes.md'
+    title: 'Preamble Notes'
+    compile: False
+  - type: 'file'
+    path: 'prologue.md'
+    title: 'Prologue'
+    compile: True
+  - type: 'directory'
+    path: 'Chapter 1'
+    title: 'Chapter 1'
+    compile: True
+    contents:
+      - type: 'file'
+        path: 'scene1.md'
+        title: 'First scene'
+        compile: True
+      - type: 'file'
+        path: 'scene2.md'
+        title: 'Second scene'
+        compile: True
+      - type: 'file'
+        path: 'scene3.md'
+        title: 'Third scene'
+        compile: True
+      - type: 'directory'
+        path: 'Sub Chapter 1'
+        title: 'Sub Chapter 1'
+        compile: True
+        contents:
+          - type: 'file'
+            path: 'scene1.md'
+            title: 'Third scene'
+            compile: True
+  - type: 'directory'
+    path: 'Chapter 2'
+    title: 'Chapter 2'
+    compile: True
+    contents:
+      - type: 'file'
+        path: 'scene1.md'
+        title: 'First scene'
+        compile: True
+      - type: 'file'
+        path: 'scene2.md'
+        title: 'Second scene'
+        compile: True
+      - type: 'file'
+        path: 'scene3.md'
+        title: 'Third scene'
+        compile: True
+      - type: 'directory'
+        path: 'Sub Chapter 2'
+        title: 'Sub Chapter 2'
+        compile: True
+        contents:
+          - type: 'file'
+            path: 'scene1.md'
+            title: 'Third scene'
+            compile: True
+  - type: 'file'
+    path: 'epilogue.md'
+    title: 'Epilogue'
+    compile: True
+  - type: 'trash'
+    path: 'trash'
+    title: 'Trash'
+    compile: False
+    contents:
+      - type: 'file'
+        path: 'something.md'
+        title: 'Some thing'
+        compile: False
+
+
