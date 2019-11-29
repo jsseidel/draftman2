@@ -90,12 +90,13 @@ class KeeperTreeView:
 
         # Set treestore
         self.treeview.set_model(self.tree_model.get_tree_store())
+        self.treeview.set_cursor(0)
 
-    def __on_tree_selection_changed(self, selection):
-        (model, treeiter) = selection.get_selected()
-        #if treeiter is not None:
-        #    print("You selected", model[treeiter])
-
+    ###
+    ##
+    ## Helper functions
+    ##
+    ###
     def __set_compile_cells(self, store, tree_iter, new_value):
         while tree_iter is not None:
             store[tree_iter][2] = new_value
@@ -103,6 +104,27 @@ class KeeperTreeView:
                 child_iter = store.iter_children(tree_iter)
                 self.__set_compile_cells(store, child_iter, new_value)
             tree_iter = store.iter_next(tree_iter)
+
+
+    def __iter_to_project_path(self, store, tree_iter, path):
+        parent_iter = store.iter_parent(tree_iter)
+        if parent_iter is not None:
+            parent_path = self.__iter_to_project_path(store, parent_iter, store[parent_iter][1])
+            return ("%s/%s" % (parent_path, path))
+
+        return path
+
+    ###
+    ##
+    ## Signal handler functions
+    ##
+    ###
+    def __on_tree_selection_changed(self, selection):
+        (model, tree_iter) = selection.get_selected()
+        if tree_iter is not None:
+            print("You selected", model[tree_iter][1])
+            store = self.tree_model.get_tree_store()
+            print("path=%s" % self.__iter_to_project_path(store, tree_iter, model[tree_iter][1]))
 
     def __on_compile_cell_toggled(self, widget, path):
         store = self.tree_model.get_tree_store()
