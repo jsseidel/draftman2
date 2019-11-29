@@ -295,7 +295,7 @@
                     <property name="can_focus">False</property>
                     <child>
                       <object class="GtkButton">
-                        <property name="label" translatable="yes">B1</property>
+                        <property name="label" translatable="yes">+</property>
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
                         <property name="receives_default">True</property>
@@ -309,10 +309,11 @@
                     </child>
                     <child>
                       <object class="GtkButton">
-                        <property name="label" translatable="yes">B2</property>
+                        <property name="label" translatable="yes">-</property>
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
                         <property name="receives_default">True</property>
+                        <property name="always_show_image">True</property>
                       </object>
                       <packing>
                         <property name="expand">False</property>
