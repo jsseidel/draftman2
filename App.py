@@ -77,3 +77,4 @@ class App:
                 return
 
             self.keeper_treeview.refresh()
+            self.keeper_treeview.save()

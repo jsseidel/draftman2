@@ -10,10 +10,12 @@ from pathlib import Path, PurePath
 import yaml
 import traceback
 
+from lib.Project import Project
+
 class KeeperTreeModel:
 
     def __init__(self):
-        self.__store = Gtk.TreeStore(GdkPixbuf.Pixbuf, str, bool, int, int, int, int)
+        self.__store = Gtk.TreeStore(GdkPixbuf.Pixbuf, str, str, bool, int, int, int, int)
 
     def __get_icon_for_item(self, item):
         if item['type'] == 'directory':
@@ -30,7 +32,8 @@ class KeeperTreeModel:
     def __add_item_list_to_store(self, parent_row, item_list):
         for item in item_list:
             parent = self.__store.append(parent_row,
-                    [self.__get_icon_for_item(item), item['title'], item['compile'], 0, 0,
+                    [self.__get_icon_for_item(item), item['type'],
+                        item['title'], item['compile'], 0, 0,
                         0, 0])
             if item['type'] == 'directory' or item['type'] == 'trash':
                 self.__add_item_list_to_store(parent, item['contents'])
@@ -40,6 +43,7 @@ class KeeperTreeModel:
 
     def get_tree_store(self):
         return self.__store
+
 
     def load_tree_store(self, project_path):
         rv = True

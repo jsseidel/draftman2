@@ -11,11 +11,7 @@ from pathlib import Path, PurePath
 from lib.Message import Message
 import sys
 
-DEFAULT_NEW_PROJECT="""# THIS IS A DRAFTMAN2 PROJECT FILE. IT CONTAINS THE
-# INTERNAL DRAFT DATABASE. YOU MAY EDIT THIS FILE WHEN
-# DRAFTMAN2 IS NOT RUNNING. OTHERWISE YOUR CHANGES MAY
-# BE OVERWRITTEN.
-project:
+DEFAULT_NEW_PROJECT="""project:
 keeper:
   - type: 'trash'
     path: 'trash'
