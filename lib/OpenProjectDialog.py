@@ -8,8 +8,8 @@ gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk
 
 class OpenProjectDialog:
-    def __init__(self, app_window):
-        self.__app_window = app_window
+    def __init__(self, builder):
+        self.__app_window = builder.get_object('appWindow')
 
     def run(self):
         dialog = Gtk.FileChooserDialog(

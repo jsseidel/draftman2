@@ -8,10 +8,10 @@ gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk
 
 class NewProjectDialog:
-    def __init__(self, app_window, entry_project_name, dialog):
-        self.__app_window = app_window
-        self.__entry_project_name = entry_project_name
-        self.__dialog = dialog
+    def __init__(self, builder):
+        self.__app_window = builder.get_object('appWindow')
+        self.__entry_project_name = builder.get_object('entryProjectName')
+        self.__dialog = builder.get_object('fileChooserProjectDirectory')
 
     def run(self):
         self.__dialog.set_default_size(800, 400)

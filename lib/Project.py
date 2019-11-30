@@ -21,6 +21,14 @@ keeper:
 """
 
 class Project:
+    def __init__(self):
+        self.name = ""
+        self.project_path = ""
+        self.keeper_path = ""
+        self.keeper_yaml = ""
+        self.backups_path = ""
+        self.is_loaded = False
+
     def __validate_project(self, path):
         p = Path(path)
         if not p.exists() or not p.is_dir():
@@ -36,14 +44,6 @@ class Project:
                 return (False, "%s doesn't exist." % item)
 
         return (True, "OK")
-
-    def __init__(self):
-        self.name = ""
-        self.project_path = ""
-        self.keeper_path = ""
-        self.keeper_yaml = ""
-        self.backups_path = ""
-        self.is_loaded = False
 
     def __str__(self):
         return ("name=%s\nproject=%s\nkeeper=%s\n"
@@ -83,6 +83,9 @@ class Project:
         # Create the other parts of the project
         try:
             proj_piece = project_dir / 'keeper'
+            proj_piece.mkdir()
+
+            proj_piece = project_dir / 'keeper' / 'Trash'
             proj_piece.mkdir()
 
             proj_piece = project_dir / 'keeper.yaml'

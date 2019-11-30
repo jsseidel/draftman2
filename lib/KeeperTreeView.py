@@ -18,104 +18,129 @@ def iter_to_project_path(store, tree_iter, path):
     return path
 
 class KeeperTreeView:
+    COL_PIXBUF=0
+    COL_TYPE=1
+    COL_TITLE=2
+    COL_COMPILE=3
+    COL_SCENES=4
+    COL_SCENES_RUNNING=5
+    COL_WORDS=6
+    COL_WORDS_RUNNING=7
+
     def __init__(self, app_window, project, treeview):
-        self.app_window = app_window
-        self.project = project
-        self.treeview = treeview
-        self.tree_model = KeeperTreeModel()
+        self.__app_window = app_window
+        self.__project = project
+        self.__treeview = treeview
+        self.__tree_model = KeeperTreeModel()
 
         # Note that when adding columns, the "text" attribute is an index into
         # the tree model list. Attributes names match the available properties
         # of the class.
 
         # The icon representing the kind of item
-        col_icon = Gtk.TreeViewColumn('Type', Gtk.CellRendererPixbuf(), pixbuf=0)
+        col_icon = Gtk.TreeViewColumn('Type', Gtk.CellRendererPixbuf(),
+                pixbuf=KeeperTreeView.COL_PIXBUF)
         col_icon.set_sizing(Gtk.TreeViewColumnSizing.AUTOSIZE)
         col_icon.set_resizable(False)
         col_icon.set_reorderable(False)
-        self.treeview.append_column(col_icon)
+        self.__treeview.append_column(col_icon)
 
         # A hidden type column
-        col_type = Gtk.TreeViewColumn('Type', Gtk.CellRendererText(), text=1)
+        col_type = Gtk.TreeViewColumn('Type', Gtk.CellRendererText(),
+                text=KeeperTreeView.COL_TYPE)
         col_type.set_sizing(Gtk.TreeViewColumnSizing.AUTOSIZE)
         col_type.set_resizable(False)
         col_type.set_reorderable(False)
         col_type.set_visible(False)
-        self.treeview.append_column(col_type)
+        self.__treeview.append_column(col_type)
 
         # The title of the item
-        col_title = Gtk.TreeViewColumn('Title', Gtk.CellRendererText(), text=2)
+        col_title = Gtk.TreeViewColumn('Title', Gtk.CellRendererText(),
+                text=KeeperTreeView.COL_TITLE)
         col_title.set_sizing(Gtk.TreeViewColumnSizing.AUTOSIZE)
         col_title.set_resizable(True)
         col_title.set_reorderable(False)
-        self.treeview.append_column(col_title)
+        self.__treeview.append_column(col_title)
 
-        # Add checkbox column for including in compilees
+        # Add checkbox column for including in compiles
         toggle_renderer = Gtk.CellRendererToggle()
-        col_include = Gtk.TreeViewColumn('Inc', toggle_renderer, active=3)
+        col_include = Gtk.TreeViewColumn('Inc', toggle_renderer,
+                active=KeeperTreeView.COL_COMPILE)
         col_include.set_sizing(Gtk.TreeViewColumnSizing.AUTOSIZE)
         col_include.set_resizable(False)
         col_include.set_reorderable(False)
         toggle_renderer.connect("toggled", self.__on_compile_cell_toggled)
-        self.treeview.append_column(col_include)
+        self.__treeview.append_column(col_include)
 
         # Number of scenes in an item
-        col_scenes = Gtk.TreeViewColumn('Scenes', Gtk.CellRendererText(), text=4)
+        col_scenes = Gtk.TreeViewColumn('Scenes', Gtk.CellRendererText(),
+                text=KeeperTreeView.COL_SCENES)
         col_scenes.set_sizing(Gtk.TreeViewColumnSizing.AUTOSIZE)
         col_scenes.set_resizable(True)
         col_scenes.set_reorderable(False)
-        self.treeview.append_column(col_scenes)
+        self.__treeview.append_column(col_scenes)
 
         # Running count of the number of scenes in the project
-        col_running_scenes = Gtk.TreeViewColumn('Running', Gtk.CellRendererText(), text=5)
+        col_running_scenes = Gtk.TreeViewColumn('Running',
+                Gtk.CellRendererText(), text=KeeperTreeView.COL_SCENES_RUNNING)
         col_running_scenes.set_sizing(Gtk.TreeViewColumnSizing.AUTOSIZE)
         col_running_scenes.set_resizable(True)
         col_running_scenes.set_reorderable(False)
-        self.treeview.append_column(col_running_scenes)
+        self.__treeview.append_column(col_running_scenes)
 
         # The number of words in the item
-        col_words = Gtk.TreeViewColumn('Words', Gtk.CellRendererText(), text=6)
+        col_words = Gtk.TreeViewColumn('Words', Gtk.CellRendererText(),
+                text=KeeperTreeView.COL_WORDS)
         col_words.set_sizing(Gtk.TreeViewColumnSizing.AUTOSIZE)
         col_words.set_resizable(True)
         col_words.set_reorderable(False)
-        self.treeview.append_column(col_words)
+        self.__treeview.append_column(col_words)
 
         # Running count of the number of words in the project
-        col_running_words = Gtk.TreeViewColumn('Running', Gtk.CellRendererText(), text=7)
+        col_running_words = Gtk.TreeViewColumn('Running',
+                Gtk.CellRendererText(), text=KeeperTreeView.COL_WORDS_RUNNING)
         col_running_words.set_sizing(Gtk.TreeViewColumnSizing.AUTOSIZE)
         col_running_words.set_resizable(True)
         col_running_words.set_reorderable(False)
-        self.treeview.append_column(col_running_words)
+        self.__treeview.append_column(col_running_words)
 
         # Connect signals
-        select = self.treeview.get_selection()
+        select = self.__treeview.get_selection()
         select.connect("changed", self.__on_tree_selection_changed)
 
+        self.__treeview.connect("drag-end", self.__on_row_moved)
+
     def refresh(self):
-        if not self.project.is_loaded:
+        if not self.__project.is_loaded:
             return
 
-        (is_ok, reason) = self.tree_model.load_tree_store(self.project.project_path)
+        (is_ok, reason) = self.__tree_model.load_tree_store(self.__project.project_path)
         if not is_ok:
             m = Message()
-            m.error(self.app_window, 'Keeper error', 'Could not refresh '
+            m.error(self.__app_window, 'Keeper error', 'Could not refresh '
                     'Keeper:\n\n%s' % reason)
             return
 
         # Set treestore
-        self.treeview.set_model(self.tree_model.get_tree_store())
-        self.treeview.set_cursor(0)
+        self.__treeview.set_model(self.__tree_model.get_tree_store())
+        self.__treeview.set_cursor(0)
+
+    def add_item(self, name, item_type, is_child):
+        print("%s,%s,%s" % (name, item_type, is_child))
 
     def __tree_to_yaml(self, store, tree_iter, indent, out_str=""):
         while tree_iter is not None:
-            item_type = store[tree_iter][1]
-            item_title = store[tree_iter][2]
-            item_compile = store[tree_iter][3]
+            item_type = store[tree_iter][KeeperTreeView.COL_TYPE]
+            item_title = store[tree_iter][KeeperTreeView.COL_TITLE]
+            item_compile = store[tree_iter][KeeperTreeView.COL_COMPILE]
 
             out_str = out_str + "%s- type: '%s'\n" % (indent, item_type)
             out_str = out_str + "%s  title: '%s'\n" % (indent, item_title)
-            out_str = out_str + "%s  path: '%s.md'\n" % (indent,
-                    iter_to_project_path(store, tree_iter, item_title))
+            ext = ".md"
+            if item_title == "Trash":
+                ext = ""
+            out_str = out_str + "%s  path: '%s%s'\n" % (indent,
+                    iter_to_project_path(store, tree_iter, item_title), ext)
             out_str = out_str + '%s  compile: %s\n' % (indent, item_compile)
             if store.iter_has_child(tree_iter):
                 out_str = out_str + '%s  contents:\n' % indent
@@ -126,10 +151,12 @@ class KeeperTreeView:
         return out_str
 
     def save(self):
-        store = self.tree_model.get_tree_store()
-        tree_iter = store.get_iter_first()
-        keeper_str = "project:\nkeeper:\n%s" % self.__tree_to_yaml(store, tree_iter, "  ")
-        print(keeper_str)
+        if self.__project.is_loaded:
+            store = self.__tree_model.get_tree_store()
+            tree_iter = store.get_iter_first()
+            keeper_str = "project:\nkeeper:\n%s\n" % self.__tree_to_yaml(store, tree_iter, "  ")
+            with open(self.__project.keeper_yaml, "w") as f:
+                f.write(keeper_str)
 
     ###
     ##
@@ -138,7 +165,7 @@ class KeeperTreeView:
     ###
     def __set_compile_cells(self, store, tree_iter, new_value):
         while tree_iter is not None:
-            store[tree_iter][2] = new_value
+            store[tree_iter][KeeperTreeView.COL_COMPILE] = new_value
             if store.iter_has_child(tree_iter):
                 child_iter = store.iter_children(tree_iter)
                 self.__set_compile_cells(store, child_iter, new_value)
@@ -152,16 +179,19 @@ class KeeperTreeView:
     def __on_tree_selection_changed(self, selection):
         (model, tree_iter) = selection.get_selected()
         if tree_iter is not None:
-            print("You selected", model[tree_iter][1])
-            store = self.tree_model.get_tree_store()
-            print("path=%s" % iter_to_project_path(store, tree_iter, model[tree_iter][1]))
+            print("You selected", model[tree_iter][KeeperTreeView.COL_TITLE])
+            store = self.__tree_model.get_tree_store()
+            print("path=%s" % iter_to_project_path(store, tree_iter, model[tree_iter][KeeperTreeView.COL_TITLE]))
 
     def __on_compile_cell_toggled(self, widget, path):
-        store = self.tree_model.get_tree_store()
-        new_value = not store[path][2]
+        store = self.__tree_model.get_tree_store()
+        new_value = not store[path][KeeperTreeView.COL_COMPILE]
 
         # Now this item and all children should be set to new value
-        store[path][2] = new_value
+        store[path][KeeperTreeView.COL_COMPILE] = new_value
         tree_iter = store.get_iter(path)
         self.__set_compile_cells(store, store.iter_children(tree_iter), new_value)
+
+    def __on_row_moved(self, widget, context):
+        self.save()
 
