@@ -7,7 +7,9 @@ import gi
 gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk
 
+from lib.AddItemDialog import AddItemDialog
 from lib.KeeperTreeModel import KeeperTreeModel
+from lib.KeeperPopupMenu import KeeperPopupMenu
 from lib.Message import Message
 
 def iter_to_project_path(store, tree_iter, path):
@@ -27,11 +29,12 @@ class KeeperTreeView:
     COL_WORDS=6
     COL_WORDS_RUNNING=7
 
-    def __init__(self, app_window, project, treeview):
-        self.__app_window = app_window
+    def __init__(self, builder, project):
+        self.__app_window = builder.get_object('appWindow')
         self.__project = project
-        self.__treeview = treeview
+        self.__treeview = builder.get_object('treeViewKeeper')
         self.__tree_model = KeeperTreeModel()
+        self.__builder = builder
 
         # Note that when adding columns, the "text" attribute is an index into
         # the tree model list. Attributes names match the available properties
@@ -109,6 +112,13 @@ class KeeperTreeView:
         select.connect("changed", self.__on_tree_selection_changed)
 
         self.__treeview.connect("drag-end", self.__on_row_moved)
+        self.__treeview.connect("button-press-event", self.__on_button_pressed)
+
+        # A popover menu for right clicks in treeview
+        self.__popup = KeeperPopupMenu()
+        self.__popup.connect_add(self.on_add_file, self.on_add_directory)
+        self.__popup.connect_delete(self.on_delete)
+        self.__popup.connect_edit(self.on_edit_file)
 
     def refresh(self):
         if not self.__project.is_loaded:
@@ -125,8 +135,10 @@ class KeeperTreeView:
         self.__treeview.set_model(self.__tree_model.get_tree_store())
         self.__treeview.set_cursor(0)
 
-    def add_item(self, name, item_type, is_child):
-        print("%s,%s,%s" % (name, item_type, is_child))
+    def add_item(self, name, item_type, as_child):
+        (model, tree_iter) = self.__treeview.get_selection().get_selected()
+        self.__tree_model.insert_at(tree_iter, name, item_type, as_child)
+        self.save()
 
     def __tree_to_yaml(self, store, tree_iter, indent, out_str=""):
         while tree_iter is not None:
@@ -179,9 +191,7 @@ class KeeperTreeView:
     def __on_tree_selection_changed(self, selection):
         (model, tree_iter) = selection.get_selected()
         if tree_iter is not None:
-            print("You selected", model[tree_iter][KeeperTreeView.COL_TITLE])
             store = self.__tree_model.get_tree_store()
-            print("path=%s" % iter_to_project_path(store, tree_iter, model[tree_iter][KeeperTreeView.COL_TITLE]))
 
     def __on_compile_cell_toggled(self, widget, path):
         store = self.__tree_model.get_tree_store()
@@ -194,4 +204,48 @@ class KeeperTreeView:
 
     def __on_row_moved(self, widget, context):
         self.save()
+
+    def __on_button_pressed(self, widget, event):
+        # right click
+        if event.button == 3:
+            info = self.__treeview.get_path_at_pos(event.x, event.y)
+            if info != None:
+                (path, col, cell_x, cell_y) = info
+                self.__treeview.grab_focus()
+                self.__treeview.set_cursor(path, col, 0)
+
+                selection = self.__treeview.get_selection()
+                (model, tree_iter) = selection.get_selected()
+
+                item_type = model[tree_iter][KeeperTreeView.COL_TYPE]
+
+                menu = self.__popup.get_menu_for_type(item_type)
+                menu.show_all()
+                menu.popup_at_pointer(event)
+            else:
+                select = self.__treeview.get_selection().unselect_all()
+                menu = self.__popup.get_menu_for_type(None)
+                menu.show_all()
+                menu.popup_at_pointer(event)
+        elif event.button == 1:
+            info = self.__treeview.get_path_at_pos(event.x, event.y)
+            if info == None:
+                select = self.__treeview.get_selection().unselect_all()
+
+    # These are not private because our App uses them to handle the
+    # app menu signals
+    def on_add_file(self, *args):
+        aid = AddItemDialog(self.__builder)
+        (response, name) = aid.run()
+        if response == Gtk.ResponseType.OK:
+            self.add_item(name, 'file', True)
+
+    def on_add_directory(self, *args):
+        print('Add directory')
+
+    def on_edit_file(self, *args):
+        print('Edit file')
+
+    def on_delete(self, *args):
+        print('Delete')
 

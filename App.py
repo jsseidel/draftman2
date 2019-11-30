@@ -13,7 +13,6 @@ import os
 from lib.Project import Project
 from lib.NewProjectDialog import NewProjectDialog
 from lib.OpenProjectDialog import OpenProjectDialog
-from lib.AddItemDialog import AddItemDialog
 from lib.KeeperTreeView import KeeperTreeView
 from lib.Message import Message
 
@@ -29,8 +28,7 @@ class App:
         self.__app_window = self.__builder.get_object("appWindow")
         self.__keeper_treeview = self.__builder.get_object("treeViewKeeper")
         self.__project = Project()
-        self.__keeper_treeview = KeeperTreeView(self.__app_window,
-                self.__project, self.__keeper_treeview)
+        self.__keeper_treeview = KeeperTreeView(self.__builder, self.__project)
 
         self.__app_window.show_all()
         Gtk.main()
@@ -49,19 +47,22 @@ class App:
         self.__keeper_treeview.save()
         Gtk.main_quit()
 
-    # User selected Add or clicked add button
-    def onAdd(self, button):
-        self.__doAddItem()
+    # User selected add file
+    def onAddFile(self, *args):
+        self.__keeper_treeview.on_add_file(args)
 
-    def onAdd(self, *args):
-        self.__doAddItem()
+    # User selected add directory
+    def onAddDirectory(self, *args):
+        self.__keeper_treeview.on_add_directory(args)
 
-    def __doAddItem(self):
-        aid = AddItemDialog(self.__builder)
-        (response, name, item_type, is_child) = aid.run()
-        if response == Gtk.ResponseType.OK:
-            self.__keeper_treeview.add_item(name, item_type, is_child)
-            self.__keeper_treeview.refresh()
+    # User selected edit file
+    def onEditFile(self, *args):
+        self.__keeper_treeview.on_edit_file(args)
+
+    # User selected delete
+    def onDelete(self, *args):
+        self.__keeper_treeview.on_delete(args)
+
 
     # User selected New
     def onNew(self, *args):

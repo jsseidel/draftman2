@@ -131,9 +131,18 @@
                       <object class="GtkMenuItem">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
-                        <property name="label" translatable="yes">Add...</property>
+                        <property name="label" translatable="yes">Add file...</property>
                         <property name="use_underline">True</property>
-                        <signal name="activate" handler="onAdd" swapped="no"/>
+                        <signal name="activate" handler="onAddFile" swapped="no"/>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkMenuItem">
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <property name="label" translatable="yes">Add directory...</property>
+                        <property name="use_underline">True</property>
+                        <signal name="activate" handler="onAddDirectory" swapped="no"/>
                       </object>
                     </child>
                     <child>
@@ -142,6 +151,7 @@
                         <property name="can_focus">False</property>
                         <property name="label" translatable="yes">Edit</property>
                         <property name="use_underline">True</property>
+                        <signal name="activate" handler="onEditFile" swapped="no"/>
                       </object>
                     </child>
                     <child>
@@ -150,6 +160,7 @@
                         <property name="can_focus">False</property>
                         <property name="label" translatable="yes">Delete...</property>
                         <property name="use_underline">True</property>
+                        <signal name="activate" handler="onDelete" swapped="no"/>
                       </object>
                     </child>
                     <child>
@@ -277,6 +288,7 @@
                     <property name="can_focus">True</property>
                     <property name="hexpand">True</property>
                     <property name="vexpand">True</property>
+                    <property name="headers_clickable">False</property>
                     <property name="reorderable">True</property>
                     <property name="enable_tree_lines">True</property>
                     <child internal-child="selection">
@@ -295,12 +307,11 @@
                     <property name="can_focus">False</property>
                     <child>
                       <object class="GtkButton">
-                        <property name="label" translatable="yes">+</property>
+                        <property name="label" translatable="yes">B1</property>
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
                         <property name="receives_default">True</property>
                         <property name="always_show_image">True</property>
-                        <signal name="clicked" handler="onAdd" swapped="no"/>
                       </object>
                       <packing>
                         <property name="expand">False</property>
@@ -310,7 +321,7 @@
                     </child>
                     <child>
                       <object class="GtkButton">
-                        <property name="label" translatable="yes">-</property>
+                        <property name="label" translatable="yes">B2</property>
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
                         <property name="receives_default">True</property>
@@ -510,82 +521,6 @@
                 <property name="left_attach">1</property>
                 <property name="top_attach">0</property>
               </packing>
-            </child>
-            <child>
-              <object class="GtkLabel">
-                <property name="visible">True</property>
-                <property name="can_focus">False</property>
-                <property name="margin_left">10</property>
-                <property name="label" translatable="yes">Type:</property>
-              </object>
-              <packing>
-                <property name="left_attach">0</property>
-                <property name="top_attach">1</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkBox">
-                <property name="visible">True</property>
-                <property name="can_focus">False</property>
-                <child>
-                  <object class="GtkRadioButton" id="radioButtonFile">
-                    <property name="label" translatable="yes">File</property>
-                    <property name="visible">True</property>
-                    <property name="can_focus">True</property>
-                    <property name="receives_default">False</property>
-                    <property name="margin_left">10</property>
-                    <property name="margin_bottom">10</property>
-                    <property name="active">True</property>
-                    <property name="draw_indicator">True</property>
-                  </object>
-                  <packing>
-                    <property name="expand">False</property>
-                    <property name="fill">True</property>
-                    <property name="position">0</property>
-                  </packing>
-                </child>
-                <child>
-                  <object class="GtkRadioButton" id="radioButtonDirectory">
-                    <property name="label" translatable="yes">Directory</property>
-                    <property name="visible">True</property>
-                    <property name="can_focus">True</property>
-                    <property name="receives_default">False</property>
-                    <property name="margin_right">10</property>
-                    <property name="margin_bottom">10</property>
-                    <property name="active">True</property>
-                    <property name="draw_indicator">True</property>
-                    <property name="group">radioButtonFile</property>
-                  </object>
-                  <packing>
-                    <property name="expand">False</property>
-                    <property name="fill">True</property>
-                    <property name="position">1</property>
-                  </packing>
-                </child>
-              </object>
-              <packing>
-                <property name="left_attach">1</property>
-                <property name="top_attach">1</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkCheckButton" id="checkboxIsChild">
-                <property name="label" translatable="yes">Is child</property>
-                <property name="visible">True</property>
-                <property name="can_focus">True</property>
-                <property name="receives_default">False</property>
-                <property name="margin_right">10</property>
-                <property name="margin_bottom">10</property>
-                <property name="active">True</property>
-                <property name="draw_indicator">True</property>
-              </object>
-              <packing>
-                <property name="left_attach">1</property>
-                <property name="top_attach">2</property>
-              </packing>
-            </child>
-            <child>
-              <placeholder/>
             </child>
           </object>
           <packing>

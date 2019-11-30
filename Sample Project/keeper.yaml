@@ -1,6 +1,10 @@
 project:
 keeper:
   - type: 'file'
+    title: 'Preamble Notes'
+    path: 'Preamble Notes.md'
+    compile: False
+  - type: 'file'
     title: 'Prologue'
     path: 'Prologue.md'
     compile: True
@@ -9,6 +13,10 @@ keeper:
     path: 'Chapter 1.md'
     compile: True
     contents:
+    - type: 'file'
+      title: 'new item 3'
+      path: 'Chapter 1/new item 3.md'
+      compile: True
     - type: 'file'
       title: 'First scene'
       path: 'Chapter 1/First scene.md'
@@ -20,6 +28,10 @@ keeper:
     - type: 'file'
       title: 'Third scene'
       path: 'Chapter 1/Third scene.md'
+      compile: True
+    - type: 'file'
+      title: 'new item 2'
+      path: 'Chapter 1/new item 2.md'
       compile: True
     - type: 'directory'
       title: 'Sub Chapter 1'
@@ -65,10 +77,6 @@ keeper:
     path: 'Trash'
     compile: False
     contents:
-    - type: 'file'
-      title: 'Preamble Notes'
-      path: 'Trash/Preamble Notes.md'
-      compile: False
     - type: 'file'
       title: 'Some thing'
       path: 'Trash/Some thing.md'
