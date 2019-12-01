@@ -59,6 +59,9 @@ class Project:
     def keeper_yaml(self):
         return self.__keeper_yaml
 
+    def keeper_path(self):
+        return self.__keeper_path
+
     def open(self, path):
         (rv, reason) = self.__validate_project(path)
         if not rv:
@@ -114,8 +117,29 @@ class Project:
             return (False, "Something went wrong creating %s:\n%s" % (str(project_dir), str(e)))
 
     def add_new_file(self, name, path):
-        p = PurePath(self.__keeper_path)
-        print(str(p / path / ("%s.md" % name)))
-        with open(str(p / path / ("%s.md" % name)), "w") as f:
-            f.write("# %s\n\nHappy writing!\n\n" % name)
+        rv = True
+        reason = "OK"
+        try:
+            p = Path(self.__keeper_path)
+            with open(str(p / path / ("%s.md" % name)), "w") as f:
+                f.write("# %s\n\nHappy writing!\n\n" % name)
+        except Exception as e:
+            rv = False
+            reason = str(e)
+
+        return (rv, reason)
+
+
+    def add_new_directory(self, name, path):
+        rv = True
+        reason = "OK"
+        try:
+            p = Path(self.__keeper_path)
+            p = p / path / ("%s" % name)
+            p.mkdir()
+        except Exception as e:
+            rv = False
+            reason = str(e)
+
+        return (rv, reason)
 

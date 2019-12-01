@@ -56,6 +56,8 @@ class KeeperTreeModel:
             # Inserting as a child, so we'll leave the sibling empty
             self.__store.insert_after(tree_iter, None, [self.__get_icon_for_type(item_type, 0), item_type, name, True, 0, 0, 0, 0])
 
+    def remove(self, tree_iter):
+        self.__store.remove(tree_iter)
 
     def load_tree_store(self, project_path):
         rv = True

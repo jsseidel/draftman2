@@ -1,84 +1,36 @@
 project:
 keeper:
-  - type: 'file'
-    title: 'Preamble Notes'
-    path: 'Preamble Notes.md'
-    compile: False
-  - type: 'file'
-    title: 'Prologue'
-    path: 'Prologue.md'
-    compile: True
   - type: 'directory'
     title: 'Chapter 1'
     path: 'Chapter 1.md'
     compile: True
     contents:
-    - type: 'file'
-      title: 'new item 3'
-      path: 'Chapter 1/new item 3.md'
-      compile: True
-    - type: 'file'
-      title: 'First scene'
-      path: 'Chapter 1/First scene.md'
-      compile: True
-    - type: 'file'
-      title: 'Second scene'
-      path: 'Chapter 1/Second scene.md'
-      compile: True
-    - type: 'file'
-      title: 'Third scene'
-      path: 'Chapter 1/Third scene.md'
-      compile: True
-    - type: 'file'
-      title: 'new item 2'
-      path: 'Chapter 1/new item 2.md'
-      compile: True
     - type: 'directory'
-      title: 'Sub Chapter 1'
-      path: 'Chapter 1/Sub Chapter 1.md'
+      title: 'Sub-chapter 1'
+      path: 'Chapter 1/Sub-chapter 1.md'
       compile: True
       contents:
       - type: 'file'
-        title: 'Third scene'
-        path: 'Chapter 1/Sub Chapter 1/Third scene.md'
+        title: 'Scene 1'
+        path: 'Chapter 1/Sub-chapter 1/Scene 1.md'
         compile: True
   - type: 'directory'
     title: 'Chapter 2'
     path: 'Chapter 2.md'
     compile: True
     contents:
-    - type: 'file'
-      title: 'First scene'
-      path: 'Chapter 2/First scene.md'
-      compile: True
-    - type: 'file'
-      title: 'Second scene'
-      path: 'Chapter 2/Second scene.md'
-      compile: True
-    - type: 'file'
-      title: 'Third scene'
-      path: 'Chapter 2/Third scene.md'
-      compile: True
     - type: 'directory'
-      title: 'Sub Chapter 2'
-      path: 'Chapter 2/Sub Chapter 2.md'
+      title: 'Sub-chapter 1'
+      path: 'Chapter 2/Sub-chapter 1.md'
       compile: True
       contents:
       - type: 'file'
-        title: 'Third scene'
-        path: 'Chapter 2/Sub Chapter 2/Third scene.md'
+        title: 'Scene 1'
+        path: 'Chapter 2/Sub-chapter 1/Scene 1.md'
         compile: True
-  - type: 'file'
-    title: 'Epilogue'
-    path: 'Epilogue.md'
-    compile: True
   - type: 'trash'
     title: 'Trash'
     path: 'Trash'
     compile: False
-    contents:
-    - type: 'file'
-      title: 'Some thing'
-      path: 'Trash/Some thing.md'
-      compile: False
+    contents: []
 

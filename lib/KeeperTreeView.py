@@ -11,12 +11,7 @@ from lib.AddItemDialog import AddItemDialog
 from lib.KeeperTreeModel import KeeperTreeModel
 from lib.KeeperPopupMenu import KeeperPopupMenu
 from lib.Message import Message
-
-def iter_to_project_path(store, tree_iter, path):
-    parent_iter = store.iter_parent(tree_iter)
-    if parent_iter is None:
-        return path
-    return ("%s/%s" % (iter_to_project_path(store, parent_iter, store[parent_iter][2]), path))
+from lib.KeeperFileOpsLinux import KeeperFileOpsLinux
 
 class KeeperTreeView:
     COL_PIXBUF=0
@@ -139,6 +134,18 @@ class KeeperTreeView:
         self.__tree_model.insert_at(tree_iter, name, item_type, as_child)
         self.save()
 
+    def remove_item(self, tree_iter):
+        self.__tree_model.remove(tree_iter)
+        self.save()
+
+    def iter_to_project_path(self, tree_iter, path):
+        store = self.__tree_model.get_tree_store()
+        parent_iter = store.iter_parent(tree_iter)
+        if parent_iter is None:
+            return path
+        return ("%s/%s" % (self.iter_to_project_path(parent_iter,
+            store[parent_iter][2]), path))
+
     def __tree_to_yaml(self, store, tree_iter, indent, out_str=""):
         while tree_iter is not None:
             item_type = store[tree_iter][KeeperTreeView.COL_TYPE]
@@ -151,13 +158,13 @@ class KeeperTreeView:
             if item_title == "Trash":
                 ext = ""
             out_str = out_str + "%s  path: '%s%s'\n" % (indent,
-                    iter_to_project_path(store, tree_iter, item_title), ext)
+                    self.iter_to_project_path(tree_iter, item_title), ext)
             out_str = out_str + '%s  compile: %s\n' % (indent, item_compile)
             if store.iter_has_child(tree_iter):
                 out_str = out_str + '%s  contents:\n' % indent
                 child_iter = store.iter_children(tree_iter)
                 out_str = self.__tree_to_yaml(store, child_iter, indent + "  ", out_str)
-            elif item_type == "trash":
+            elif item_type == 'directory' or item_type == 'trash':
                 out_str = out_str + '%s  contents: []\n' % indent
 
             tree_iter = store.iter_next(tree_iter)
@@ -240,22 +247,81 @@ class KeeperTreeView:
         aid = AddItemDialog(self.__builder)
         (response, name) = aid.run()
         if response == Gtk.ResponseType.OK:
-            self.add_item(name, 'file', True)
             selection = self.__treeview.get_selection()
             (model, tree_iter) = selection.get_selected()
             if tree_iter is not None:
-                self.__project.add_new_file(name,
-                        iter_to_project_path(model, tree_iter, model[tree_iter][2]))
+                (rv, reason) = self.__project.add_new_file(name,
+                        self.iter_to_project_path(tree_iter,
+                            model[tree_iter][KeeperTreeView.COL_TITLE]))
+                if rv:
+                    self.add_item(name, 'file', True)
+                else:
+                    m = Message()
+                    m.error(self.__app_window, 'Keeper error', 'Could not add'
+                            'file:\n\n%s' % reason)
+
             else:
-                self.__project.add_new_file(name, "")
+                (rv, reason) = self.__project.add_new_file(name, "")
+                if rv:
+                    self.add_item(name, 'file', True)
+                else:
+                    m = Message()
+                    m.error(self.__app_window, 'Keeper error', 'Could not add'
+                            'file:\n\n%s' % reason)
 
 
     def on_add_directory(self, *args):
-        print('Add directory')
+        aid = AddItemDialog(self.__builder)
+        (response, name) = aid.run()
+        if response == Gtk.ResponseType.OK:
+            selection = self.__treeview.get_selection()
+            (model, tree_iter) = selection.get_selected()
+            if tree_iter is not None:
+                (rv, reason) = self.__project.add_new_directory(name,
+                        self.iter_to_project_path(tree_iter,
+                            model[tree_iter][KeeperTreeView.COL_TITLE]))
+                if rv:
+                    self.add_item(name, 'directory', True)
+                else:
+                    m = Message()
+                    m.error(self.__app_window, 'Keeper error', 'Could not add'
+                            'directory:\n\n%s' % reason)
+
+            else:
+                (rv, reason) = self.__project.add_new_directory(name, "")
+                if rv:
+                    self.add_item(name, 'directory', True)
+                else:
+                    m = Message()
+                    m.error(self.__app_window, 'Keeper error', 'Could not add'
+                            'directory:\n\n%s' % reason)
 
     def on_edit_file(self, *args):
         print('Edit file')
 
     def on_delete(self, *args):
-        print('Delete')
+        selection = self.__treeview.get_selection()
+        (model, tree_iter) = selection.get_selected()
+        if tree_iter is not None:
+            item = self.iter_to_project_path(tree_iter,
+                    model[tree_iter][KeeperTreeView.COL_TITLE])
+            ext = ''
+            if model[tree_iter][KeeperTreeView.COL_TYPE] == 'file':
+                ext = '.md'
+            fops = KeeperFileOpsLinux()
+            m = Message()
+            if m.confirm(self.__app_window, 'Confirm', 'Are you sure you want '
+                    'to permenantly delete %s?' % item):
+                (rv, reason) = fops.delete('%s/%s%s' %
+                        (self.__project.keeper_path(), item, ext))
+                if rv:
+                    self.remove_item(tree_iter)
+                else:
+                    m = Message()
+                    m.error(self.__app_window, 'Keeper error', 'Could not delete'
+                            'item:\n\n%s' % reason)
+        else:
+            m = Message()
+            m.error(self.__app_window, 'Keeper error', 'Nothing to delete.'
+                    ' Please report.')
 
