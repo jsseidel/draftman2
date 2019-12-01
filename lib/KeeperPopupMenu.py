@@ -10,31 +10,37 @@ from gi.repository import Gtk
 class KeeperPopupMenu:
 
     def __init__(self):
-        self.__dpopup = Gtk.Menu()
+        self.__popup = Gtk.Menu()
         self.__menuItemAddFile = Gtk.MenuItem('Add file...')
         self.__menuItemEditFile = Gtk.MenuItem('Edit...')
         self.__menuItemAddDirectory = Gtk.MenuItem('Add directory...')
         self.__menuItemDelete = Gtk.MenuItem('Delete ...')
 
-        self.__dpopup.append(self.__menuItemAddFile)
-        self.__dpopup.append(self.__menuItemAddDirectory)
-        self.__dpopup.append(self.__menuItemDelete)
-
-        self.__fpopup = Gtk.Menu()
-        self.__fpopup.append(self.__menuItemEditFile)
-        self.__fpopup.append(self.__menuItemDelete)
-
-        self.__npopup = Gtk.Menu()
-        self.__npopup.append(self.__menuItemAddFile)
-        self.__npopup.append(self.__menuItemAddDirectory)
+        self.__popup.append(self.__menuItemAddFile)
+        self.__popup.append(self.__menuItemEditFile)
+        self.__popup.append(Gtk.SeparatorMenuItem())
+        self.__popup.append(self.__menuItemAddDirectory)
+        self.__popup.append(Gtk.SeparatorMenuItem())
+        self.__popup.append(self.__menuItemDelete)
 
     def get_menu_for_type(self, item_type):
         if item_type == 'file':
-            return self.__fpopup
+            self.__menuItemAddFile.set_sensitive(False)
+            self.__menuItemEditFile.set_sensitive(True)
+            self.__menuItemAddDirectory.set_sensitive(False)
+            self.__menuItemDelete.set_sensitive(True)
         elif item_type == 'directory' or item_type == 'trash':
-            return self.__dpopup
+            self.__menuItemAddFile.set_sensitive(True)
+            self.__menuItemEditFile.set_sensitive(False)
+            self.__menuItemAddDirectory.set_sensitive(True)
+            self.__menuItemDelete.set_sensitive(True)
+        else:
+            self.__menuItemAddFile.set_sensitive(True)
+            self.__menuItemEditFile.set_sensitive(False)
+            self.__menuItemAddDirectory.set_sensitive(True)
+            self.__menuItemDelete.set_sensitive(False)
 
-        return self.__npopup
+        return self.__popup
 
     def connect_add(self, add_file_func, add_directory_func):
         self.__menuItemAddFile.connect("activate", add_file_func)

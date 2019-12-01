@@ -22,12 +22,12 @@ keeper:
 
 class Project:
     def __init__(self):
-        self.name = ""
-        self.project_path = ""
-        self.keeper_path = ""
-        self.keeper_yaml = ""
-        self.backups_path = ""
-        self.is_loaded = False
+        self.__name = ""
+        self.__project_path = ""
+        self.__keeper_path = ""
+        self.__keeper_yaml = ""
+        self.__backups_path = ""
+        self.__is_loaded = False
 
     def __validate_project(self, path):
         p = Path(path)
@@ -47,8 +47,17 @@ class Project:
 
     def __str__(self):
         return ("name=%s\nproject=%s\nkeeper=%s\n"
-                "keeper_yaml=%s\nbackups=%s\n" % (self.name, self.project_path,
-                    self.keeper_path, self.keeper_yaml, self.backups_path))
+                "keeper_yaml=%s\nbackups=%s\n" % (self.__name, self.__project_path,
+                    self.__keeper_path, self.__keeper_yaml, self.__backups_path))
+
+    def is_loaded(self):
+        return self.__is_loaded
+
+    def project_path(self):
+        return self.__project_path
+
+    def keeper_yaml(self):
+        return self.__keeper_yaml
 
     def open(self, path):
         (rv, reason) = self.__validate_project(path)
@@ -56,12 +65,12 @@ class Project:
             return (rv, reason)
 
         p = PurePath(path)
-        self.name = p.name
-        self.project_path = p
-        self.keeper_path = p / 'keeper'
-        self.keeper_yaml = p / 'keeper.yaml'
-        self.backups_path = p
-        self.is_loaded = True
+        self.__name = p.name
+        self.__project_path = p
+        self.__keeper_path = p / 'keeper'
+        self.__keeper_yaml = p / 'keeper.yaml'
+        self.__backups_path = p
+        self.__is_loaded = True
 
         return (True, "OK")
 
@@ -93,15 +102,20 @@ class Project:
                 f.write(DEFAULT_NEW_PROJECT)
 
             p = PurePath(project_dir)
-            self.name = p.name
-            self.project_path = p
-            self.keeper_path = p / 'keeper'
-            self.keeper_yaml = p / 'keeper.yaml'
-            self.backups_path = p
-            self.is_loaded = True
+            self.__name = p.name
+            self.__project_path = p
+            self.__keeper_path = p / 'keeper'
+            self.__keeper_yaml = p / 'keeper.yaml'
+            self.__backups_path = p
+            self.__is_loaded = True
 
             return (True, "OK")
         except Exception as e:
             return (False, "Something went wrong creating %s:\n%s" % (str(project_dir), str(e)))
 
+    def add_new_file(self, name, path):
+        p = PurePath(self.__keeper_path)
+        print(str(p / path / ("%s.md" % name)))
+        with open(str(p / path / ("%s.md" % name)), "w") as f:
+            f.write("# %s\n\nHappy writing!\n\n" % name)
 

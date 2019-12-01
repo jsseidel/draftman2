@@ -14,10 +14,9 @@ from lib.Message import Message
 
 def iter_to_project_path(store, tree_iter, path):
     parent_iter = store.iter_parent(tree_iter)
-    if parent_iter is not None:
-        parent_path = iter_to_project_path(store, parent_iter, store[parent_iter][2])
-        return ("%s/%s" % (parent_path, path))
-    return path
+    if parent_iter is None:
+        return path
+    return ("%s/%s" % (iter_to_project_path(store, parent_iter, store[parent_iter][2]), path))
 
 class KeeperTreeView:
     COL_PIXBUF=0
@@ -121,10 +120,10 @@ class KeeperTreeView:
         self.__popup.connect_edit(self.on_edit_file)
 
     def refresh(self):
-        if not self.__project.is_loaded:
+        if not self.__project.is_loaded():
             return
 
-        (is_ok, reason) = self.__tree_model.load_tree_store(self.__project.project_path)
+        (is_ok, reason) = self.__tree_model.load_tree_store(self.__project.project_path())
         if not is_ok:
             m = Message()
             m.error(self.__app_window, 'Keeper error', 'Could not refresh '
@@ -158,16 +157,19 @@ class KeeperTreeView:
                 out_str = out_str + '%s  contents:\n' % indent
                 child_iter = store.iter_children(tree_iter)
                 out_str = self.__tree_to_yaml(store, child_iter, indent + "  ", out_str)
+            elif item_type == "trash":
+                out_str = out_str + '%s  contents: []\n' % indent
+
             tree_iter = store.iter_next(tree_iter)
 
         return out_str
 
     def save(self):
-        if self.__project.is_loaded:
+        if self.__project.is_loaded():
             store = self.__tree_model.get_tree_store()
             tree_iter = store.get_iter_first()
             keeper_str = "project:\nkeeper:\n%s\n" % self.__tree_to_yaml(store, tree_iter, "  ")
-            with open(self.__project.keeper_yaml, "w") as f:
+            with open(self.__project.keeper_yaml(), "w") as f:
                 f.write(keeper_str)
 
     ###
@@ -189,9 +191,10 @@ class KeeperTreeView:
     ##
     ###
     def __on_tree_selection_changed(self, selection):
-        (model, tree_iter) = selection.get_selected()
-        if tree_iter is not None:
-            store = self.__tree_model.get_tree_store()
+        pass
+        #(model, tree_iter) = selection.get_selected()
+        #if tree_iter is not None:
+        #    store = self.__tree_model.get_tree_store()
 
     def __on_compile_cell_toggled(self, widget, path):
         store = self.__tree_model.get_tree_store()
@@ -216,7 +219,6 @@ class KeeperTreeView:
 
                 selection = self.__treeview.get_selection()
                 (model, tree_iter) = selection.get_selected()
-
                 item_type = model[tree_iter][KeeperTreeView.COL_TYPE]
 
                 menu = self.__popup.get_menu_for_type(item_type)
@@ -239,6 +241,14 @@ class KeeperTreeView:
         (response, name) = aid.run()
         if response == Gtk.ResponseType.OK:
             self.add_item(name, 'file', True)
+            selection = self.__treeview.get_selection()
+            (model, tree_iter) = selection.get_selected()
+            if tree_iter is not None:
+                self.__project.add_new_file(name,
+                        iter_to_project_path(model, tree_iter, model[tree_iter][2]))
+            else:
+                self.__project.add_new_file(name, "")
+
 
     def on_add_directory(self, *args):
         print('Add directory')

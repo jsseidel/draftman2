@@ -16,6 +16,7 @@ class AddItemDialog:
     def run(self):
         self.__dialog.set_transient_for(self.__app_window)
         self.__dialog.set_modal(True)
+        self.__entry_add.set_text('')
         response = self.__dialog.run()
         item_name = ''
         if response == Gtk.ResponseType.OK:
