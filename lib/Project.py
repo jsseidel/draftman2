@@ -9,12 +9,14 @@ gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk
 from pathlib import Path, PurePath
 from lib.Message import Message
+import re
 import sys
+import time
 
 DEFAULT_NEW_PROJECT="""project:
 keeper:
-  - type: 'trash'
-    path: 'trash'
+  - type: 'directory'
+    id: '0'
     title: 'Trash'
     compile: False
     contents: []
@@ -45,10 +47,6 @@ class Project:
 
         return (True, "OK")
 
-    def __str__(self):
-        return ("name=%s\nproject=%s\nkeeper=%s\n"
-                "keeper_yaml=%s\nbackups=%s\n" % (self.__name, self.__project_path,
-                    self.__keeper_path, self.__keeper_yaml, self.__backups_path))
 
     def is_loaded(self):
         return self.__is_loaded
@@ -116,27 +114,13 @@ class Project:
         except Exception as e:
             return (False, "Something went wrong creating %s:\n%s" % (str(project_dir), str(e)))
 
-    def add_new_file(self, name, path):
+    def write_new_file(self, name):
         rv = True
         reason = "OK"
         try:
             p = Path(self.__keeper_path)
-            with open(str(p / path / ("%s.md" % name)), "w") as f:
+            with open(str(p / ("%s" % name)), "w") as f:
                 f.write("# %s\n\nHappy writing!\n\n" % name)
-        except Exception as e:
-            rv = False
-            reason = str(e)
-
-        return (rv, reason)
-
-
-    def add_new_directory(self, name, path):
-        rv = True
-        reason = "OK"
-        try:
-            p = Path(self.__keeper_path)
-            p = p / path / ("%s" % name)
-            p.mkdir()
         except Exception as e:
             rv = False
             reason = str(e)
