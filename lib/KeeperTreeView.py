@@ -7,6 +7,7 @@ from datetime import datetime
 import gi
 gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk
+import re
 
 from lib.AddItemDialog import AddItemDialog
 from lib.KeeperTreeModel import KeeperTreeModel
@@ -151,7 +152,9 @@ class KeeperTreeView:
 
     def iter_to_project_path(self, tree_iter):
         item_id = self.__tree_model.get_tree_store()[tree_iter][KeeperTreeView.COL_ID]
-        return ("%s/%s.md" % (self.__project.keeper_path(), item_id))
+        item_name = self.__tree_model.get_tree_store()[tree_iter][KeeperTreeView.COL_TITLE]
+        return ("%s/%s" % (self.__project.keeper_path(),
+            self.__file_name(item_name, item_id)))
 
     def __tree_to_yaml(self, store, tree_iter, indent, out_str=""):
         while tree_iter is not None:
@@ -198,8 +201,11 @@ class KeeperTreeView:
 
     def __strip_name(self, name):
         name = name.strip()
-        name = re.sub('[^0-9a-zA-Z]+', '', name)
+        name = re.sub('[^0-9a-zA-Z]+', '', name.lower())
         return name
+
+    def __file_name(self, item_name, item_id):
+        return "%s-%s.md" % (self.__strip_name(item_name), item_id)
 
     ###
     ##
@@ -257,10 +263,11 @@ class KeeperTreeView:
         (response, name) = aid.run()
         if response == Gtk.ResponseType.OK:
             dt = datetime.now()
-            item_id = dt.strftime("%Y%d%m_%H%M%S")
+            item_id = dt.strftime('%Y%d%m_%H%M%S')
             selection = self.__treeview.get_selection()
             (model, tree_iter) = selection.get_selected()
-            (rv, reason) = self.__project.write_new_file("%s.md" % item_id)
+            (rv, reason) = self.__project.write_new_file(self.__file_name(name,
+                item_id))
             if rv:
                 self.add_item(name, 'file', item_id, True)
             else:
@@ -273,7 +280,7 @@ class KeeperTreeView:
         (response, name) = aid.run()
         if response == Gtk.ResponseType.OK:
             dt = datetime.now()
-            item_id = dt.strftime("%Y%d%m_%H%M%S")
+            item_id = dt.strftime('%Y%d%m_%H%M%S')
             selection = self.__treeview.get_selection()
             (model, tree_iter) = selection.get_selected()
             self.add_item(name, 'directory', item_id, True)
@@ -288,6 +295,11 @@ class KeeperTreeView:
             path = self.iter_to_project_path(tree_iter)
             fops = KeeperFileOpsLinux()
             (rv, reason) = fops.delete(path)
+            if not rv:
+                m = Message()
+                m.error(self.__app_window, 'Keeper error', 'Could not delete'
+                        ' %s:\n%s\n' % (path, reason))
+
         elif store.iter_has_child(tree_iter):
             child_iter = store.iter_children(tree_iter)
             while child_iter is not None:
