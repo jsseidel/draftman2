@@ -17,3 +17,16 @@ class KeeperFileOpsLinux(KeeperFileOps):
             rv = False
             reason = result.stderr
         return (rv, reason)
+
+    def move(self, src, dst):
+        rv = True
+        reason = "OK"
+
+        if src == dst:
+            return (rv, reason)
+
+        result = subprocess.run(['mv', src, dst])
+        if result.returncode != 0:
+            rv = False
+            reason = result.stderr
+        return (rv, reason)

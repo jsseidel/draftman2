@@ -11,7 +11,6 @@ from pathlib import Path, PurePath
 from lib.Message import Message
 import re
 import sys
-import time
 
 DEFAULT_NEW_PROJECT="""project:
 keeper:

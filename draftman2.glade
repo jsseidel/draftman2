@@ -203,6 +203,7 @@
                         <property name="can_focus">False</property>
                         <property name="label" translatable="yes">Refresh file list/word counts</property>
                         <property name="use_underline">True</property>
+                        <signal name="activate" handler="onUpdateWordCounts" swapped="no"/>
                       </object>
                     </child>
                     <child>
@@ -265,6 +266,7 @@
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
                 <property name="orientation">vertical</property>
+                <property name="spacing">10</property>
                 <child>
                   <object class="GtkLabel">
                     <property name="visible">True</property>
@@ -272,7 +274,6 @@
                     <property name="margin_left">10</property>
                     <property name="margin_right">10</property>
                     <property name="margin_top">10</property>
-                    <property name="margin_bottom">10</property>
                     <property name="label" translatable="yes">Keeper</property>
                   </object>
                   <packing>
@@ -286,6 +287,10 @@
                     <property name="name">keeperTreeView</property>
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
+                    <property name="margin_left">10</property>
+                    <property name="margin_right">10</property>
+                    <property name="margin_top">10</property>
+                    <property name="margin_bottom">10</property>
                     <property name="hexpand">True</property>
                     <property name="vexpand">True</property>
                     <property name="headers_clickable">False</property>
@@ -305,9 +310,9 @@
                   <object class="GtkBox">
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
+                    <property name="spacing">10</property>
                     <child>
-                      <object class="GtkLabel">
-                        <property name="name">labelStatus1</property>
+                      <object class="GtkLabel" id="labelStatus1">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
                         <property name="margin_left">10</property>
@@ -322,14 +327,14 @@
                       </packing>
                     </child>
                     <child>
-                      <object class="GtkLabel">
-                        <property name="name">labelStatus2</property>
+                      <object class="GtkLabel" id="labelStatus2">
+                        <property name="name">labelStatus3</property>
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
                         <property name="margin_left">10</property>
                         <property name="margin_top">10</property>
                         <property name="margin_bottom">10</property>
-                        <property name="label" translatable="yes">Status 2</property>
+                        <property name="label" translatable="yes">status 2</property>
                       </object>
                       <packing>
                         <property name="expand">False</property>
@@ -338,14 +343,15 @@
                       </packing>
                     </child>
                     <child>
-                      <object class="GtkLabel">
-                        <property name="name">labelStatus3</property>
+                      <object class="GtkButton">
+                        <property name="label" translatable="yes">Update counts</property>
                         <property name="visible">True</property>
-                        <property name="can_focus">False</property>
-                        <property name="margin_left">10</property>
+                        <property name="can_focus">True</property>
+                        <property name="receives_default">True</property>
+                        <property name="halign">start</property>
                         <property name="margin_top">10</property>
                         <property name="margin_bottom">10</property>
-                        <property name="label" translatable="yes">Status 3</property>
+                        <signal name="clicked" handler="onUpdateWordCounts" swapped="no"/>
                       </object>
                       <packing>
                         <property name="expand">False</property>
@@ -354,14 +360,14 @@
                       </packing>
                     </child>
                     <child>
-                      <object class="GtkLabel">
-                        <property name="name">labelStatus4</property>
+                      <object class="GtkButton">
+                        <property name="label" translatable="yes">Expand all</property>
                         <property name="visible">True</property>
-                        <property name="can_focus">False</property>
-                        <property name="margin_left">10</property>
+                        <property name="can_focus">True</property>
+                        <property name="receives_default">True</property>
                         <property name="margin_top">10</property>
                         <property name="margin_bottom">10</property>
-                        <property name="label" translatable="yes">Status 4</property>
+                        <signal name="clicked" handler="onExpandAll" swapped="no"/>
                       </object>
                       <packing>
                         <property name="expand">False</property>
@@ -370,15 +376,14 @@
                       </packing>
                     </child>
                     <child>
-                      <object class="GtkLabel">
-                        <property name="name">labelStatus5</property>
+                      <object class="GtkButton">
+                        <property name="label" translatable="yes">Collapse all</property>
                         <property name="visible">True</property>
-                        <property name="can_focus">False</property>
-                        <property name="margin_left">10</property>
-                        <property name="margin_right">10</property>
+                        <property name="can_focus">True</property>
+                        <property name="receives_default">True</property>
                         <property name="margin_top">10</property>
                         <property name="margin_bottom">10</property>
-                        <property name="label" translatable="yes">Status 5</property>
+                        <signal name="clicked" handler="onCollapseAll" swapped="no"/>
                       </object>
                       <packing>
                         <property name="expand">False</property>
@@ -423,6 +428,8 @@
                     <property name="name">notesTextView</property>
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
+                    <property name="margin_left">10</property>
+                    <property name="margin_right">10</property>
                     <property name="margin_top">10</property>
                     <property name="margin_bottom">10</property>
                     <property name="hexpand">True</property>
@@ -513,6 +520,7 @@
           <object class="GtkGrid">
             <property name="visible">True</property>
             <property name="can_focus">False</property>
+            <property name="column_spacing">10</property>
             <child>
               <object class="GtkLabel">
                 <property name="visible">True</property>

@@ -38,7 +38,7 @@ class App:
         self.__keeper_treeview.save()
         Gtk.main_quit()
 
-    # MENU Handlers
+    # Menu and Button Handlers
     #
     #
 
@@ -89,3 +89,15 @@ class App:
                 return
 
             self.__keeper_treeview.refresh()
+
+    # Expand all
+    def onExpandAll(self, *args):
+        self.__keeper_treeview.expand_all()
+
+    # Collapse all
+    def onCollapseAll(self, *args):
+        self.__keeper_treeview.collapse_all()
+
+    # Update word/scene counts
+    def onUpdateWordCounts(self, *args):
+        self.__keeper_treeview.update_word_counts()

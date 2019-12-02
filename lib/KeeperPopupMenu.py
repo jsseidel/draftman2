@@ -14,7 +14,8 @@ class KeeperPopupMenu:
         self.__menuItemAddFile = Gtk.MenuItem('Add file...')
         self.__menuItemEditFile = Gtk.MenuItem('Edit...')
         self.__menuItemAddDirectory = Gtk.MenuItem('Add directory...')
-        self.__menuItemDelete = Gtk.MenuItem('Delete ...')
+        self.__menuItemDelete = Gtk.MenuItem('Delete...')
+        self.__menuItemDeleteAll = Gtk.MenuItem('Empty directory...')
 
         self.__popup.append(self.__menuItemAddFile)
         self.__popup.append(self.__menuItemEditFile)
@@ -22,6 +23,7 @@ class KeeperPopupMenu:
         self.__popup.append(self.__menuItemAddDirectory)
         self.__popup.append(Gtk.SeparatorMenuItem())
         self.__popup.append(self.__menuItemDelete)
+        self.__popup.append(self.__menuItemDeleteAll)
 
     def get_menu_for_type(self, item_type):
         if item_type == 'file':
@@ -29,16 +31,19 @@ class KeeperPopupMenu:
             self.__menuItemEditFile.set_sensitive(True)
             self.__menuItemAddDirectory.set_sensitive(False)
             self.__menuItemDelete.set_sensitive(True)
-        elif item_type == 'directory' or item_type == 'trash':
+            self.__menuItemDeleteAll.set_sensitive(True)
+        elif item_type == 'directory':
             self.__menuItemAddFile.set_sensitive(True)
             self.__menuItemEditFile.set_sensitive(False)
             self.__menuItemAddDirectory.set_sensitive(True)
             self.__menuItemDelete.set_sensitive(True)
+            self.__menuItemDeleteAll.set_sensitive(True)
         else:
             self.__menuItemAddFile.set_sensitive(True)
             self.__menuItemEditFile.set_sensitive(False)
             self.__menuItemAddDirectory.set_sensitive(True)
             self.__menuItemDelete.set_sensitive(False)
+            self.__menuItemDeleteAll.set_sensitive(False)
 
         return self.__popup
 
@@ -51,3 +56,6 @@ class KeeperPopupMenu:
 
     def connect_delete(self, del_func):
         self.__menuItemDelete.connect("activate", del_func)
+
+    def connect_delete_all(self, del_all_func):
+        self.__menuItemDeleteAll.connect("activate", del_all_func)
