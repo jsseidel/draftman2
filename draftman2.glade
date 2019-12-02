@@ -306,12 +306,14 @@
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
                     <child>
-                      <object class="GtkButton">
-                        <property name="label" translatable="yes">B1</property>
+                      <object class="GtkLabel">
+                        <property name="name">labelStatus1</property>
                         <property name="visible">True</property>
-                        <property name="can_focus">True</property>
-                        <property name="receives_default">True</property>
-                        <property name="always_show_image">True</property>
+                        <property name="can_focus">False</property>
+                        <property name="margin_left">10</property>
+                        <property name="margin_top">10</property>
+                        <property name="margin_bottom">10</property>
+                        <property name="label" translatable="yes">Status 1</property>
                       </object>
                       <packing>
                         <property name="expand">False</property>
@@ -320,12 +322,14 @@
                       </packing>
                     </child>
                     <child>
-                      <object class="GtkButton">
-                        <property name="label" translatable="yes">B2</property>
+                      <object class="GtkLabel">
+                        <property name="name">labelStatus2</property>
                         <property name="visible">True</property>
-                        <property name="can_focus">True</property>
-                        <property name="receives_default">True</property>
-                        <property name="always_show_image">True</property>
+                        <property name="can_focus">False</property>
+                        <property name="margin_left">10</property>
+                        <property name="margin_top">10</property>
+                        <property name="margin_bottom">10</property>
+                        <property name="label" translatable="yes">Status 2</property>
                       </object>
                       <packing>
                         <property name="expand">False</property>
@@ -334,11 +338,14 @@
                       </packing>
                     </child>
                     <child>
-                      <object class="GtkButton">
-                        <property name="label" translatable="yes">B3</property>
+                      <object class="GtkLabel">
+                        <property name="name">labelStatus3</property>
                         <property name="visible">True</property>
-                        <property name="can_focus">True</property>
-                        <property name="receives_default">True</property>
+                        <property name="can_focus">False</property>
+                        <property name="margin_left">10</property>
+                        <property name="margin_top">10</property>
+                        <property name="margin_bottom">10</property>
+                        <property name="label" translatable="yes">Status 3</property>
                       </object>
                       <packing>
                         <property name="expand">False</property>
@@ -347,11 +354,14 @@
                       </packing>
                     </child>
                     <child>
-                      <object class="GtkButton">
-                        <property name="label" translatable="yes">B4</property>
+                      <object class="GtkLabel">
+                        <property name="name">labelStatus4</property>
                         <property name="visible">True</property>
-                        <property name="can_focus">True</property>
-                        <property name="receives_default">True</property>
+                        <property name="can_focus">False</property>
+                        <property name="margin_left">10</property>
+                        <property name="margin_top">10</property>
+                        <property name="margin_bottom">10</property>
+                        <property name="label" translatable="yes">Status 4</property>
                       </object>
                       <packing>
                         <property name="expand">False</property>
@@ -360,11 +370,15 @@
                       </packing>
                     </child>
                     <child>
-                      <object class="GtkButton">
-                        <property name="label" translatable="yes">B5</property>
+                      <object class="GtkLabel">
+                        <property name="name">labelStatus5</property>
                         <property name="visible">True</property>
-                        <property name="can_focus">True</property>
-                        <property name="receives_default">True</property>
+                        <property name="can_focus">False</property>
+                        <property name="margin_left">10</property>
+                        <property name="margin_right">10</property>
+                        <property name="margin_top">10</property>
+                        <property name="margin_bottom">10</property>
+                        <property name="label" translatable="yes">Status 5</property>
                       </object>
                       <packing>
                         <property name="expand">False</property>
