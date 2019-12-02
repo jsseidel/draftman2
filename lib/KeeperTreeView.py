@@ -14,6 +14,7 @@ from lib.KeeperTreeModel import KeeperTreeModel
 from lib.KeeperPopupMenu import KeeperPopupMenu
 from lib.Message import Message
 from lib.KeeperFileOpsLinux import KeeperFileOpsLinux
+from pathlib import Path, PurePath
 
 class KeeperTreeView:
     COL_PIXBUF=0
@@ -32,6 +33,10 @@ class KeeperTreeView:
         self.__treeview = builder.get_object('treeViewKeeper')
         self.__tree_model = KeeperTreeModel()
         self.__builder = builder
+
+        # We use this to save our last selected row so we can save notes
+        # before we show another row's notes
+        self.__last_sel = None
 
         # Note that when adding columns, the "text" attribute is an index into
         # the tree model list. Attributes names match the available properties
@@ -156,6 +161,12 @@ class KeeperTreeView:
         return ("%s/%s" % (self.__project.keeper_path(),
             self.__file_name(item_name, item_id)))
 
+    def iter_to_notes_path(self, tree_iter):
+        item_id = self.__tree_model.get_tree_store()[tree_iter][KeeperTreeView.COL_ID]
+        item_name = self.__tree_model.get_tree_store()[tree_iter][KeeperTreeView.COL_TITLE]
+        return ("%s/%s" % (self.__project.notes_path(),
+            self.__file_name(item_name, item_id)))
+
     def __tree_to_yaml(self, store, tree_iter, indent, out_str=""):
         while tree_iter is not None:
             item_type = store[tree_iter][KeeperTreeView.COL_TYPE]
@@ -207,16 +218,52 @@ class KeeperTreeView:
     def __file_name(self, item_name, item_id):
         return "%s-%s.md" % (self.__strip_name(item_name), item_id)
 
+    def __save_notes(self, store, tree_iter):
+        item_type = store[tree_iter][KeeperTreeView.COL_TYPE]
+        text_view_notes = self.__builder.get_object('textViewNotes')
+        text_view_buffer = text_view_notes.get_buffer()
+        item_id = store[tree_iter][KeeperTreeView.COL_ID]
+        item_name = store[tree_iter][KeeperTreeView.COL_TITLE]
+        path = Path("%s/notes/%s" % (self.__project.project_path(),
+            self.__file_name(item_name, item_id)))
+        start_iter = text_view_buffer.get_start_iter()
+        end_iter = text_view_buffer.get_end_iter()
+        with open(str(path), "w") as f:
+            f.write(text_view_buffer.get_text(start_iter, end_iter, True))
+
+    def __show_notes(self, store, tree_iter):
+        item_type = store[tree_iter][KeeperTreeView.COL_TYPE]
+        text_view_notes = self.__builder.get_object('textViewNotes')
+        text_view_buffer = text_view_notes.get_buffer()
+        item_id = store[tree_iter][KeeperTreeView.COL_ID]
+        item_name = store[tree_iter][KeeperTreeView.COL_TITLE]
+        path = Path("%s/notes/%s" % (self.__project.project_path(),
+            self.__file_name(item_name, item_id)))
+        with open(str(path), "r") as f:
+            text_view_buffer.set_text(f.read())
+
     ###
     ##
     ## Signal handler functions
     ##
     ###
     def __on_tree_selection_changed(self, selection):
-        pass
-        #(model, tree_iter) = selection.get_selected()
-        #if tree_iter is not None:
-        #    store = self.__tree_model.get_tree_store()
+        if self.__last_sel is not None:
+            (store, tree_iter) = self.__last_sel
+            self.__save_notes(store, tree_iter)
+
+        (store, tree_iter) = selection.get_selected()
+        if tree_iter is not None:
+            text_view_notes = self.__builder.get_object('textViewNotes')
+            self.__show_notes(store, tree_iter)
+            self.__last_sel = selection.get_selected()
+            text_view_notes.set_sensitive(True)
+        else:
+            text_view_notes = self.__builder.get_object('textViewNotes')
+            text_view_buffer = text_view_notes.get_buffer()
+            text_view_buffer.set_text('')
+            self.__last_sel = None
+            text_view_notes.set_sensitive(False)
 
     def __on_compile_cell_toggled(self, widget, path):
         store = self.__tree_model.get_tree_store()
@@ -266,7 +313,9 @@ class KeeperTreeView:
             item_id = dt.strftime('%Y%d%m_%H%M%S')
             selection = self.__treeview.get_selection()
             (model, tree_iter) = selection.get_selected()
-            (rv, reason) = self.__project.write_new_file(self.__file_name(name,
+            (rv, reason) = self.__project.write_new_file(name, self.__file_name(name,
+                item_id))
+            (rv, reason) = self.__project.write_new_note(name, self.__file_name(name,
                 item_id))
             if rv:
                 self.add_item(name, 'file', item_id, True)
@@ -283,7 +332,14 @@ class KeeperTreeView:
             item_id = dt.strftime('%Y%d%m_%H%M%S')
             selection = self.__treeview.get_selection()
             (model, tree_iter) = selection.get_selected()
-            self.add_item(name, 'directory', item_id, True)
+            (rv, reason) = self.__project.write_new_note(name,
+                    self.__file_name(name, item_id))
+            if rv:
+                self.add_item(name, 'directory', item_id, True)
+            else:
+                m = Message()
+                m.error(self.__app_window, 'Keeper error', 'Could not add'
+                        'directory note:\n\n%s' % reason)
 
     def on_edit_file(self, *args):
         print('Edit file')
@@ -299,8 +355,23 @@ class KeeperTreeView:
                 m = Message()
                 m.error(self.__app_window, 'Keeper error', 'Could not delete'
                         ' %s:\n%s\n' % (path, reason))
+            path = self.iter_to_notes_path(tree_iter)
+            fops = KeeperFileOpsLinux()
+            (rv, reason) = fops.delete(path)
+            if not rv:
+                m = Message()
+                m.error(self.__app_window, 'Keeper error', 'Could not delete'
+                        ' %s:\n%s\n' % (path, reason))
+        elif item_type == 'directory':
+            path = self.iter_to_notes_path(tree_iter)
+            fops = KeeperFileOpsLinux()
+            (rv, reason) = fops.delete(path)
+            if not rv:
+                m = Message()
+                m.error(self.__app_window, 'Keeper error', 'Could not delete'
+                        ' %s:\n%s\n' % (path, reason))
 
-        elif store.iter_has_child(tree_iter):
+        if store.iter_has_child(tree_iter):
             child_iter = store.iter_children(tree_iter)
             while child_iter is not None:
                 self.__delete_list(child_iter)
@@ -309,6 +380,7 @@ class KeeperTreeView:
     def on_delete(self, *args):
         selection = self.__treeview.get_selection()
         (model, tree_iter) = selection.get_selected()
+        self.__last_sel = None
         if tree_iter is not None:
             path = self.iter_to_project_path(tree_iter)
             item_name = self.__tree_model.get_tree_store()[tree_iter][KeeperTreeView.COL_TITLE]

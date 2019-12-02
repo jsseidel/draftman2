@@ -27,6 +27,7 @@ class Project:
         self.__name = ""
         self.__project_path = ""
         self.__keeper_path = ""
+        self.__notes_path = ""
         self.__keeper_yaml = ""
         self.__backups_path = ""
         self.__is_loaded = False
@@ -39,7 +40,7 @@ class Project:
 
         # Now, we look for all the items we expect to find in a draftman2
         # project (which isn't much).
-        must_haves = ['keeper.yaml', 'keeper']
+        must_haves = ['keeper.yaml', 'keeper', 'notes']
         for item in must_haves:
             q = p / item
             if not q.exists():
@@ -53,6 +54,9 @@ class Project:
 
     def project_path(self):
         return self.__project_path
+
+    def notes_path(self):
+        return self.__notes_path
 
     def keeper_yaml(self):
         return self.__keeper_yaml
@@ -70,6 +74,7 @@ class Project:
         self.__project_path = p
         self.__keeper_path = p / 'keeper'
         self.__keeper_yaml = p / 'keeper.yaml'
+        self.__notes_path = p / 'notes'
         self.__backups_path = p
         self.__is_loaded = True
 
@@ -95,8 +100,12 @@ class Project:
             proj_piece = project_dir / 'keeper'
             proj_piece.mkdir()
 
-            proj_piece = project_dir / 'keeper' / 'Trash'
+            proj_piece = project_dir / 'notes'
             proj_piece.mkdir()
+
+            proj_piece = project_dir / 'notes' / 'trash-0.md'
+            with open(str(proj_piece), "w") as f:
+                f.write("# Trash notes\n\n")
 
             proj_piece = project_dir / 'keeper.yaml'
             with open(str(proj_piece), "w") as f:
@@ -107,6 +116,7 @@ class Project:
             self.__project_path = p
             self.__keeper_path = p / 'keeper'
             self.__keeper_yaml = p / 'keeper.yaml'
+            self.__notes_path = p / 'notes'
             self.__backups_path = p
             self.__is_loaded = True
 
@@ -114,13 +124,26 @@ class Project:
         except Exception as e:
             return (False, "Something went wrong creating %s:\n%s" % (str(project_dir), str(e)))
 
-    def write_new_file(self, name):
+    def write_new_file(self, title, file_name):
         rv = True
         reason = "OK"
         try:
             p = Path(self.__keeper_path)
-            with open(str(p / ("%s" % name)), "w") as f:
-                f.write("# %s\n\nHappy writing!\n\n" % name)
+            with open(str(p / ("%s" % file_name)), "w") as f:
+                f.write("# %s\n\nHappy writing!\n\n" % title)
+        except Exception as e:
+            rv = False
+            reason = str(e)
+
+        return (rv, reason)
+
+    def write_new_note(self, title, file_name):
+        rv = True
+        reason = "OK"
+        try:
+            p = Path(self.__notes_path)
+            with open(str(p / ("%s" % file_name)), "w") as f:
+                f.write("# %s notes\n\nKeep track of notes here\n\n" % title)
         except Exception as e:
             rv = False
             reason = str(e)
