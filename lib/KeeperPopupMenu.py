@@ -30,7 +30,7 @@ class KeeperPopupMenu:
 
     def get_menu_for_type(self, item_type):
         if item_type == 'file':
-            self.__menuItemAddFile.set_sensitive(False)
+            self.__menuItemAddFile.set_sensitive(True)
             self.__menuItemEditFile.set_sensitive(True)
             self.__menuItemAddDirectory.set_sensitive(False)
             self.__menuItemDelete.set_sensitive(True)

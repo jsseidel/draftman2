@@ -33,7 +33,7 @@ class KeeperTreeModel:
     def __add_item_list_to_store(self, parent_row, item_list):
         for item in item_list:
             contents_size = 0
-            if item['type'] == 'directory':
+            if 'contents' in item:
                 contents_size = len(item['contents'])
 
             parent = self.__store.append(parent_row,
@@ -42,7 +42,7 @@ class KeeperTreeModel:
                         item['id'], item['title'], item['compile'], 0, 0, 0,
                         0])
 
-            if item['type'] == 'directory':
+            if 'contents' in item:
                 self.__add_item_list_to_store(parent, item['contents'])
 
     def clear(self):
@@ -73,10 +73,9 @@ class KeeperTreeModel:
         self.clear()
 
         try:
-            yaml_str = ""
             with open(("%s/keeper.yaml" % project_path), "r") as stream:
-                draftmaster = yaml.safe_load(stream)
-                self.__add_item_list_to_store(None, draftmaster['keeper'])
+                keeper = yaml.safe_load(stream)
+                self.__add_item_list_to_store(None, keeper['keeper'])
 
         except Exception as e:
             rv = False

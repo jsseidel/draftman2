@@ -8,6 +8,7 @@ import gi
 gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk
 import re
+import os
 import subprocess
 
 from lib.counts import word_count, scene_count
@@ -37,15 +38,16 @@ class KeeperTreeView:
         self.__builder = builder
         self.__label_status1 = builder.get_object('labelStatus1')
         self.__label_status2 = builder.get_object('labelStatus2')
+        self.__label_status3 = builder.get_object('labelStatus3')
         self.__text_view_notes = self.__builder.get_object('textViewNotes')
 
         # We use this to save our last selected row so we can save notes
         # before we show another row's notes
         self.__last_sel = None
 
-        # Note that when adding columns, the "text" attribute is an index into
-        # the tree model list. Attributes names match the available properties
-        # of the class.
+        # Note that when adding columns, the text/pizbuf/etc attributes are an
+        # index into the tree model list. Attributes names match the available
+        # properties of the class.
 
         # The icon representing the kind of item
         col_icon = Gtk.TreeViewColumn('Type', Gtk.CellRendererPixbuf(),
@@ -145,11 +147,17 @@ class KeeperTreeView:
         # Set labels
         self.__label_status1.set_label("Words: 0")
         self.__label_status2.set_label("Scenes: 0")
+        self.__label_status3.set_label("Avg Words/File: 0")
 
         self.enable_items()
 
     def enable_items(self):
         l = self.__project.is_loaded()
+        (model, tree_iter) = self.__treeview.get_selection().get_selected()
+        item_type = None
+        if model is not None and tree_iter is not None:
+            item_type = model[tree_iter][KeeperTreeView.COL_TYPE]
+
         self.__treeview.set_sensitive(l)
         self.__text_view_notes.set_sensitive(l)
         self.__builder.get_object('buttonExpandAll').set_sensitive(l)
@@ -158,13 +166,17 @@ class KeeperTreeView:
 
         # Menus
         self.__builder.get_object('menuAddFile').set_sensitive(l)
-        self.__builder.get_object('menuAddDirectory').set_sensitive(l)
-        self.__builder.get_object('menuEdit').set_sensitive(l)
-        self.__builder.get_object('menuDelete').set_sensitive(l)
         self.__builder.get_object('menuCompile').set_sensitive(l)
         self.__builder.get_object('menuBackup').set_sensitive(l)
         self.__builder.get_object('menuRefresh').set_sensitive(l)
-        self.__builder.get_object('menuInfo').set_sensitive(l)
+        self.__builder.get_object('menuPreferences').set_sensitive(l)
+
+        b = (l and (item_type == 'directory' or item_type == None))
+        self.__builder.get_object('menuAddDirectory').set_sensitive(b)
+        b = (l and item_type == 'file')
+        self.__builder.get_object('menuEdit').set_sensitive(b)
+        b = (l and item_type != None)
+        self.__builder.get_object('menuDelete').set_sensitive(b)
 
     def refresh(self):
         if not self.__project.is_loaded():
@@ -225,29 +237,41 @@ class KeeperTreeView:
 
         return out_str
 
+    def __project_settings_to_yaml(self):
+        yaml = "  editor: '%s'\n" % self.__project.editor()
+        yaml = "%s  editorArgs: '%s'\n" % (yaml, self.__project.editor_args())
+        yaml = "%s  backupPath: '%s'\n" % (yaml, self.__project.backup_path())
+        yaml = "%s  backupOnStart: %s\n" % (yaml, self.__project.backup_on_start())
+        yaml = "%s  includeTitlesCompile: %s\n" % (yaml, self.__project.include_titles())
+        return yaml
+
     def save(self):
         if self.__project.is_loaded():
             store = self.__tree_model.get_tree_store()
             tree_iter = store.get_iter_first()
-            keeper_str = "project:\nkeeper:\n%s\n" % self.__tree_to_yaml(store, tree_iter, "  ")
+            keeper_str = ("project:\n%s\nkeeper:\n%s\n" %
+            (self.__project_settings_to_yaml(), self.__tree_to_yaml(store,
+                tree_iter, "  ")))
             with open(self.__project.keeper_yaml(), "w") as f:
                 f.write(keeper_str)
 
-    def __update_word_count_tree(self, store, tree_iter, words_running, scenes_running):
+    def __update_word_count_tree(self, store, tree_iter, words_running, scenes_running, files_running):
         while tree_iter is not None:
             item_type = store[tree_iter][KeeperTreeView.COL_TYPE]
             item_name = store[tree_iter][KeeperTreeView.COL_NAME]
             item_id = store[tree_iter][KeeperTreeView.COL_ID]
             item_compile = store[tree_iter][KeeperTreeView.COL_COMPILE]
 
-            if item_type == 'file' and item_compile:
+            if item_type == 'file':
+                files_running += 1
                 path = Path("%s/keeper/%s" % (self.__project.project_path(),
                     self.__file_name(item_name, item_id)))
                 (rv, reason, words) = word_count(str(path))
                 if not rv:
                     print("WARNING: internal error in word count: %s " % reason)
 
-                words_running += words
+                if item_compile:
+                    words_running += words
 
                 store[tree_iter][KeeperTreeView.COL_WORDS] = int(words)
                 store[tree_iter][KeeperTreeView.COL_WORDS_RUNNING] = int(words_running)
@@ -256,17 +280,20 @@ class KeeperTreeView:
                 if not rv:
                     print("WARNING: internal error in scene count: %s " % reason)
 
-                scenes_running += scenes
+                if item_compile:
+                    scenes_running += scenes
 
                 store[tree_iter][KeeperTreeView.COL_SCENES] = int(scenes)
                 store[tree_iter][KeeperTreeView.COL_SCENES_RUNNING] = int(scenes_running)
 
-            elif store.iter_has_child(tree_iter) and item_compile:
+            elif item_type == 'directory' or store.iter_has_child(tree_iter):
                 child_iter = store.iter_children(tree_iter)
-                (dir_words, dir_scenes) = self.__update_word_count_tree(store,
-                        child_iter, 0, 0)
-                words_running += dir_words
-                scenes_running += dir_scenes
+                (dir_words, dir_scenes, dir_files) = self.__update_word_count_tree(store,
+                        child_iter, 0, 0, 0)
+                if item_compile:
+                    words_running += dir_words
+                    scenes_running += dir_scenes
+                    files_running += dir_files
                 store[tree_iter][KeeperTreeView.COL_WORDS] = int(dir_words)
                 store[tree_iter][KeeperTreeView.COL_WORDS_RUNNING] = int(words_running)
                 store[tree_iter][KeeperTreeView.COL_SCENES] = int(dir_scenes)
@@ -274,22 +301,72 @@ class KeeperTreeView:
 
             tree_iter = store.iter_next(tree_iter)
 
-        return (words_running, scenes_running)
+        return (words_running, scenes_running, files_running)
 
     def update_word_counts(self):
         if self.__project.is_loaded():
             store = self.__tree_model.get_tree_store()
             tree_iter = store.get_iter_first()
-            (total_words, total_scenes) = self.__update_word_count_tree(store,
-                    tree_iter, 0, 0)
+            (total_words, total_scenes, total_files) = self.__update_word_count_tree(store, tree_iter, 0, 0, 0)
             self.__label_status1.set_label("Words: %d" % total_words)
             self.__label_status2.set_label("Scenes: %d" % total_scenes)
+            avg = 0
+            if total_files > 0:
+                avg = int(total_words/total_files)
+            self.__label_status3.set_label("Avg Words/File: %d" % avg)
 
     def expand_all(self):
         self.__treeview.expand_all()
 
     def collapse_all(self):
         self.__treeview.collapse_all()
+
+    def __do_compile(self, store, tree_iter, out_str):
+        while tree_iter is not None:
+            item_type = store[tree_iter][KeeperTreeView.COL_TYPE]
+            item_name = store[tree_iter][KeeperTreeView.COL_NAME]
+            item_id = store[tree_iter][KeeperTreeView.COL_ID]
+            item_compile = store[tree_iter][KeeperTreeView.COL_COMPILE]
+
+            if item_type == 'file':
+                path = Path("%s/keeper/%s" % (self.__project.project_path(),
+                    self.__file_name(item_name, item_id)))
+                if item_compile:
+                    with open(str(path), "r") as f:
+                        out_str = "%s\n%s" % (out_str, f.read())
+
+            elif item_type == 'directory' or store.iter_has_child(tree_iter):
+                child_iter = store.iter_children(tree_iter)
+                child_out_str = self.__do_compile(store, child_iter, "")
+                out_str = "%s\n%s" % (out_str, child_out_str)
+
+            tree_iter = store.iter_next(tree_iter)
+
+        return out_str
+
+    def compile(self, path):
+        store = self.__tree_model.get_tree_store()
+        tree_iter = store.get_iter_first()
+
+        p = Path(path)
+        go_ahead = True
+        if p.exists():
+            m = Message()
+            rv = m.confirm(self.__app_window, "Replace?", "%s exists. Replace it?" % path)
+            go_head = (rv == Gtk.ResponseType.YES)
+
+        if go_ahead:
+            out_str = self.__do_compile(store, tree_iter, "")
+            with open(path, "w") as f:
+                f.write(out_str)
+
+    def backup(self, path):
+        result = subprocess.run(['zip', '-r', path, self.__project.project_path()])
+        m = Message()
+        if result.returncode != 0:
+            m.error(self.__app_window, 'Error creating backup', result.stderr)
+        else:
+            m.info(self.__app_window, 'Backup created', '%s created successfully' % path)
 
     ###
     ##
@@ -350,7 +427,10 @@ class KeeperTreeView:
         item_name = model[tree_iter][KeeperTreeView.COL_NAME]
         path = Path("%s/keeper/%s" % (self.__project.project_path(),
             self.__file_name(item_name, item_id)))
-        subprocess.Popen(['/usr/bin/typora', path])
+        editor = self.__project.editor()
+        if self.__project.editor_args() != '':
+            editor = "%s %s" % (editor, self.__project.editor_args())
+        subprocess.Popen([editor, path])
 
     ###
     ##
@@ -390,6 +470,7 @@ class KeeperTreeView:
 
     def __on_tree_selection_changed(self, selection):
         self.__save_last_sel()
+        self.enable_items()
 
         (store, tree_iter) = selection.get_selected()
         if tree_iter is not None:
@@ -415,6 +496,7 @@ class KeeperTreeView:
         self.__save_last_sel()
 
     def __on_row_moved(self, widget, context):
+        self.update_word_counts()
         self.save()
 
     def __on_button_pressed(self, widget, event):
@@ -494,43 +576,46 @@ class KeeperTreeView:
     def on_edit_file(self, *args):
         self.__do_edit_selected()
 
-    def __delete_list(self, tree_iter):
+    def __delete_self_and_child_files(self, tree_iter):
         store = self.__tree_model.get_tree_store()
-        while tree_iter is not None:
-            item_type = store[tree_iter][KeeperTreeView.COL_TYPE]
-            if item_type == 'file':
-                path = self.iter_to_project_path(tree_iter)
-                fops = KeeperFileOpsLinux()
-                (rv, reason) = fops.delete(path)
-                if not rv:
-                    m = Message()
-                    m.error(self.__app_window, 'Keeper error', 'Could not delete'
-                            ' %s:\n%s\n' % (path, reason))
-                path = self.iter_to_notes_path(tree_iter)
-                fops = KeeperFileOpsLinux()
-                (rv, reason) = fops.delete(path)
-                if not rv:
-                    m = Message()
-                    m.error(self.__app_window, 'Keeper error', 'Could not delete'
-                            ' %s:\n%s\n' % (path, reason))
-            elif item_type == 'directory':
-                path = self.iter_to_notes_path(tree_iter)
-                fops = KeeperFileOpsLinux()
-                (rv, reason) = fops.delete(path)
-                if not rv:
-                    m = Message()
-                    m.error(self.__app_window, 'Keeper error', 'Could not delete'
-                            ' %s:\n%s\n' % (path, reason))
+        item_type = store[tree_iter][KeeperTreeView.COL_TYPE]
+        if item_type == 'file':
+            path = self.iter_to_project_path(tree_iter)
+            fops = KeeperFileOpsLinux()
+            (rv, reason) = fops.delete(path)
+            if not rv:
+                m = Message()
+                m.error(self.__app_window, 'Keeper error', 'Could not delete'
+                        ' %s:\n%s\n' % (path, reason))
+            path = self.iter_to_notes_path(tree_iter)
+            fops = KeeperFileOpsLinux()
+            (rv, reason) = fops.delete(path)
+            if not rv:
+                m = Message()
+                m.error(self.__app_window, 'Keeper error', 'Could not delete'
+                        ' %s:\n%s\n' % (path, reason))
+        elif item_type == 'directory':
+            path = self.iter_to_notes_path(tree_iter)
+            fops = KeeperFileOpsLinux()
+            (rv, reason) = fops.delete(path)
+            if not rv:
+                m = Message()
+                m.error(self.__app_window, 'Keeper error', 'Could not delete'
+                        ' %s:\n%s\n' % (path, reason))
 
-            if store.iter_has_child(tree_iter):
-                child_iter = store.iter_children(tree_iter)
-                while child_iter is not None:
-                    self.__delete_list(child_iter)
-                    child_iter = store.iter_next(child_iter)
+        if store.iter_has_child(tree_iter):
+            child_iter = store.iter_children(tree_iter)
+            while child_iter is not None:
+                self.__delete_self_and_child_files(child_iter)
+                child_iter = store.iter_next(child_iter)
 
-            old_iter = tree_iter
-            tree_iter = store.iter_next(tree_iter)
-            self.__tree_model.remove(old_iter)
+    def __delete_child_files(self, tree_iter):
+        store = self.__tree_model.get_tree_store()
+        if store.iter_has_child(tree_iter):
+            child_iter = store.iter_children(tree_iter)
+            while child_iter is not None:
+                self.__delete_self_and_child_files(child_iter)
+                child_iter = store.iter_next(child_iter)
 
     def on_delete(self, *args):
         selection = self.__treeview.get_selection()
@@ -542,7 +627,7 @@ class KeeperTreeView:
             m = Message()
             if m.confirm(self.__app_window, 'Confirm', 'Are you sure you want '
                     'to permenantly delete %s?' % item_name):
-                self.__delete_list(tree_iter)
+                self.__delete_self_and_child_files(tree_iter)
                 self.remove_item(tree_iter)
         else:
             m = Message()
@@ -561,9 +646,16 @@ class KeeperTreeView:
             m = Message()
             if m.confirm(self.__app_window, 'Confirm', 'Are you sure you want '
                     'to permenantly delete everything in %s?' % item_name):
-                if model.iter_has_child(tree_iter):
-                    child_iter = model.iter_children(tree_iter)
-                    self.__delete_list(child_iter)
+                self.__delete_child_files(tree_iter)
+                paths = []
+                child_iter = model.iter_children(tree_iter)
+                while child_iter is not None:
+                    paths.append(model.get_path(child_iter))
+                    child_iter = model.iter_next(child_iter)
+
+                for p in reversed(paths):
+                    itr = model.get_iter(p)
+                    model.remove(itr)
         else:
             m = Message()
             m.error(self.__app_window, 'Keeper error', 'Nothing to delete.'

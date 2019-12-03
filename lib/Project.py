@@ -11,6 +11,7 @@ from pathlib import Path, PurePath
 from lib.Message import Message
 import re
 import sys
+import yaml
 
 DEFAULT_NEW_PROJECT="""project:
 keeper:
@@ -28,7 +29,11 @@ class Project:
         self.__keeper_path = ""
         self.__notes_path = ""
         self.__keeper_yaml = ""
-        self.__backups_path = ""
+        self.__backup_path = ""
+        self.__backup_on_start = False
+        self.__editor = '/usr/bin/gedit'
+        self.__editor_args = ''
+        self.__include_titles = False
         self.__is_loaded = False
 
     def __validate_project(self, path):
@@ -47,6 +52,30 @@ class Project:
 
         return (True, "OK")
 
+    def __load_prefs(self, path):
+        keeper = ""
+        with open(("%s/keeper.yaml" % self.__project_path), "r") as stream:
+            keeper = yaml.safe_load(stream)
+
+        project = keeper['project']
+        if project is not None:
+            if 'editor' in project:
+                self.__editor = project['editor']
+
+            if 'editorArgs' in project:
+                self.__editor_args = project['editorArgs']
+
+            if 'backupPath' in project:
+                self.__backup_path = project['backupPath']
+
+            if 'backupOnStart' in project:
+                self.__backup_on_start = project['backupOnStart']
+
+            if 'includeTitlesCompile' in project:
+                self.__include_titles = project['includeTitlesCompile']
+
+    def name(self):
+        return self.__name
 
     def is_loaded(self):
         return self.__is_loaded
@@ -63,6 +92,36 @@ class Project:
     def keeper_path(self):
         return self.__keeper_path
 
+    def backup_path(self):
+        return self.__backup_path
+
+    def backup_on_start(self):
+        return self.__backup_on_start
+
+    def editor(self):
+        return self.__editor
+
+    def editor_args(self):
+        return self.__editor_args
+
+    def include_titles(self):
+        return self.__include_titles
+
+    def set_editor(self, editor):
+        self.__editor = editor
+
+    def set_editor_args(self, editor_args):
+        self.__editor_args = editor_args
+
+    def set_backup_path(self, backup_path):
+        self.__backup_path= backup_path
+
+    def set_backup_on_start(self, backup_on_start):
+        self.__backup_on_start= backup_on_start
+
+    def set_include_titles(self, include_titles):
+        self.__include_titles = include_titles
+
     def open(self, path):
         (rv, reason) = self.__validate_project(path)
         if not rv:
@@ -74,8 +133,14 @@ class Project:
         self.__keeper_path = p / 'keeper'
         self.__keeper_yaml = p / 'keeper.yaml'
         self.__notes_path = p / 'notes'
-        self.__backups_path = p
+        self.__backup_path = p
+        self.__backup_on_start = False
+        self.__editor = '/usr/bin/gedit'
+        self.__editor_args = ''
         self.__is_loaded = True
+        self.__include_titles = False
+
+        self.__load_prefs(str(self.__keeper_yaml))
 
         return (True, "OK")
 
@@ -116,8 +181,12 @@ class Project:
             self.__keeper_path = p / 'keeper'
             self.__keeper_yaml = p / 'keeper.yaml'
             self.__notes_path = p / 'notes'
-            self.__backups_path = p
+            self.__backup_path = p
+            self.__backup_on_start = False
+            self.__editor = '/usr/bin/gedit'
+            self.__editor_args = ''
             self.__is_loaded = True
+            self.__include_titles = False
 
             return (True, "OK")
         except Exception as e:

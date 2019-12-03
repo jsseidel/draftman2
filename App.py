@@ -10,12 +10,15 @@ from gi.repository import Gtk
 
 import os
 
+from datetime import datetime
 from lib.Project import Project
+from lib.PreferencesDialog import PreferencesDialog
 from lib.NewProjectDialog import NewProjectDialog
 from lib.OpenProjectDialog import OpenProjectDialog
 from lib.AboutDialog import AboutDialog
 from lib.KeeperTreeView import KeeperTreeView
 from lib.Message import Message
+from pathlib import Path
 
 class App:
 
@@ -109,3 +112,42 @@ class App:
     def onAbout(self, *args):
         ad = AboutDialog(self.__builder)
         ad.run()
+
+    # User selected Preferences
+    def onPreferences(self, *args):
+        pd = PreferencesDialog(self.__builder, self.__project)
+        (response, editor, editor_args, backup_path, backup_on_start) = pd.run()
+        if response == Gtk.ResponseType.OK:
+            self.__project.set_editor(editor)
+            self.__project.set_editor_args(editor_args)
+            self.__project.set_backup_path(backup_path)
+            self.__project.set_backup_on_start(backup_on_start)
+
+    # User selected Compile
+    def onCompile(self, *args):
+        dialog = Gtk.FileChooserDialog("Save compilation to folder",
+                self.__app_window, Gtk.FileChooserAction.SELECT_FOLDER,
+                (Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL, "Select",
+                    Gtk.ResponseType.OK))
+        dialog.set_default_size(800, 400)
+
+        response = dialog.run()
+        filename = "NA"
+        if response == Gtk.ResponseType.OK:
+            filename = dialog.get_filename()
+
+        dialog.destroy()
+
+        p = Path(filename)
+        fileName = '%s%s' % (self.__project.name(), '.md')
+        p = p / fileName
+        self.__keeper_treeview.compile(str(p))
+
+    # User selected backup
+    def onCreateBackup(self, *args):
+        dt = datetime.now()
+        ts = dt.strftime('%Y%m%d_%H%M%S')
+        p = Path(self.__project.backup_path())
+        filename = '%s-%s%s' % (self.__project.name(), ts, '.zip')
+        p = p / filename
+        self.__keeper_treeview.backup(str(p))

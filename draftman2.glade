@@ -125,6 +125,7 @@
                         <property name="can_focus">False</property>
                         <property name="label" translatable="yes">Compile...</property>
                         <property name="use_underline">True</property>
+                        <signal name="activate" handler="onCompile" swapped="no"/>
                       </object>
                     </child>
                     <child>
@@ -139,6 +140,7 @@
                         <property name="can_focus">False</property>
                         <property name="label" translatable="yes">Create backup</property>
                         <property name="use_underline">True</property>
+                        <signal name="activate" handler="onCreateBackup" swapped="no"/>
                       </object>
                     </child>
                     <child>
@@ -163,25 +165,12 @@
                       </object>
                     </child>
                     <child>
-                      <object class="GtkMenuItem" id="menuInfo">
-                        <property name="visible">True</property>
-                        <property name="can_focus">False</property>
-                        <property name="label" translatable="yes">Info...</property>
-                        <property name="use_underline">True</property>
-                      </object>
-                    </child>
-                    <child>
-                      <object class="GtkSeparatorMenuItem">
-                        <property name="visible">True</property>
-                        <property name="can_focus">False</property>
-                      </object>
-                    </child>
-                    <child>
-                      <object class="GtkMenuItem">
+                      <object class="GtkMenuItem" id="menuPreferences">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
                         <property name="label" translatable="yes">Preferences...</property>
                         <property name="use_underline">True</property>
+                        <signal name="activate" handler="onPreferences" swapped="no"/>
                       </object>
                     </child>
                   </object>
@@ -308,6 +297,20 @@
                       </packing>
                     </child>
                     <child>
+                      <object class="GtkLabel" id="labelStatus3">
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <property name="margin_left">10</property>
+                        <property name="margin_right">10</property>
+                        <property name="label" translatable="yes">status 3</property>
+                      </object>
+                      <packing>
+                        <property name="expand">False</property>
+                        <property name="fill">True</property>
+                        <property name="position">2</property>
+                      </packing>
+                    </child>
+                    <child>
                       <object class="GtkButton" id="buttonUpdateCounts">
                         <property name="label" translatable="yes">Update counts</property>
                         <property name="visible">True</property>
@@ -321,7 +324,7 @@
                       <packing>
                         <property name="expand">False</property>
                         <property name="fill">True</property>
-                        <property name="position">2</property>
+                        <property name="position">3</property>
                       </packing>
                     </child>
                     <child>
@@ -337,7 +340,7 @@
                       <packing>
                         <property name="expand">False</property>
                         <property name="fill">True</property>
-                        <property name="position">3</property>
+                        <property name="position">4</property>
                       </packing>
                     </child>
                     <child>
@@ -353,7 +356,7 @@
                       <packing>
                         <property name="expand">False</property>
                         <property name="fill">True</property>
-                        <property name="position">4</property>
+                        <property name="position">5</property>
                       </packing>
                     </child>
                   </object>
@@ -431,7 +434,7 @@
     <property name="program_name">Glade</property>
     <property name="version">0.1b</property>
     <property name="copyright" translatable="yes">Copyright 2019, Spencer Seidel</property>
-    <property name="comments" translatable="yes">Draftman2 is an application for managing first draft manuscripts. It is designed to be minimalistic but useful.</property>
+    <property name="comments" translatable="yes">Draftman2 is an application for managing first-draft manuscripts. It is designed to be minimalistic but useful.</property>
     <property name="website">https://github.com/jsseidel/draftman2</property>
     <property name="authors">Spencer Seidel</property>
     <property name="logo">icon/draftman2_sm.png</property>
@@ -601,7 +604,7 @@
             <property name="can_focus">False</property>
             <property name="layout_style">end</property>
             <child>
-              <object class="GtkButton">
+              <object class="GtkButton" id="button5">
                 <property name="label">gtk-cancel</property>
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
@@ -617,7 +620,7 @@
               </packing>
             </child>
             <child>
-              <object class="GtkButton">
+              <object class="GtkButton" id="button6">
                 <property name="label">gtk-ok</property>
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
@@ -679,7 +682,7 @@
                           </packing>
                         </child>
                         <child>
-                          <object class="GtkEntry" id="entryEditorApplication">
+                          <object class="GtkEntry" id="entryEditor">
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
                             <property name="margin_bottom">10</property>
@@ -692,8 +695,8 @@
                           </packing>
                         </child>
                         <child>
-                          <object class="GtkButton">
-                            <property name="label" translatable="yes">Browse</property>
+                          <object class="GtkButton" id="buttonBrowseEditor">
+                            <property name="label" translatable="yes">Browse...</property>
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
                             <property name="receives_default">True</property>
@@ -733,7 +736,7 @@
                           </packing>
                         </child>
                         <child>
-                          <object class="GtkEntry" id="entryEditorApplicationArgs">
+                          <object class="GtkEntry" id="entryEditorArgs">
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
                             <property name="margin_right">10</property>
@@ -777,6 +780,47 @@
             <property name="can_focus">False</property>
             <property name="margin_left">10</property>
             <property name="margin_right">10</property>
+            <property name="label_xalign">0</property>
+            <property name="shadow_type">in</property>
+            <child>
+              <object class="GtkAlignment">
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <property name="left_padding">12</property>
+                <child>
+                  <object class="GtkCheckButton" id="checkboxIncludeTitles">
+                    <property name="label" translatable="yes">Include scene titles in compiled doc</property>
+                    <property name="visible">True</property>
+                    <property name="can_focus">True</property>
+                    <property name="receives_default">False</property>
+                    <property name="margin_left">10</property>
+                    <property name="margin_top">10</property>
+                    <property name="margin_bottom">10</property>
+                    <property name="draw_indicator">True</property>
+                  </object>
+                </child>
+              </object>
+            </child>
+            <child type="label">
+              <object class="GtkLabel">
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <property name="label" translatable="yes">Compilation</property>
+              </object>
+            </child>
+          </object>
+          <packing>
+            <property name="expand">False</property>
+            <property name="fill">True</property>
+            <property name="position">1</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkFrame">
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+            <property name="margin_left">10</property>
+            <property name="margin_right">10</property>
             <property name="margin_bottom">10</property>
             <property name="label_xalign">0</property>
             <property name="shadow_type">in</property>
@@ -792,7 +836,7 @@
                     <property name="orientation">vertical</property>
                     <property name="spacing">10</property>
                     <child>
-                      <object class="GtkCheckButton" id="checkboxBackupsOnStart">
+                      <object class="GtkCheckButton" id="checkboxBackupOnStart">
                         <property name="label" translatable="yes">Backup automatically upon startup</property>
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
@@ -826,7 +870,7 @@
                           </packing>
                         </child>
                         <child>
-                          <object class="GtkEntry" id="entryBackupsDirectory">
+                          <object class="GtkEntry" id="entryBackupPath">
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
                             <property name="margin_bottom">10</property>
@@ -839,7 +883,7 @@
                           </packing>
                         </child>
                         <child>
-                          <object class="GtkButton">
+                          <object class="GtkButton" id="buttonBrowseBackup">
                             <property name="label" translatable="yes">Browse...</property>
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
@@ -880,6 +924,10 @@
         </child>
       </object>
     </child>
+    <action-widgets>
+      <action-widget response="-6">button5</action-widget>
+      <action-widget response="-5">button6</action-widget>
+    </action-widgets>
   </object>
   <object class="GtkFileChooserDialog" id="fileChooserProjectDirectory">
     <property name="can_focus">False</property>
