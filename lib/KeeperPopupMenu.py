@@ -25,6 +25,9 @@ class KeeperPopupMenu:
         self.__popup.append(self.__menuItemDelete)
         self.__popup.append(self.__menuItemDeleteAll)
 
+    def enable(b):
+        self.__popup.set_sensitive(False)
+
     def get_menu_for_type(self, item_type):
         if item_type == 'file':
             self.__menuItemAddFile.set_sensitive(False)

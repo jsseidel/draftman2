@@ -37,6 +37,7 @@ class KeeperTreeView:
         self.__builder = builder
         self.__label_status1 = builder.get_object('labelStatus1')
         self.__label_status2 = builder.get_object('labelStatus2')
+        self.__text_view_notes = self.__builder.get_object('textViewNotes')
 
         # We use this to save our last selected row so we can save notes
         # before we show another row's notes
@@ -144,6 +145,26 @@ class KeeperTreeView:
         # Set labels
         self.__label_status1.set_label("Words: 0")
         self.__label_status2.set_label("Scenes: 0")
+
+        self.enable_items()
+
+    def enable_items(self):
+        l = self.__project.is_loaded()
+        self.__treeview.set_sensitive(l)
+        self.__text_view_notes.set_sensitive(l)
+        self.__builder.get_object('buttonExpandAll').set_sensitive(l)
+        self.__builder.get_object('buttonCollapseAll').set_sensitive(l)
+        self.__builder.get_object('buttonUpdateCounts').set_sensitive(l)
+
+        # Menus
+        self.__builder.get_object('menuAddFile').set_sensitive(l)
+        self.__builder.get_object('menuAddDirectory').set_sensitive(l)
+        self.__builder.get_object('menuEdit').set_sensitive(l)
+        self.__builder.get_object('menuDelete').set_sensitive(l)
+        self.__builder.get_object('menuCompile').set_sensitive(l)
+        self.__builder.get_object('menuBackup').set_sensitive(l)
+        self.__builder.get_object('menuRefresh').set_sensitive(l)
+        self.__builder.get_object('menuInfo').set_sensitive(l)
 
     def refresh(self):
         if not self.__project.is_loaded():
@@ -295,8 +316,7 @@ class KeeperTreeView:
 
     def __save_notes(self, store, tree_iter):
         item_type = store[tree_iter][KeeperTreeView.COL_TYPE]
-        text_view_notes = self.__builder.get_object('textViewNotes')
-        text_view_buffer = text_view_notes.get_buffer()
+        text_view_buffer = self.__text_view_notes.get_buffer()
         item_id = store[tree_iter][KeeperTreeView.COL_ID]
         item_name = store[tree_iter][KeeperTreeView.COL_NAME]
         if item_name is None:
@@ -315,8 +335,7 @@ class KeeperTreeView:
 
     def __show_notes(self, store, tree_iter):
         item_type = store[tree_iter][KeeperTreeView.COL_TYPE]
-        text_view_notes = self.__builder.get_object('textViewNotes')
-        text_view_buffer = text_view_notes.get_buffer()
+        text_view_buffer = self.__text_view_notes.get_buffer()
         item_id = store[tree_iter][KeeperTreeView.COL_ID]
         item_name = store[tree_iter][KeeperTreeView.COL_NAME]
         path = Path("%s/notes/%s" % (self.__project.project_path(),
@@ -374,16 +393,14 @@ class KeeperTreeView:
 
         (store, tree_iter) = selection.get_selected()
         if tree_iter is not None:
-            text_view_notes = self.__builder.get_object('textViewNotes')
             self.__show_notes(store, tree_iter)
             self.__last_sel = selection.get_selected()
-            text_view_notes.set_sensitive(True)
+            self.__text_view_notes.set_sensitive(True)
         else:
-            text_view_notes = self.__builder.get_object('textViewNotes')
-            text_view_buffer = text_view_notes.get_buffer()
+            text_view_buffer = self.__text_view_notes.get_buffer()
             text_view_buffer.set_text('')
             self.__last_sel = None
-            text_view_notes.set_sensitive(False)
+            self.__text_view_notes.set_sensitive(False)
 
     def __on_compile_cell_toggled(self, widget, path):
         store = self.__tree_model.get_tree_store()
@@ -402,7 +419,7 @@ class KeeperTreeView:
 
     def __on_button_pressed(self, widget, event):
         # right click
-        if event.button == 3:
+        if event.button == 3 and self.__project.is_loaded():
             info = self.__treeview.get_path_at_pos(event.x, event.y)
             if info != None:
                 (path, col, cell_x, cell_y) = info

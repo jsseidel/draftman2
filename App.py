@@ -13,6 +13,7 @@ import os
 from lib.Project import Project
 from lib.NewProjectDialog import NewProjectDialog
 from lib.OpenProjectDialog import OpenProjectDialog
+from lib.AboutDialog import AboutDialog
 from lib.KeeperTreeView import KeeperTreeView
 from lib.Message import Message
 
@@ -76,6 +77,7 @@ class App:
                 return
 
             self.__keeper_treeview.refresh()
+            self.__keeper_treeview.enable_items()
 
     # User selected Open
     def onOpen(self, *args):
@@ -89,6 +91,7 @@ class App:
                 return
 
             self.__keeper_treeview.refresh()
+            self.__keeper_treeview.enable_items()
 
     # Expand all
     def onExpandAll(self, *args):
@@ -101,3 +104,8 @@ class App:
     # Update word/scene counts
     def onUpdateWordCounts(self, *args):
         self.__keeper_treeview.update_word_counts()
+
+    # User selected About
+    def onAbout(self, *args):
+        ad = AboutDialog(self.__builder)
+        ad.run()

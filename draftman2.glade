@@ -78,7 +78,7 @@
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
                     <child>
-                      <object class="GtkMenuItem">
+                      <object class="GtkMenuItem" id="menuAddFile">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
                         <property name="label" translatable="yes">Add file...</property>
@@ -87,7 +87,7 @@
                       </object>
                     </child>
                     <child>
-                      <object class="GtkMenuItem">
+                      <object class="GtkMenuItem" id="menuAddDirectory">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
                         <property name="label" translatable="yes">Add directory...</property>
@@ -96,7 +96,7 @@
                       </object>
                     </child>
                     <child>
-                      <object class="GtkMenuItem">
+                      <object class="GtkMenuItem" id="menuEdit">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
                         <property name="label" translatable="yes">Edit</property>
@@ -105,7 +105,7 @@
                       </object>
                     </child>
                     <child>
-                      <object class="GtkMenuItem">
+                      <object class="GtkMenuItem" id="menuDelete">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
                         <property name="label" translatable="yes">Delete...</property>
@@ -120,7 +120,7 @@
                       </object>
                     </child>
                     <child>
-                      <object class="GtkMenuItem">
+                      <object class="GtkMenuItem" id="menuCompile">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
                         <property name="label" translatable="yes">Compile...</property>
@@ -134,7 +134,7 @@
                       </object>
                     </child>
                     <child>
-                      <object class="GtkMenuItem">
+                      <object class="GtkMenuItem" id="menuBackup">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
                         <property name="label" translatable="yes">Create backup</property>
@@ -148,7 +148,7 @@
                       </object>
                     </child>
                     <child>
-                      <object class="GtkMenuItem">
+                      <object class="GtkMenuItem" id="menuRefresh">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
                         <property name="label" translatable="yes">Refresh file list/word counts</property>
@@ -163,7 +163,7 @@
                       </object>
                     </child>
                     <child>
-                      <object class="GtkMenuItem">
+                      <object class="GtkMenuItem" id="menuInfo">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
                         <property name="label" translatable="yes">Info...</property>
@@ -204,6 +204,7 @@
                         <property name="can_focus">False</property>
                         <property name="label" translatable="yes">Help/About...</property>
                         <property name="use_underline">True</property>
+                        <signal name="activate" handler="onAbout" swapped="no"/>
                       </object>
                     </child>
                   </object>
@@ -307,7 +308,7 @@
                       </packing>
                     </child>
                     <child>
-                      <object class="GtkButton">
+                      <object class="GtkButton" id="buttonUpdateCounts">
                         <property name="label" translatable="yes">Update counts</property>
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
@@ -324,7 +325,7 @@
                       </packing>
                     </child>
                     <child>
-                      <object class="GtkButton">
+                      <object class="GtkButton" id="buttonExpandAll">
                         <property name="label" translatable="yes">Expand all</property>
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
@@ -340,7 +341,7 @@
                       </packing>
                     </child>
                     <child>
-                      <object class="GtkButton">
+                      <object class="GtkButton" id="buttonCollapseAll">
                         <property name="label" translatable="yes">Collapse all</property>
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
@@ -421,6 +422,64 @@
         </child>
       </object>
     </child>
+  </object>
+  <object class="GtkAboutDialog" id="dialogAbout">
+    <property name="can_focus">False</property>
+    <property name="title" translatable="yes">About draftman2</property>
+    <property name="icon">icon/draftman2.png</property>
+    <property name="type_hint">dialog</property>
+    <property name="program_name">Glade</property>
+    <property name="version">0.1b</property>
+    <property name="copyright" translatable="yes">Copyright 2019, Spencer Seidel</property>
+    <property name="comments" translatable="yes">Draftman2 is an application for managing first draft manuscripts. It is designed to be minimalistic but useful.</property>
+    <property name="website">https://github.com/jsseidel/draftman2</property>
+    <property name="authors">Spencer Seidel</property>
+    <property name="logo">icon/draftman2_sm.png</property>
+    <property name="license_type">mit-x11</property>
+    <child>
+      <placeholder/>
+    </child>
+    <child internal-child="vbox">
+      <object class="GtkBox">
+        <property name="can_focus">False</property>
+        <property name="orientation">vertical</property>
+        <property name="spacing">2</property>
+        <child internal-child="action_area">
+          <object class="GtkButtonBox">
+            <property name="can_focus">False</property>
+            <property name="layout_style">end</property>
+            <child>
+              <placeholder/>
+            </child>
+            <child>
+              <object class="GtkButton" id="button2">
+                <property name="label">gtk-ok</property>
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="receives_default">True</property>
+                <property name="use_stock">True</property>
+              </object>
+              <packing>
+                <property name="expand">True</property>
+                <property name="fill">True</property>
+                <property name="position">1</property>
+              </packing>
+            </child>
+          </object>
+          <packing>
+            <property name="expand">False</property>
+            <property name="fill">False</property>
+            <property name="position">0</property>
+          </packing>
+        </child>
+        <child>
+          <placeholder/>
+        </child>
+      </object>
+    </child>
+    <action-widgets>
+      <action-widget response="-5">button2</action-widget>
+    </action-widgets>
   </object>
   <object class="GtkDialog" id="dialogAddItem">
     <property name="can_focus">False</property>
@@ -558,7 +617,7 @@
               </packing>
             </child>
             <child>
-              <object class="GtkButton" id="button2">
+              <object class="GtkButton" id="fileChooserButtonOK">
                 <property name="label" translatable="yes">OK</property>
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
@@ -631,7 +690,7 @@
     </child>
     <action-widgets>
       <action-widget response="-6">button1</action-widget>
-      <action-widget response="-5">button2</action-widget>
+      <action-widget response="-5">fileChooserButtonOK</action-widget>
     </action-widgets>
   </object>
 </interface>
