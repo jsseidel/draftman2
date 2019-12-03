@@ -34,11 +34,26 @@ class App:
         self.__project = Project()
         self.__keeper_treeview = KeeperTreeView(self.__builder, self.__project)
 
+        draftman2rc = Path.home() / '.draftman2rc'
+        if draftman2rc.exists():
+            last_project = ''
+            with draftman2rc.open() as f:
+                last_project = f.read().strip()
+            p = Path(last_project)
+            if p.exists():
+                self.__project.open(str(p))
+                self.__keeper_treeview.refresh()
+
         self.__app_window.show_all()
         Gtk.main()
 
     # User closed the appwindow
     def onDestroy(self, *args):
+        if self.__project.project_path() != "":
+            draftman2rc = Path.home() / '.draftman2rc'
+            with draftman2rc.open("w") as f:
+                f.write(str(self.__project.project_path()))
+
         self.__keeper_treeview.save()
         Gtk.main_quit()
 

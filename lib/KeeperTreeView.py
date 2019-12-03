@@ -17,7 +17,7 @@ from lib.KeeperTreeModel import KeeperTreeModel
 from lib.KeeperPopupMenu import KeeperPopupMenu
 from lib.Message import Message
 from lib.KeeperFileOpsLinux import KeeperFileOpsLinux
-from pathlib import Path, PurePath
+from pathlib import Path, PurePath, PurePosixPath
 
 class KeeperTreeView:
     COL_PIXBUF=0
@@ -361,7 +361,9 @@ class KeeperTreeView:
                 f.write(out_str)
 
     def backup(self, path):
-        result = subprocess.run(['zip', '-r', path, self.__project.project_path()])
+        p = PurePath(self.__project.project_path())
+        os.chdir(str(p.parent))
+        result = subprocess.run(['zip', '-r', path, self.__project.name()])
         m = Message()
         if result.returncode != 0:
             m.error(self.__app_window, 'Error creating backup', result.stderr)
