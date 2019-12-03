@@ -1,5 +1,11 @@
 [Desktop Entry]
+Version=0.1b
+Encoding=UTF-8
 Name=Draftman2
-Exec=/home/att/git/draftman2/draftman2
+Comment=A minimalist first-draft management system
+Exec=@prefix@/draftman.py
+Icon=@prefix@/icon/draftman2.png
+Terminal=false
 Type=Application
-Icon=/home/att/git/draftman2/icon/draftman2.png
+StartupNotify=true
+Categories=GNOME;GTK;Utility;
