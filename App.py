@@ -73,9 +73,17 @@ class App:
     def onAddFile(self, *args):
         self.__keeper_treeview.on_add_file(args)
 
+    # User selected add file at root
+    def onAddFileAtRoot(self, *args):
+        self.__keeper_treeview.on_add_file_at_root(args)
+
     # User selected add directory
     def onAddDirectory(self, *args):
         self.__keeper_treeview.on_add_directory(args)
+
+    # User selected add root directory
+    def onAddDirectoryAtRoot(self, *args):
+        self.__keeper_treeview.on_add_directory_at_root(args)
 
     # User selected edit file
     def onEditFile(self, *args):
