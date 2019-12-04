@@ -1,4 +1,0 @@
-# Project structure
-
-Happy writing!
-

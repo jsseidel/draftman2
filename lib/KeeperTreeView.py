@@ -340,19 +340,22 @@ class KeeperTreeView:
             item_id = store[tree_iter][KeeperTreeView.COL_ID]
             item_compile = store[tree_iter][KeeperTreeView.COL_COMPILE]
 
-            if item_type == 'file':
+            if item_compile and item_type == 'file':
                 path = Path("%s/keeper/%s" % (self.__project.project_path(),
-                    self.__file_name(item_name, item_id)))
-                if item_compile:
-                    with open(str(path), "r") as f:
-                        title = ''
-                        if self.__project.include_titles():
-                            title = '# %s\n\n' % item_name
-                        out_str = "%s%s\n%s" % (title, out_str, f.read())
+                self.__file_name(item_name, item_id)))
+                with open(str(path), "r") as f:
+                    title = ''
+                    if self.__project.include_titles():
+                        title = '# %s\n\n' % item_name
+                    out_str = "%s%s\n%s" % (out_str, title, f.read())
 
-            elif item_type == 'directory' or store.iter_has_child(tree_iter):
+            elif item_compile and (item_type == 'directory' or store.iter_has_child(tree_iter)):
                 child_iter = store.iter_children(tree_iter)
-                child_out_str = self.__do_compile(store, child_iter, "")
+                title = ''
+                if self.__project.include_titles():
+                    title = '# %s\n\n' % item_name
+                out_str = "%s\n%s" % (out_str, title)
+                child_out_str = self.__do_compile(store, child_iter, '')
                 out_str = "%s\n%s" % (out_str, child_out_str)
 
             tree_iter = store.iter_next(tree_iter)
@@ -445,8 +448,11 @@ class KeeperTreeView:
         item_name = model[tree_iter][KeeperTreeView.COL_NAME]
         path = Path("%s/keeper/%s" % (self.__project.project_path(),
             self.__file_name(item_name, item_id)))
-        subprocess.Popen([self.__project.editor(),
-            self.__project.editor_args(), path])
+        if self.__project.editor_args() != '':
+            subprocess.Popen([self.__project.editor(),
+                self.__project.editor_args(), path])
+        else:
+            subprocess.Popen([self.__project.editor(), path])
 
     ###
     ##
