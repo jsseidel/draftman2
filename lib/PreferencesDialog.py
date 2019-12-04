@@ -70,4 +70,5 @@ class PreferencesDialog:
         return (response, self.__entry_editor.get_text(),
                 self.__entry_editor_args.get_text(),
                 self.__entry_backup_path.get_text(),
-                self.__checkbox_backup_on_start.get_active())
+                self.__checkbox_backup_on_start.get_active(),
+                self.__checkbox_include_titles.get_active())

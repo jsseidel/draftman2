@@ -149,6 +149,14 @@ class KeeperTreeView:
         self.__label_status2.set_label("Scenes: 0")
         self.__label_status3.set_label("Avg Words/File: 0")
 
+        if self.__project.backup_on_start():
+            dt = datetime.now()
+            ts = dt.strftime('%Y%m%d_%H%M%S')
+            p = Path(self.__project.backup_path())
+            filename = '%s-%s%s' % (self.__project.name(), ts, '.zip')
+            p = p / filename
+            self.backup(str(p))
+
         self.enable_items()
 
     def enable_items(self):
@@ -333,7 +341,10 @@ class KeeperTreeView:
                     self.__file_name(item_name, item_id)))
                 if item_compile:
                     with open(str(path), "r") as f:
-                        out_str = "%s\n%s" % (out_str, f.read())
+                        title = ''
+                        if self.__project.include_titles():
+                            title = '# %s\n\n' % item_name
+                        out_str = "%s%s\n%s" % (title, out_str, f.read())
 
             elif item_type == 'directory' or store.iter_has_child(tree_iter):
                 child_iter = store.iter_children(tree_iter)
@@ -347,11 +358,11 @@ class KeeperTreeView:
     def compile(self, path):
         store = self.__tree_model.get_tree_store()
         tree_iter = store.get_iter_first()
+        m = Message()
 
         p = Path(path)
         go_ahead = True
         if p.exists():
-            m = Message()
             rv = m.confirm(self.__app_window, "Replace?", "%s exists. Replace it?" % path)
             go_head = (rv == Gtk.ResponseType.YES)
 
@@ -359,6 +370,7 @@ class KeeperTreeView:
             out_str = self.__do_compile(store, tree_iter, "")
             with open(path, "w") as f:
                 f.write(out_str)
+            m.info(self.__app_window, "File created", "%s created." % path)
 
     def backup(self, path):
         p = PurePath(self.__project.project_path())
@@ -429,10 +441,8 @@ class KeeperTreeView:
         item_name = model[tree_iter][KeeperTreeView.COL_NAME]
         path = Path("%s/keeper/%s" % (self.__project.project_path(),
             self.__file_name(item_name, item_id)))
-        editor = self.__project.editor()
-        if self.__project.editor_args() != '':
-            editor = "%s %s" % (editor, self.__project.editor_args())
-        subprocess.Popen([editor, path])
+        subprocess.Popen([self.__project.editor(),
+            self.__project.editor_args(), path])
 
     ###
     ##
@@ -513,13 +523,14 @@ class KeeperTreeView:
                 selection = self.__treeview.get_selection()
                 (model, tree_iter) = selection.get_selected()
                 item_type = model[tree_iter][KeeperTreeView.COL_TYPE]
+                has_children = model.iter_has_child(tree_iter)
 
-                menu = self.__popup.get_menu_for_type(item_type)
+                menu = self.__popup.get_menu_for_type(item_type, has_children)
                 menu.show_all()
                 menu.popup_at_pointer(event)
             else:
                 select = self.__treeview.get_selection().unselect_all()
-                menu = self.__popup.get_menu_for_type(None)
+                menu = self.__popup.get_menu_for_type(None, False)
                 menu.show_all()
                 menu.popup_at_pointer(event)
         elif event.button == 1:

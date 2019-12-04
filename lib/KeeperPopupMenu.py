@@ -15,7 +15,7 @@ class KeeperPopupMenu:
         self.__menuItemEditFile = Gtk.MenuItem('Edit...')
         self.__menuItemAddDirectory = Gtk.MenuItem('Add directory...')
         self.__menuItemDelete = Gtk.MenuItem('Delete...')
-        self.__menuItemDeleteAll = Gtk.MenuItem('Empty directory...')
+        self.__menuItemDeleteAll = Gtk.MenuItem('Empty...')
 
         self.__popup.append(self.__menuItemAddFile)
         self.__popup.append(self.__menuItemEditFile)
@@ -28,19 +28,19 @@ class KeeperPopupMenu:
     def enable(b):
         self.__popup.set_sensitive(False)
 
-    def get_menu_for_type(self, item_type):
+    def get_menu_for_type(self, item_type, has_children):
         if item_type == 'file':
             self.__menuItemAddFile.set_sensitive(True)
             self.__menuItemEditFile.set_sensitive(True)
             self.__menuItemAddDirectory.set_sensitive(False)
             self.__menuItemDelete.set_sensitive(True)
-            self.__menuItemDeleteAll.set_sensitive(True)
+            self.__menuItemDeleteAll.set_sensitive(has_children)
         elif item_type == 'directory':
             self.__menuItemAddFile.set_sensitive(True)
             self.__menuItemEditFile.set_sensitive(False)
             self.__menuItemAddDirectory.set_sensitive(True)
             self.__menuItemDelete.set_sensitive(True)
-            self.__menuItemDeleteAll.set_sensitive(True)
+            self.__menuItemDeleteAll.set_sensitive(has_children)
         else:
             self.__menuItemAddFile.set_sensitive(True)
             self.__menuItemEditFile.set_sensitive(False)

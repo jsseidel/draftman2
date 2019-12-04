@@ -32,7 +32,6 @@ class App:
         self.__app_window = self.__builder.get_object("appWindow")
         self.__keeper_treeview = self.__builder.get_object("treeViewKeeper")
         self.__project = Project()
-        self.__keeper_treeview = KeeperTreeView(self.__builder, self.__project)
 
         draftman2rc = Path.home() / '.draftman2rc'
         if draftman2rc.exists():
@@ -42,18 +41,21 @@ class App:
             p = Path(last_project)
             if p.exists():
                 self.__project.open(str(p))
-                self.__keeper_treeview.refresh()
 
+        self.__keeper_treeview = KeeperTreeView(self.__builder, self.__project)
+        self.__keeper_treeview.refresh()
         self.__app_window.show_all()
         Gtk.main()
 
-    # User closed the appwindow
-    def onDestroy(self, *args):
+    def save_last(self):
         if self.__project.project_path() != "":
             draftman2rc = Path.home() / '.draftman2rc'
             with draftman2rc.open("w") as f:
                 f.write(str(self.__project.project_path()))
 
+    # User closed the appwindow
+    def onDestroy(self, *args):
+        self.save_last()
         self.__keeper_treeview.save()
         Gtk.main_quit()
 
@@ -63,6 +65,7 @@ class App:
 
     # User selected Quit
     def onQuit(self, *args):
+        self.save_last()
         self.__keeper_treeview.save()
         Gtk.main_quit()
 
@@ -131,12 +134,13 @@ class App:
     # User selected Preferences
     def onPreferences(self, *args):
         pd = PreferencesDialog(self.__builder, self.__project)
-        (response, editor, editor_args, backup_path, backup_on_start) = pd.run()
+        (response, editor, editor_args, backup_path, backup_on_start, include_titles) = pd.run()
         if response == Gtk.ResponseType.OK:
             self.__project.set_editor(editor)
             self.__project.set_editor_args(editor_args)
             self.__project.set_backup_path(backup_path)
             self.__project.set_backup_on_start(backup_on_start)
+            self.__project.set_include_titles(include_titles)
 
     # User selected Compile
     def onCompile(self, *args):
