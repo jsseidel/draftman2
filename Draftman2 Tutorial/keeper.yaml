@@ -1,0 +1,55 @@
+project:
+  editor: '/usr/bin/typora'
+  editorArgs: ''
+  backupPath: '/home/att/Desktop'
+  backupOnStart: False
+  includeTitlesCompile: True
+
+keeper:
+  - type: 'file'
+    title: 'About Draftman2'
+    id: '20191204_102120'
+    compile: True
+  - type: 'file'
+    title: 'Keeper'
+    id: '20191204_125637'
+    compile: True
+  - type: 'file'
+    title: 'Notes'
+    id: '20191204_133559'
+    compile: True
+  - type: 'file'
+    title: 'Compiling a project'
+    id: '20191204_133808'
+    compile: True
+  - type: 'file'
+    title: 'Project structure'
+    id: '20191204_133822'
+    compile: True
+  - type: 'directory'
+    title: 'Menu'
+    id: '20191204_133219'
+    compile: True
+    contents:
+    - type: 'file'
+      title: 'File'
+      id: '20191204_132619'
+      compile: True
+    - type: 'file'
+      title: 'Project'
+      id: '20191204_133335'
+      compile: True
+    - type: 'file'
+      title: 'Help'
+      id: '20191204_133525'
+      compile: True
+  - type: 'directory'
+    title: 'Trash'
+    id: '0'
+    compile: False
+    contents:
+    - type: 'file'
+      title: 'Some discarded file'
+      id: '20191204_133657'
+      compile: False
+

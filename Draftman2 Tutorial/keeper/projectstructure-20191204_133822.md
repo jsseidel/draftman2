@@ -1,0 +1,4 @@
+# Project structure
+
+Happy writing!
+
