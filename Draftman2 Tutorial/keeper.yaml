@@ -3,7 +3,7 @@ project:
   editorArgs: ''
   backupPath: '/home/att/Desktop'
   backupOnStart: False
-  includeTitlesCompile: False
+  includeTitlesCompile: True
 
 keeper:
   - type: 'file'
