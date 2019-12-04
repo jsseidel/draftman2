@@ -34,6 +34,7 @@ class Project:
         self.__editor = '/usr/bin/gedit'
         self.__editor_args = ''
         self.__include_titles = False
+        self.__include_directory_titles = False
         self.__is_loaded = False
 
     def __validate_project(self, path):
@@ -74,6 +75,9 @@ class Project:
             if 'includeTitlesCompile' in project:
                 self.__include_titles = project['includeTitlesCompile']
 
+            if 'includeDirectoryTitlesCompile' in project:
+                self.__include_directory_titles = project['includeDirectoryTitlesCompile']
+
     def name(self):
         return self.__name
 
@@ -107,6 +111,9 @@ class Project:
     def include_titles(self):
         return self.__include_titles
 
+    def include_directory_titles(self):
+        return self.__include_directory_titles
+
     def set_editor(self, editor):
         self.__editor = editor
 
@@ -121,6 +128,9 @@ class Project:
 
     def set_include_titles(self, include_titles):
         self.__include_titles = include_titles
+
+    def set_include_directory_titles(self, include_titles):
+        self.__include_directory_titles = include_titles
 
     def open(self, path):
         (rv, reason) = self.__validate_project(path)
@@ -187,6 +197,7 @@ class Project:
             self.__editor_args = ''
             self.__is_loaded = True
             self.__include_titles = False
+            self.__include_directory_titles = False
 
             return (True, "OK")
         except Exception as e:

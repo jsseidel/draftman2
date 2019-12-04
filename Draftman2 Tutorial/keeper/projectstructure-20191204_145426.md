@@ -1,3 +1,5 @@
+## Project Structure
+
 Draftman2 projects have the following structure:
 
 ```

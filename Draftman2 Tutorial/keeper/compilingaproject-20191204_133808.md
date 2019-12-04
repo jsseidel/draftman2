@@ -1,3 +1,5 @@
+# Compiling a Project
+
 To assemble all the relevant files into a coherent single Markdown document, select "Compile..." from the Project menu and then choose a location to store the file.
 
 Draftman2 will include all files marked as "Inc" from the Keeper.

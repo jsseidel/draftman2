@@ -18,6 +18,7 @@ class PreferencesDialog:
         self.__entry_backup_path = builder.get_object('entryBackupPath')
         self.__checkbox_backup_on_start = builder.get_object('checkboxBackupOnStart')
         self.__checkbox_include_titles = builder.get_object('checkboxIncludeTitles')
+        self.__checkbox_include_directory_titles = builder.get_object('checkboxIncludeDirectoryTitles')
         self.__button_browse_editor = builder.get_object('buttonBrowseEditor')
         self.__button_browse_backup = builder.get_object('buttonBrowseBackup')
 
@@ -31,6 +32,7 @@ class PreferencesDialog:
         self.__entry_backup_path.set_text(project.backup_path())
         self.__checkbox_backup_on_start.set_active(project.backup_on_start())
         self.__checkbox_include_titles.set_active(project.include_titles())
+        self.__checkbox_include_directory_titles.set_active(project.include_directory_titles())
 
     def __on_choose_editor(self, *args):
         (rv, filename) = self.__get_file_name("Choose an editor",
@@ -71,4 +73,5 @@ class PreferencesDialog:
                 self.__entry_editor_args.get_text(),
                 self.__entry_backup_path.get_text(),
                 self.__checkbox_backup_on_start.get_active(),
-                self.__checkbox_include_titles.get_active())
+                self.__checkbox_include_titles.get_active(),
+                self.__checkbox_include_directory_titles.get_active())

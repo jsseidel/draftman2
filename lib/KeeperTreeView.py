@@ -254,6 +254,7 @@ class KeeperTreeView:
         yaml = "%s  backupPath: '%s'\n" % (yaml, self.__project.backup_path())
         yaml = "%s  backupOnStart: %s\n" % (yaml, self.__project.backup_on_start())
         yaml = "%s  includeTitlesCompile: %s\n" % (yaml, self.__project.include_titles())
+        yaml = "%s  includeDirectoryTitlesCompile: %s\n" % (yaml, self.__project.include_directory_titles())
         return yaml
 
     def save(self):
@@ -352,7 +353,7 @@ class KeeperTreeView:
             elif item_compile and (item_type == 'directory' or store.iter_has_child(tree_iter)):
                 child_iter = store.iter_children(tree_iter)
                 title = ''
-                if self.__project.include_titles():
+                if self.__project.include_directory_titles():
                     title = '# %s\n\n' % item_name
                 out_str = "%s\n%s" % (out_str, title)
                 child_out_str = self.__do_compile(store, child_iter, '')

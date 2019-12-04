@@ -3,7 +3,8 @@ project:
   editorArgs: ''
   backupPath: '/home/att/Desktop'
   backupOnStart: False
-  includeTitlesCompile: True
+  includeTitlesCompile: False
+  includeDirectoryTitlesCompile: True
 
 keeper:
   - type: 'file'
@@ -58,7 +59,7 @@ keeper:
     compile: False
     contents:
     - type: 'file'
-      title: 'Some discarded file'
-      id: '20191204_133657'
+      title: 'Some discarded item'
+      id: '20191204_154606'
       compile: False
 
