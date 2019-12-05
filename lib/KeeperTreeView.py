@@ -42,6 +42,11 @@ class KeeperTreeView:
         self.__label_status3 = builder.get_object('labelStatus3')
         self.__text_view_notes = self.__builder.get_object('textViewNotes')
 
+        m = Message()
+        m.warning(self.__app_window, 'Warning BETA', 'Draftman2 is currently in'
+                ' beta. This means that some things might break. If you choose to'
+                ' use Draftman2 in beta, back up your projects frequently.')
+
         # We use this to save our last selected row so we can save notes
         # before we show another row's notes
         self.__last_sel = None
