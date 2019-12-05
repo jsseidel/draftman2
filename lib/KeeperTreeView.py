@@ -207,7 +207,8 @@ class KeeperTreeView:
 
     def add_item(self, name, item_type, item_id, as_child):
         (model, tree_iter) = self.__treeview.get_selection().get_selected()
-        self.__tree_model.insert_at(tree_iter, name, item_type, item_id, as_child)
+        self.__tree_model.insert_at(tree_iter, name, item_type, item_id,
+                as_child)
         self.save()
 
     def remove_item(self, tree_iter):
@@ -397,6 +398,9 @@ class KeeperTreeView:
     ## Helper functions
     ##
     ###
+    def clear_all(self):
+        self.__tree_model.clear()
+
     def __set_compile_cells(self, store, tree_iter, new_value):
         while tree_iter is not None:
             store[tree_iter][KeeperTreeView.COL_COMPILE] = new_value

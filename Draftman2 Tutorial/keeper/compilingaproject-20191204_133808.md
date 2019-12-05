@@ -4,12 +4,16 @@ To assemble all the relevant files into a coherent single Markdown document, sel
 
 Draftman2 will include all files marked as "Inc" from the Keeper.
 
-## Scene titles
+## File titles
 
-Note that you have the option of including file names as Heading 1 headers. Simply choose "Preferences..." from the Project menu and click the "Include scene titles in the compiled doc."
+Note that you have the option of including file names as headers. Simply choose "Preferences..." from the Project menu and click the "Include file titles."
 
-In this way, you can create Markdown files without Heading 1 headers and let Draftman2 put them in automatically during a compile. Or, put them in yourself and Draftman2 will ignore the names you give the files in the Keeper when compiling.
+In this way, you can create Markdown files without headers and let Draftman2 put them in automatically during a compile at the correct heading level. For example, if you have a folder that contains a file named 'Foo,' Draftman2 will output '## Foo.'
 
-## Folders
+Or, put them in yourself and Draftman2 will ignore the names you give the files in the Keeper when compiling.
 
-Note that in Draftman2, folders are an organizational convenience only. During a compile, Draftman2 skips over folders. It's up to you to make sure your headings are internally consistent for your project.
+## Folder titles
+
+Similar to file titles, you can optionally include folder titles in the compiled output as well.
+
+For more information about structuring your project to make consistent headings, see 'Project Organization.'

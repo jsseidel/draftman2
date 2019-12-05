@@ -52,7 +52,16 @@ keeper:
         title: 'My Sub File 1'
         id: '20191204_102120'
         compile: True
+  - type: 'file'
+    title: 'My File 1'
+    id: '20191204_102120'
+    compile: True
+     contents:
+      - type: 'file'
+        title: 'My Sub File 2'
+        id: '20191204_102125'
+        compile: True
 ```
 
-Project preferences are stored at the top and the directories and files are stored on the bottom. That's about it.
+Project preferences are stored at the top and the directories and files are stored on the bottom.
 

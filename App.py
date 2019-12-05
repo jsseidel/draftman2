@@ -99,6 +99,11 @@ class App:
         npd = NewProjectDialog(self.__builder)
         (response, project_name, project_directory) = npd.run()
         if response == Gtk.ResponseType.OK:
+            if self.__project.is_loaded():
+                self.save_last()
+                self.__keeper_treeview.save()
+                self.__keeper_treeview.clear_all()
+
             (rv, reason) = self.__project.new(project_directory, project_name)
             if not rv:
                 m = Message()
@@ -113,6 +118,11 @@ class App:
         opd = OpenProjectDialog(self.__builder)
         (response, project_directory) = opd.run()
         if response == Gtk.ResponseType.OK:
+            if self.__project.is_loaded():
+                self.save_last()
+                self.__keeper_treeview.save()
+                self.__keeper_treeview.clear_all()
+
             (rv, reason) = self.__project.open(project_directory)
             if not rv:
                 m = Message()
