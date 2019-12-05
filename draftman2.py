@@ -1,3 +1,4 @@
+import sys
 from App import App
 
 def main():

@@ -10,6 +10,7 @@ from gi.repository import Gtk
 import re
 import os
 import subprocess
+import sys
 
 from lib.counts import word_count, scene_count
 from lib.AddItemDialog import AddItemDialog
@@ -197,6 +198,7 @@ class KeeperTreeView:
             m = Message()
             m.error(self.__app_window, 'Keeper error', 'Could not refresh '
                     'Keeper:\n\n%s' % reason)
+            sys.exit(1)
             return
 
         # Set treestore
@@ -263,11 +265,19 @@ class KeeperTreeView:
             self.__save_last_sel()
             store = self.__tree_model.get_tree_store()
             tree_iter = store.get_iter_first()
-            keeper_str = ("project:\n%s\nkeeper:\n%s\n" %
-            (self.__project_settings_to_yaml(), self.__tree_to_yaml(store,
-                tree_iter, "  ")))
-            with open(self.__project.keeper_yaml(), "w") as f:
-                f.write(keeper_str)
+            keeper_yaml = self.__tree_to_yaml(store, tree_iter, "  ")
+            # If the keeper yaml is empty, this most likely means something
+            # catastrophic happened to the tree store, so we won't save
+            if keeper_yaml != '':
+                keeper_str = ("project:\n%s\nkeeper:\n%s\n" %
+                (self.__project_settings_to_yaml(), keeper_yaml))
+                with open(self.__project.keeper_yaml(), "w") as f:
+                    f.write(keeper_str)
+            else:
+                m = Message()
+                m.error(self.__app_window, 'Keeper error', 'Oops, something '
+                        ' went wrong. Shutting down.')
+                sys.exit(1)
 
     def __update_word_count_tree(self, store, tree_iter, words_running, scenes_running, files_running):
         while tree_iter is not None:
