@@ -152,12 +152,14 @@ class App:
     # User selected Preferences
     def onPreferences(self, *args):
         pd = PreferencesDialog(self.__builder, self.__project)
-        (response, editor, editor_args, backup_path, backup_on_start, include_titles, include_directory_titles) = pd.run()
+        (response, editor, editor_args, backup_path, backup_on_start, include_text, include_text_entry, include_titles, include_directory_titles) = pd.run()
         if response == Gtk.ResponseType.OK:
             self.__project.set_editor(editor)
             self.__project.set_editor_args(editor_args)
             self.__project.set_backup_path(backup_path)
             self.__project.set_backup_on_start(backup_on_start)
+            self.__project.set_include_text(include_text)
+            self.__project.set_include_text_entry(include_text_entry)
             self.__project.set_include_titles(include_titles)
             self.__project.set_include_directory_titles(include_directory_titles)
 

@@ -17,6 +17,8 @@ class PreferencesDialog:
         self.__entry_editor_args = builder.get_object('entryEditorArgs')
         self.__entry_backup_path = builder.get_object('entryBackupPath')
         self.__checkbox_backup_on_start = builder.get_object('checkboxBackupOnStart')
+        self.__checkbox_include_text = builder.get_object('checkboxIncludeText')
+        self.__entry_include_text = builder.get_object('entryIncludeText')
         self.__checkbox_include_titles = builder.get_object('checkboxIncludeTitles')
         self.__checkbox_include_directory_titles = builder.get_object('checkboxIncludeDirectoryTitles')
         self.__button_browse_editor = builder.get_object('buttonBrowseEditor')
@@ -25,14 +27,25 @@ class PreferencesDialog:
         # We need signals for the buttons to get file names
         self.__button_browse_editor.connect("clicked", self.__on_choose_editor)
         self.__button_browse_backup.connect("clicked", self.__on_choose_backup_path)
+        self.__checkbox_include_text.connect("clicked", self.__on_checkbox_include_text)
+
+        self.__entry_include_text.set_sensitive(self.__checkbox_include_text.get_active())
 
         # Populate the fields
         self.__entry_editor.set_text(project.editor())
         self.__entry_editor_args.set_text(project.editor_args())
-        self.__entry_backup_path.set_text(project.backup_path())
+        self.__entry_backup_path.set_text(str(project.backup_path()))
         self.__checkbox_backup_on_start.set_active(project.backup_on_start())
+        self.__checkbox_include_text.set_active(project.include_text())
+        entry_text = project.include_text_entry()
+        if entry_text is None:
+            entry_text = ''
+        self.__entry_include_text.set_text(entry_text)
         self.__checkbox_include_titles.set_active(project.include_titles())
         self.__checkbox_include_directory_titles.set_active(project.include_directory_titles())
+
+    def __on_checkbox_include_text(self, *args):
+        self.__entry_include_text.set_sensitive(self.__checkbox_include_text.get_active())
 
     def __on_choose_editor(self, *args):
         (rv, filename) = self.__get_file_name("Choose an editor",
@@ -73,5 +86,7 @@ class PreferencesDialog:
                 self.__entry_editor_args.get_text(),
                 self.__entry_backup_path.get_text(),
                 self.__checkbox_backup_on_start.get_active(),
+                self.__checkbox_include_text.get_active(),
+                self.__entry_include_text.get_text(),
                 self.__checkbox_include_titles.get_active(),
                 self.__checkbox_include_directory_titles.get_active())

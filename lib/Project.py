@@ -36,6 +36,8 @@ class Project:
         self.__include_titles = False
         self.__include_directory_titles = False
         self.__is_loaded = False
+        self.__include_text = False
+        self.__include_text_entry = ''
 
     def __validate_project(self, path):
         p = Path(path)
@@ -71,6 +73,12 @@ class Project:
 
             if 'backupOnStart' in project:
                 self.__backup_on_start = project['backupOnStart']
+
+            if 'includeTextCompile' in project:
+                self.__include_text = project['includeTextCompile']
+
+            if 'includeTextEntryCompile' in project:
+                self.__include_text_entry = project['includeTextEntryCompile']
 
             if 'includeTitlesCompile' in project:
                 self.__include_titles = project['includeTitlesCompile']
@@ -114,6 +122,12 @@ class Project:
     def include_directory_titles(self):
         return self.__include_directory_titles
 
+    def include_text(self):
+        return self.__include_text
+
+    def include_text_entry(self):
+        return self.__include_text_entry
+
     def set_editor(self, editor):
         self.__editor = editor
 
@@ -132,6 +146,12 @@ class Project:
     def set_include_directory_titles(self, include_titles):
         self.__include_directory_titles = include_titles
 
+    def set_include_text(self, include_text):
+        self.__include_text = include_text
+
+    def set_include_text_entry(self, include_text_entry):
+        self.__include_text_entry = include_text_entry
+
     def open(self, path):
         (rv, reason) = self.__validate_project(path)
         if not rv:
@@ -149,6 +169,8 @@ class Project:
         self.__editor_args = ''
         self.__is_loaded = True
         self.__include_titles = False
+        self.__include_text = False
+        self.__include_text_entry = ''
 
         self.__load_prefs(str(self.__keeper_yaml))
 
@@ -198,6 +220,8 @@ class Project:
             self.__is_loaded = True
             self.__include_titles = False
             self.__include_directory_titles = False
+            self.__include_text = False
+            self.__include_text_entry = ''
 
             return (True, "OK")
         except Exception as e:
