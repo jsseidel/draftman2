@@ -3,5 +3,5 @@
 # Run environment checks, etc, here
 
 pushd "$(cd "$(dirname "${BASH_SOURCE[0]}")" >/dev/null 2>&1 && pwd )"
-python3 draftman.py
+python3 draftman2.py
 popd
