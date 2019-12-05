@@ -53,6 +53,10 @@ keeper:
       title: 'Project Structure'
       id: '20191204_145426'
       compile: True
+    - type: 'file'
+      title: 'HiDPI'
+      id: '20191205_130903'
+      compile: True
   - type: 'directory'
     title: 'Trash'
     id: '0'
