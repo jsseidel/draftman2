@@ -340,24 +340,26 @@ class KeeperTreeView:
             item_name = store[tree_iter][KeeperTreeView.COL_NAME]
             item_id = store[tree_iter][KeeperTreeView.COL_ID]
             item_compile = store[tree_iter][KeeperTreeView.COL_COMPILE]
+            heading_level = self.__num_parents(store, tree_iter, 1)
 
-            if item_compile and item_type == 'file':
+            if item_compile:
                 path = Path("%s/keeper/%s" % (self.__project.project_path(),
                 self.__file_name(item_name, item_id)))
-                with open(str(path), "r") as f:
-                    title = ''
-                    if self.__project.include_titles():
-                        title = '# %s\n\n' % item_name
-                    out_str = "%s%s\n%s" % (out_str, title, f.read())
+                if path.exists():
+                    with open(str(path), "r") as f:
+                        title = ''
+                        if self.__project.include_titles():
+                            title = '%s %s\n\n' % ('#'*heading_level, item_name)
+                        out_str = "%s%s\n%s" % (out_str, title, f.read())
 
-            elif item_compile and (item_type == 'directory' or store.iter_has_child(tree_iter)):
-                child_iter = store.iter_children(tree_iter)
-                title = ''
-                if self.__project.include_directory_titles():
-                    title = '# %s\n\n' % item_name
-                out_str = "%s\n%s" % (out_str, title)
-                child_out_str = self.__do_compile(store, child_iter, '')
-                out_str = "%s\n%s" % (out_str, child_out_str)
+                if store.iter_has_child(tree_iter):
+                    child_iter = store.iter_children(tree_iter)
+                    title = ''
+                    if self.__project.include_directory_titles():
+                        title = '%s %s\n\n' % ('#'*heading_level, item_name)
+                    out_str = "%s\n%s" % (out_str, title)
+                    child_out_str = self.__do_compile(store, child_iter, '')
+                    out_str = "%s\n%s" % (out_str, child_out_str)
 
             tree_iter = store.iter_next(tree_iter)
 
@@ -454,6 +456,11 @@ class KeeperTreeView:
                 self.__project.editor_args(), path])
         else:
             subprocess.Popen([self.__project.editor(), path])
+
+    def __num_parents(self, store, tree_iter, n):
+        if store.iter_parent(tree_iter) == None:
+            return n
+        return self.__num_parents(store, store.iter_parent(tree_iter), n+1)
 
     ###
     ##

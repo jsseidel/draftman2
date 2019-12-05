@@ -41,7 +41,7 @@ keeper:
       id: '20191204_133335'
       compile: True
     - type: 'file'
-      title: 'Help'
+      title: 'About'
       id: '20191204_133525'
       compile: True
   - type: 'directory'

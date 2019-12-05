@@ -215,7 +215,7 @@
               <object class="GtkMenuItem">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
-                <property name="label" translatable="yes">_Help</property>
+                <property name="label" translatable="yes">_About</property>
                 <property name="use_underline">True</property>
                 <child type="submenu">
                   <object class="GtkMenu">
@@ -225,7 +225,7 @@
                       <object class="GtkMenuItem">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
-                        <property name="label" translatable="yes">Help/About...</property>
+                        <property name="label" translatable="yes">About Draftman2...</property>
                         <property name="use_underline">True</property>
                         <signal name="activate" handler="onAbout" swapped="no"/>
                       </object>
@@ -844,7 +844,7 @@
                     <property name="orientation">vertical</property>
                     <child>
                       <object class="GtkCheckButton" id="checkboxIncludeTitles">
-                        <property name="label" translatable="yes">Include scene titles</property>
+                        <property name="label" translatable="yes">Include file titles</property>
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
                         <property name="receives_default">False</property>
@@ -859,7 +859,7 @@
                     </child>
                     <child>
                       <object class="GtkCheckButton" id="checkboxIncludeDirectoryTitles">
-                        <property name="label" translatable="yes">Include directory titles</property>
+                        <property name="label" translatable="yes">Include folder titles</property>
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
                         <property name="receives_default">False</property>

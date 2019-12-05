@@ -209,7 +209,7 @@ class Project:
         try:
             p = Path(self.__keeper_path)
             with open(str(p / ("%s" % file_name)), "w") as f:
-                f.write("# %s\n\nHappy writing!\n\n" % title)
+                f.write("Happy writing!\n\n")
         except Exception as e:
             rv = False
             reason = str(e)
