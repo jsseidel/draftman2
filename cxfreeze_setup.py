@@ -3,7 +3,7 @@ from cx_Freeze import setup, Executable
 # Dependencies are automatically detected, but it might need
 # fine tuning.
 
-includes = ['./draftman2.glade']
+includes = ['./draftman2.glade', './icon/draftman2.png']
 
 buildOptions = dict(packages = ['gi'], include_files = includes, excludes = [])
 
