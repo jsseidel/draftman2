@@ -11,6 +11,7 @@ from gi.repository import Gtk
 import os
 
 from datetime import datetime
+from lib.KeeperFileOpsLinux import KeeperFileOpsLinux
 from lib.Project import Project
 from lib.PreferencesDialog import PreferencesDialog
 from lib.NewProjectDialog import NewProjectDialog
@@ -192,4 +193,55 @@ class App:
         filename = '%s-%s%s' % (self.__project.name(), ts, '.zip')
         p = p / filename
         self.__keeper_treeview.backup(str(p))
+
+    # User selected create tutorial
+    def onCreateTutorial(self, *args):
+        m = Message()
+        dialog = Gtk.FileChooserDialog("Save tutorial project to folder",
+                self.__app_window, Gtk.FileChooserAction.SELECT_FOLDER,
+                (Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL, "Select",
+                    Gtk.ResponseType.OK))
+        dialog.set_default_size(800, 400)
+
+        response = dialog.run()
+        tut_dir = dialog.get_filename()
+
+        dialog.destroy()
+
+        tutorial_path = Path(tut_dir)
+        tutorial_path = tutorial_path / 'Draftman2 Tutorial'
+
+        if response == Gtk.ResponseType.OK:
+            go_ahead = True
+            if tutorial_path.exists():
+                rv = m.confirm(self.__app_window, 'Overwrite?', '%s exists.'
+                      ' Overwrite?' % str(tutorial_path))
+                go_ahead == (response == Gtk.ResponseType.OK)
+
+            if go_ahead:
+                fops = KeeperFileOpsLinux()
+                (rv, reason) = fops.copy_tutorial(tut_dir)
+                if not rv:
+                    m.error(self.__app_window, 'Error', 'Could not create'
+                            ' tutorial: %s\n' % reason)
+                else:
+                    m.info(self.__app_window, 'Success', 'Created %s' %
+                            str(tutorial_path))
+
+                if self.__project.is_loaded():
+                    self.save_last()
+                    self.__keeper_treeview.save()
+                    self.__keeper_treeview.clear_all()
+
+                (rv, reason) = self.__project.open(str(tutorial_path))
+                if not rv:
+                    m = Message()
+                    m.error(self.__app_window, 'Cannot open project', 'Cannot'
+                            ' open project: %s:\n\n%s\n' % (str(tutorial_path),
+                                reason))
+                    return
+
+                self.__keeper_treeview.refresh()
+                self.__keeper_treeview.enable_items()
+
 
