@@ -163,15 +163,22 @@ class KeeperTreeView:
             p = p / filename
             self.backup(str(p))
 
+        self.sanity_check_editor()
+
+        self.enable_items()
+
+    def sanity_check_editor(self):
         # Sanity check the editor
         p = Path(self.__project.editor())
         if not p.exists():
+            m = Message()
             m.info(self.__app_window, 'No editor', 'It seems that the %s editor'
                     ' does not exist on your system. To choose a new editor,'
                     ' please select Project->Preferences...\n' %
                     self.__project.editor())
+            return False
 
-        self.enable_items()
+        return True
 
     def enable_items(self):
         l = self.__project.is_loaded()
@@ -494,6 +501,8 @@ class KeeperTreeView:
             text_view_buffer.set_text(f.read())
 
     def __do_edit_selected(self):
+        if not self.sanity_check_editor():
+            return
         selection = self.__treeview.get_selection()
         (model, tree_iter) = selection.get_selected()
         item_id = model[tree_iter][KeeperTreeView.COL_ID]
