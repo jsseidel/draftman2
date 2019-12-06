@@ -163,6 +163,14 @@ class KeeperTreeView:
             p = p / filename
             self.backup(str(p))
 
+        # Sanity check the editor
+        p = Path(self.__project.editor())
+        if not p.exists():
+            m.info(self.__app_window, 'No editor', 'It seems that the %s editor'
+                    ' does not exist on your system. To choose a new editor,'
+                    ' please select Project->Preferences...\n' %
+                    self.__project.editor())
+
         self.enable_items()
 
     def enable_items(self):
