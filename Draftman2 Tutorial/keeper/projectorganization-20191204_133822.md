@@ -4,20 +4,28 @@ Since Draftman2 was written primarily with fiction writers (like me) in mind, I 
 
 I stick to the following conventions:
 
-1. Large groupings of Chapters, e.g. "Books", are represented by folders
-2. Chapters are represented by folders
-3. A single file contains a single scene
-4. No headings at all are used in files
+1. Large groupings of Chapters, e.g. "Books", are represented by folders.
+2. Chapters are represented by folders.
+3. A single file contains a single scene.
+4. No headings at all are used in files.
 
-In Preferences, I uncheck 'Include file titles' and check 'Include folder titles.' Then, when I compile my project into a single Markdown, Draftman2 outputs the appropriate heading levels at the top of each file. For example, if you have a file named 'My scene' in a folder named 'Chapter 1' which is itself inside a folder named 'Book 1', the ouput will be something like this:
+In Preferences, I uncheck 'Include file titles' and check 'Include folder titles.' Additionally, I check 'Include text with files' and add `* * *` to the text entry box to use as a scene separator. Then, when I compile my project into a single Markdown, Draftman2 outputs the appropriate heading levels at the top of each file. For example, if you have a file named 'My scene' in a folder named 'Chapter 1' which is itself inside a folder named 'Book 1', the ouput will be something like this:
 
 ```
 # Book 1
 
 ## Chapter 1
 
+* * *
+
+Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla et cursus orci. Nam dignissim maximus mauris, tincidunt ultricies leo congue a. Vivamus gravida venenatis feugiat. Quisque egestas diam in enim iaculis, quis fermentum enim commodo. Nunc tincidunt ante eget dui suscipit dictum. Aliquam mauris nibh, sollicitudin et elit ut, vestibulum viverra enim. Proin finibus malesuada tristique. Nunc venenatis tortor non mi tristique varius.
+
+* * *
+
 Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla et cursus orci. Nam dignissim maximus mauris, tincidunt ultricies leo congue a. Vivamus gravida venenatis feugiat. Quisque egestas diam in enim iaculis, quis fermentum enim commodo. Nunc tincidunt ante eget dui suscipit dictum. Aliquam mauris nibh, sollicitudin et elit ut, vestibulum viverra enim. Proin finibus malesuada tristique. Nunc venenatis tortor non mi tristique varius.
 ```
+
+If I wanted my individual scenes to have titles, I would check 'Include file titles' in Preferences.
 
 ## When titles aren't enough
 

@@ -1,10 +1,13 @@
 project:
   editor: '/usr/bin/typora'
   editorArgs: ''
-  backupPath: '/home/att/Desktop'
-  backupOnStart: False
+  backupPath: '/home/att/backups'
+  backupOnStart: True
   includeTitlesCompile: False
   includeDirectoryTitlesCompile: True
+  includeTextCompile: False
+  includeTextEntryCompile: ''
+  skipFirst: False
 
 keeper:
   - type: 'file'
