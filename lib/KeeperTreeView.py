@@ -212,6 +212,14 @@ class KeeperTreeView:
         self.__last_sel = self.__treeview.get_selection().get_selected()
         self.update_word_counts()
 
+        if self.__project.backup_on_start():
+            dt = datetime.now()
+            ts = dt.strftime('%Y%m%d_%H%M%S')
+            p = Path(self.__project.backup_path())
+            filename = '%s-%s%s' % (self.__project.name(), ts, '.zip')
+            p = p / filename
+            self.backup(str(p))
+
     def add_item(self, name, item_type, item_id, as_child):
         (model, tree_iter) = self.__treeview.get_selection().get_selected()
         self.__tree_model.insert_at(tree_iter, name, item_type, item_id,
@@ -262,9 +270,12 @@ class KeeperTreeView:
         yaml = "%s  backupPath: '%s'\n" % (yaml, self.__project.backup_path())
         yaml = "%s  backupOnStart: %s\n" % (yaml, self.__project.backup_on_start())
         yaml = "%s  includeTitlesCompile: %s\n" % (yaml, self.__project.include_titles())
-        yaml = "%s  includeDirectoryTitlesCompile: %s\n" % (yaml, self.__project.include_directory_titles())
+        yaml = "%s  includeDirectoryTitlesCompile: %s\n" % (yaml,
+                self.__project.include_directory_titles())
         yaml = "%s  includeTextCompile: %s\n" % (yaml, self.__project.include_text())
-        yaml = "%s  includeTextEntryCompile: '%s'\n" % (yaml, self.__project.include_text_entry())
+        yaml = "%s  includeTextEntryCompile: '%s'\n" % (yaml,
+                self.__project.include_text_entry())
+        yaml = "%s  skipFirst: %s\n" % (yaml, self.__project.skip_first())
         return yaml
 
     def save(self):
@@ -353,6 +364,7 @@ class KeeperTreeView:
         self.__treeview.collapse_all()
 
     def __do_compile(self, store, tree_iter, out_str):
+        first = self.__project.skip_first()
         while tree_iter is not None:
             item_type = store[tree_iter][KeeperTreeView.COL_TYPE]
             item_name = store[tree_iter][KeeperTreeView.COL_NAME]
@@ -365,25 +377,28 @@ class KeeperTreeView:
                 self.__file_name(item_name, item_id)))
                 if path.exists():
                     with open(str(path), "r") as f:
-                        title = ''
-                        if self.__project.include_titles():
-                            title = '%s %s\n\n' % ('#'*heading_level, item_name)
+                        f_contents = f.read().strip()
 
-                        text = ''
-                        if self.__project.include_text():
-                            text = '%s\n\n' % self.__project.include_text_entry()
+                    title = ''
+                    if self.__project.include_titles():
+                        title = '%s %s\n\n' % ('#'*heading_level, item_name)
 
-                        out_str = "%s\n\n%s%s%s" % (out_str, title, text, f.read())
+                    text = ''
+                    if not first and self.__project.include_text():
+                        text = '%s\n\n' % self.__project.include_text_entry()
+
+                    out_str = "%s%s%s%s\n\n" % (out_str, title, text, f_contents)
 
                 if store.iter_has_child(tree_iter):
                     child_iter = store.iter_children(tree_iter)
                     title = ''
                     if self.__project.include_directory_titles():
                         title = '%s %s\n\n' % ('#'*heading_level, item_name)
-                    out_str = "%s\n%s" % (out_str, title)
+                    out_str = "%s%s" % (out_str, title)
                     child_out_str = self.__do_compile(store, child_iter, '')
-                    out_str = "%s\n%s" % (out_str, child_out_str)
+                    out_str = "%s%s" % (out_str, child_out_str)
 
+            first = False
             tree_iter = store.iter_next(tree_iter)
 
         return out_str

@@ -38,6 +38,7 @@ class Project:
         self.__is_loaded = False
         self.__include_text = False
         self.__include_text_entry = ''
+        self.__skip_first = False
 
     def __validate_project(self, path):
         p = Path(path)
@@ -79,6 +80,9 @@ class Project:
 
             if 'includeTextEntryCompile' in project:
                 self.__include_text_entry = project['includeTextEntryCompile']
+
+            if 'skipFirst' in project:
+                self.__skip_first = project['skipFirst']
 
             if 'includeTitlesCompile' in project:
                 self.__include_titles = project['includeTitlesCompile']
@@ -128,6 +132,9 @@ class Project:
     def include_text_entry(self):
         return self.__include_text_entry
 
+    def skip_first(self):
+        return self.__skip_first
+
     def set_editor(self, editor):
         self.__editor = editor
 
@@ -152,6 +159,9 @@ class Project:
     def set_include_text_entry(self, include_text_entry):
         self.__include_text_entry = include_text_entry
 
+    def set_skip_first(self, skip_first):
+        self.__skip_first = skip_first
+
     def open(self, path):
         (rv, reason) = self.__validate_project(path)
         if not rv:
@@ -171,6 +181,7 @@ class Project:
         self.__include_titles = False
         self.__include_text = False
         self.__include_text_entry = ''
+        self.__skip_first = False
 
         self.__load_prefs(str(self.__keeper_yaml))
 
@@ -222,6 +233,7 @@ class Project:
             self.__include_directory_titles = False
             self.__include_text = False
             self.__include_text_entry = ''
+            self.__skip_first = False
 
             return (True, "OK")
         except Exception as e:
