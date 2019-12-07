@@ -510,8 +510,11 @@ class KeeperTreeView:
         path = Path("%s/keeper/%s" % (self.__project.project_path(),
             self.__file_name(item_name, item_id)))
         if self.__project.editor_args() != '':
-            subprocess.Popen([self.__project.editor(),
-                self.__project.editor_args(), path])
+            popen_list = [self.__project.editor()]
+            for arg in self.__project.editor_args().split():
+                popen_list.append(arg)
+            popen_list.append(path)
+            subprocess.Popen(popen_list)
         else:
             subprocess.Popen([self.__project.editor(), path])
 

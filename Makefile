@@ -1,3 +1,4 @@
+all: install
 
 dist-build:
 	python3 cxfreeze_setup.py build --build-base build
