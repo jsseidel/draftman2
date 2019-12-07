@@ -52,6 +52,21 @@ class KeeperTreeModel:
     def get_tree_store(self):
         return self.__store
 
+    def __find_last_child_of_iter(self, store, tree_iter):
+        if tree_iter is not None:
+            if store.iter_has_child(tree_iter):
+                child_iter = store.iter_children(tree_iter)
+                last_child_iter = child_iter
+                while child_iter:
+                    last_child_iter = child_iter
+                    child_iter = store.iter_next(child_iter)
+
+                return last_child_iter
+            else:
+                return None
+
+        return tree_iter
+
     def insert_at(self, tree_iter, name, item_type, item_id, as_child):
         # If not inserting as a child, insert after the selected sibling
         if not as_child:
@@ -59,10 +74,10 @@ class KeeperTreeModel:
                 [self.__get_icon_for_type_or_name(item_type, name),
                     item_type, item_id, name, True, 0, 0, 0, 0])
         else:
-            # Inserting as a child, so we'll leave the sibling empty
-            self.__store.insert_after(tree_iter, None,
-                [self.__get_icon_for_type_or_name(item_type, name),
-                    item_type, item_id, name, True, 0, 0, 0, 0])
+            # Inserting as a child. We find the last sibling and insert after it.
+            self.__store.insert_after(tree_iter, self.__find_last_child_of_iter(self.__store,
+                tree_iter), [self.__get_icon_for_type_or_name(item_type,
+                    name), item_type, item_id, name, True, 0, 0, 0, 0])
 
     def remove(self, tree_iter):
         self.__store.remove(tree_iter)
