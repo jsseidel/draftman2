@@ -1,0 +1,72 @@
+project:
+  editor: '/usr/bin/typora'
+  editorArgs: ''
+  backupPath: '/home/att/backups'
+  backupOnStart: False
+  includeTitlesCompile: False
+  includeDirectoryTitlesCompile: True
+  includeTextCompile: False
+  includeTextEntryCompile: ''
+  skipFirst: False
+
+keeper:
+  - type: 'file'
+    title: 'About Draftman2'
+    id: '20191204_102120'
+    compile: True
+  - type: 'file'
+    title: 'Keeper'
+    id: '20191204_125637'
+    compile: True
+  - type: 'file'
+    title: 'Notes'
+    id: '20191204_133559'
+    compile: True
+  - type: 'file'
+    title: 'Compiling a Project'
+    id: '20191204_133808'
+    compile: True
+  - type: 'file'
+    title: 'Project Organization'
+    id: '20191204_133822'
+    compile: True
+  - type: 'directory'
+    title: 'Menu'
+    id: '20191204_133219'
+    compile: True
+    contents:
+    - type: 'file'
+      title: 'File'
+      id: '20191204_132619'
+      compile: True
+    - type: 'file'
+      title: 'Project'
+      id: '20191204_133335'
+      compile: True
+    - type: 'file'
+      title: 'About'
+      id: '20191204_133525'
+      compile: True
+  - type: 'directory'
+    title: 'Advanced'
+    id: '20191204_145405'
+    compile: True
+    contents:
+    - type: 'file'
+      title: 'Project Structure'
+      id: '20191204_145426'
+      compile: True
+    - type: 'file'
+      title: 'HiDPI'
+      id: '20191205_130903'
+      compile: True
+  - type: 'directory'
+    title: 'Trash'
+    id: '0'
+    compile: False
+    contents:
+    - type: 'file'
+      title: 'Some discarded item'
+      id: '20191204_154606'
+      compile: False
+
