@@ -1,19 +1,19 @@
 # Compiling a Project
 
-To assemble all the relevant files into a coherent single Markdown document, select "Compile..." from the Project menu and then choose a location to store the file.
+To assemble all the relevant files into a coherent single Markdown document, select *Compile...* from the Project menu and then choose a location to store the file.
 
-Draftman2 will include all files marked as "Inc" from the Keeper.
+Draftman2 will include all files marked as 'Inc' from the Keeper.
 
-## File titles
+## Include folder titles
 
-Note that you have the option of including file names as headers. Simply choose "Preferences..." from the Project menu and click the "Include file titles."
+In the *Project->Preferences...* dialog, select *Include folder titles* to tell Draftman2 to automatically include folder titles as in the output at the appropriate heading level. 
 
-In this way, you can create Markdown files without headers and let Draftman2 put them in automatically during a compile at the correct heading level. For example, if you have a folder that contains a file named 'Foo,' Draftman2 will output '## Foo.'
+## Include file titles
 
-Or, put them in yourself and Draftman2 will ignore the names you give the files in the Keeper when compiling.
+Similarly, select *Include file titles* to tell Draftman2 to automatically include file titles in the output at the appropriate heading level.
 
-## Folder titles
+## Include text with files
 
-Similar to file titles, you can optionally include folder titles in the compiled output as well.
+If you need to include some arbitrary text before each file, like a `* * *` scene separator, select *Include text with files* and type in your text next to the check box. If, for some reason, you don't want to include that text after the first heading, as in the case of scene separators, click *And skip first*.
 
 For more information about structuring your project to make consistent headings, see 'Project Organization.'

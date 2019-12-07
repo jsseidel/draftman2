@@ -2,7 +2,7 @@ project:
   editor: '/usr/bin/typora'
   editorArgs: ''
   backupPath: '/home/att/backups'
-  backupOnStart: True
+  backupOnStart: False
   includeTitlesCompile: False
   includeDirectoryTitlesCompile: True
   includeTextCompile: False

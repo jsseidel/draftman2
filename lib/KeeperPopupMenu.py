@@ -13,7 +13,7 @@ class KeeperPopupMenu:
         self.__popup = Gtk.Menu()
         self.__menuItemAddFile = Gtk.MenuItem('Add file...')
         self.__menuItemEditFile = Gtk.MenuItem('Edit...')
-        self.__menuItemAddDirectory = Gtk.MenuItem('Add directory...')
+        self.__menuItemAddDirectory = Gtk.MenuItem('Add folder...')
         self.__menuItemDelete = Gtk.MenuItem('Delete...')
         self.__menuItemDeleteAll = Gtk.MenuItem('Empty...')
 

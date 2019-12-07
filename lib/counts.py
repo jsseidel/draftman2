@@ -23,11 +23,18 @@ def scene_count(path):
     reason = "OK"
     scenes = 0
     try:
+        file_scenes = 0
         with open(path, "r") as f:
             line = f.readline()
             while line:
-                scenes += len(re.findall(r'^#', line))
+                file_scenes += len(re.findall(r'^#', line))
                 line = f.readline()
+            # Since you can have text files that just contain text without
+            # headers, a non-empty file constitutes at least one scene
+            if file_scenes == 0:
+                file_scenes = 1
+
+            scenes += file_scenes
     except Exception as e:
         rv = False
         reason = str(e)
