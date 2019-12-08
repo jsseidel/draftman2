@@ -1,2 +1,0 @@
-# Trash notes
-
