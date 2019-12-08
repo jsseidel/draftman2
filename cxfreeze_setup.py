@@ -5,6 +5,7 @@ from cx_Freeze import setup, Executable
 
 includes = ['./draftman2.glade',
            ('./icon/draftman2.png', 'icon/draftman2.png'),
+           ('./icon/draftman2_sm.png', 'icon/draftman2_sm.png'),
            ('./icon/file.svg', 'icon/file.svg'),
            ('./icon/directory.svg', 'icon/directory.svg'),
            ('./icon/trash.svg', 'icon/trash.svg'),

@@ -1,0 +1,5 @@
+[Desktop Entry]
+Name=Draftman2
+Exec=draftman2
+Type=Application
+Icon=${SNAP}/meta/gui/draftman2.png

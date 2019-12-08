@@ -1,2 +1,3 @@
+gi
 pyyaml
 cx_Freeze
