@@ -1,4 +1,4 @@
-## HiDPI
+# HiDPI
 
 The only elements in Draftman2 affected by HiDPI currently should be the icons associated with item types. Until a fix is put in place for this, you can control the size of these icons with an environment variable:
 

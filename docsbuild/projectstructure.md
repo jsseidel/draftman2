@@ -1,20 +1,20 @@
-## Project Structure
+# Project Structure
 
 Draftman2 projects have the following structure:
 
 ```
 Project Directory/
-├── keeper
-│   ├── <stripped file name 1>-YYYYMMDD_HHMMSS.md
-│   ├── <stripped file name 2>-YYYYMMDD_HHMMSS.md
-│   ├── <etc>
-├── keeper.yaml
-└── notes
-    ├── <stripped file name 1>-YYYYMMDD_HHMMSS.md
-    ├── <stripped file name 2>-YYYYMMDD_HHMMSS.md
-    ├── <stripped folder name 1>-YYYYMMDD_HHMMSS.md
-    ├── <etc>
-    └── trash-0.md
++--keeper
+|   +-- <stripped file name 1>-YYYYMMDD_HHMMSS.md
+|   +-- <stripped file name 2>-YYYYMMDD_HHMMSS.md
+|   +-- <etc>
++--keeper.yaml
++--notes
+    +-- <stripped file name 1>-YYYYMMDD_HHMMSS.md
+    +-- <stripped file name 2>-YYYYMMDD_HHMMSS.md
+    +-- <stripped folder name 1>-YYYYMMDD_HHMMSS.md
+    +-- <etc>
+    +-- trash-0.md
 ```
 
 The time stamp is generated only once, when the file is created.
@@ -29,7 +29,7 @@ File and folder names are created like this:
 
 This structure makes all the file names unique, even if they have the same name. 
 
-### `keeper.yaml`
+## `keeper.yaml`
 
 `keeper.yaml` is a YAML file that acts as the project database. It looks like this:
 

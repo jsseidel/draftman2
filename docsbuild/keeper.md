@@ -28,27 +28,27 @@ The name of the file or folder. Double-click in the name to rename a file.
 
 #### Inc
 
-The Inc check boxes indicate that the file or folder should be included when you Compile a Draftman2 project. See the 'Compiling a Project' section for more information about compiling a project to a single file.
+The *Inc* check boxes indicate that the file or folder should be included when you Compile a Draftman2 project. See the [Compiling a Project](#compiling-a-project) section for more information about compiling a project to a single file.
 
 #### Scenes/Running
 
-Scenes tells you how many 'scenes' are in a file or a folder represented by that row. Scenes in Draftman2 parlance indicate either a count of Markdown headers in a text file (i.e. #) or the file itself as a single scene. Because you might not use headers in a file, a file that contains no headers is counted as having one scene, even empty files. See the Project Organization file for more information.
+Scenes tells you how many 'scenes' are in a file or a folder represented by that row. Scenes, in Draftman2 parlance, indicate either a count of Markdown headers in a text file (i.e. lines beginning with `#`) or the file itself as a single scene. Because you might not use headers in a file, a file that contains no headers is counted as having one scene, even empty files. See the [Project Organization](#project-organization) section for more information.
 
 The scene count next to a folder indicates the total number of scenes found within the folder. If you have a folder that contains five files with one scene per file, Scenes would be 5 at the folder row. If you open the folder, each file would show 1 scene at its row.
 
-The Running column next to the Scenes column indicates how many *total* scenes that have been found *as of and including that row* for all included (Inc is checked) items above.
+The Running column next to the Scenes column indicates how many *total* scenes that have been found *as of and including that row* for all included (*Inc* is checked) items above.
 
 #### Words/Running
 
 The Words and associated Running column are identical to the Scenes/Running columns, except they count words instead of scenes.
 
-Similar to scenes, only included (Inc is checked) files are counted as part of a total count.
+Similar to scenes, only included (*Inc* is checked) files are counted as part of a total count.
 
 ## Rows
 
 You can take specific action on rows by selecting them and right-clicking. Further, you can reorder rows by clicking and dragging.
 
-You can de-select all rows by right-clicking in white space below all rows. This also refreshes the scene and word counts.
+You can de-select all rows by clicking in white space below all rows. This also refreshes the scene and word counts.
 
 ## Status
 
@@ -60,11 +60,11 @@ The total words of all included objects in your project.
 
 ### Scenes
 
-The total number of scenes in your project
+The total number of included scenes in your project
 
 ### Avg words/file
 
-The average number of words per file in your project. This can be used to predict your project's overall length if you have an idea of how many scenes your project will contain.
+The average number of words per included file in your project. This can be used to predict your project's overall length if you have an idea of how many scenes your project will contain.
 
 ### Update counts
 
