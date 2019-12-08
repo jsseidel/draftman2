@@ -14,6 +14,6 @@ uninstall:
 	sudo rm -f /usr/share/applications/draftman2.desktop
 
 clean:
-	rm -rf ./build ./dist ./*~ './Draftman2 Tutorial.zip'
+	rm -rf ./build ./dist ./*~ './Draftman2 Tutorial.zip' install_files
 	(cd docsbuild ; make clean)
 

@@ -1,0 +1,19 @@
+Package: draftman2
+Version: 2.0.0
+Architecture: amd64
+Maintainer: Joseph Spencer Seidel <jsseidel@fastmail.com>
+Installed-Size: 9877
+Depends: libbz2-1.0, libc6 (>= 2.25), libcairo-gobject2 (>= 1.10.0), libcairo2 (>= 1.10.0), libexpat1 (>= 2.1~beta3), libffi6 (>= 3.0.4), libgirepository-1.0-1 (>= 1.44.0), libglib2.0-0 (>= 2.41.1), liblzma5 (>= 5.1.1alpha+20120614), libreadline7 (>= 7.0~beta), libssl1.1 (>= 1.1.1), libyaml-0-2, zlib1g (>= 1:1.2.0)
+Section: text
+Priority: optional
+Homepage: https://jsseidel.github.io/draftman2/
+Description: Draftman2 is a draft-management tool for writers
+ Draftman2 is an organizational tool for writers. Although
+ designed with creative writers in mind, Draftman2 is useful
+ for any long-form writing project.
+ Features:
+ - Free and open source
+ - Cross platform
+ - Minimalist
+ - Bring your own editor
+ -Markdown/plain-text based

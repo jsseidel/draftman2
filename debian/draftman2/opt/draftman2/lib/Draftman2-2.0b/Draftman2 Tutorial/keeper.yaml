@@ -1,0 +1,22 @@
+project:
+  editor: 'No editor'
+  editorArgs: ''
+  backupPath: '/home/draftman2'
+  backupOnStart: False
+  includeTitlesCompile: False
+  includeDirectoryTitlesCompile: False
+  includeTextCompile: False
+  includeTextEntryCompile: ''
+  skipFirst: False
+
+keeper:
+  - type: 'file'
+    title: 'Start Here'
+    id: '20191207_100703'
+    compile: False
+  - type: 'directory'
+    title: 'Trash'
+    id: '0'
+    compile: False
+    contents: []
+
