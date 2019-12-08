@@ -1,7 +1,7 @@
 project:
-  editor: '/usr/bin/typora'
+  editor: 'No editor'
   editorArgs: ''
-  backupPath: '/home/jsseidel/Desktop'
+  backupPath: '/home/draftman2'
   backupOnStart: False
   includeTitlesCompile: False
   includeDirectoryTitlesCompile: False
@@ -10,32 +10,6 @@ project:
   skipFirst: False
 
 keeper:
-  - type: 'directory'
-    title: 'Chapter 1'
-    id: '20191207_154541'
-    compile: True
-    contents:
-    - type: 'file'
-      title: 'Scene 1'
-      id: '20191207_155115'
-      compile: True
-    - type: 'file'
-      title: 'Scene 2'
-      id: '20191207_163904'
-      compile: True
-  - type: 'directory'
-    title: 'Chapter 2'
-    id: '20191207_164015'
-    compile: True
-    contents:
-    - type: 'file'
-      title: 'Scene 1'
-      id: '20191207_164027'
-      compile: True
-    - type: 'file'
-      title: 'Scene 2'
-      id: '20191207_164034'
-      compile: True
   - type: 'file'
     title: 'Start Here'
     id: '20191207_100703'

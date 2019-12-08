@@ -46,8 +46,11 @@ class PreferencesDialog:
         self.__checkbox_include_titles.set_active(project.include_titles())
         self.__checkbox_include_directory_titles.set_active(project.include_directory_titles())
 
+        self.__checkbox_skip_first.set_sensitive(self.__checkbox_include_text.get_active())
+
     def __on_checkbox_include_text(self, *args):
         self.__entry_include_text.set_sensitive(self.__checkbox_include_text.get_active())
+        self.__checkbox_skip_first.set_sensitive(self.__checkbox_include_text.get_active())
 
     def __on_choose_editor(self, *args):
         (rv, filename) = self.__get_file_name("Choose an editor",
