@@ -1,5 +1,6 @@
 ```include
 about.md
+installing.md
 keeper.md
 notes.md
 compiling.md
