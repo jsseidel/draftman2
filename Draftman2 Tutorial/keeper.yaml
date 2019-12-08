@@ -1,5 +1,5 @@
 project:
-  editor: 'No editor'
+  editor: '/usr/bin/gedit'
   editorArgs: ''
   backupPath: '/home/draftman2'
   backupOnStart: False
