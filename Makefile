@@ -15,4 +15,5 @@ uninstall:
 
 clean:
 	rm -rf ./build ./dist ./*~ './Draftman2 Tutorial.zip'
+	(cd docsbuild ; make clean)
 
