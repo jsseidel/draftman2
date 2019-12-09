@@ -170,7 +170,7 @@ class KeeperTreeView:
     def sanity_check_editor(self):
         # Sanity check the editor
         p = Path(self.__project.editor())
-        if not p.exists():
+        if self.__project.is_loaded() and not p.exists():
             m = Message()
             m.info(self.__app_window, 'No editor', 'It seems that the %s editor'
                     ' does not exist on your system. To choose a new editor,'

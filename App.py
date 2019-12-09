@@ -109,7 +109,9 @@ class App:
             (rv, reason) = self.__project.new(project_directory, project_name)
             if not rv:
                 m = Message()
-                m.error(self.__app_window, "Cannot create project", "Cannot create project directory, %s:\n\n%s\n" % (project_directory, reason))
+                m.error(self.__app_window, 'Cannot create project', 'Cannot'
+                        ' create project directory, %s:\n\n%s\n' %
+                        (project_directory, reason))
                 return
 
             self.__keeper_treeview.refresh()
@@ -128,7 +130,9 @@ class App:
             (rv, reason) = self.__project.open(project_directory)
             if not rv:
                 m = Message()
-                m.error(self.__app_window, "Cannot open project", "Cannot open project directory, %s:\n\n%s\n" % (project_directory, reason))
+                m.error(self.__app_window, 'Cannot open project', 'Cannot open '
+                        ' project directory, %s:\n\n%s\n' % (project_directory,
+                        reason))
                 return
 
             self.__keeper_treeview.refresh()
@@ -154,7 +158,9 @@ class App:
     # User selected Preferences
     def onPreferences(self, *args):
         pd = PreferencesDialog(self.__builder, self.__project)
-        (response, editor, editor_args, backup_path, backup_on_start, include_text, include_text_entry, skip_first, include_titles, include_directory_titles) = pd.run()
+        (response, editor, editor_args, backup_path, backup_on_start,
+                include_text, include_text_entry, skip_first, include_titles,
+                include_directory_titles) = pd.run()
         if response == Gtk.ResponseType.OK:
             self.__project.set_editor(editor)
             self.__project.set_editor_args(editor_args)
