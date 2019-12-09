@@ -5,10 +5,10 @@ Draftman2 is an organizational tool for writers. Although designed with creative
 Features:
 
 1. Free and open source
-2. Cross platform
-3. Minimalist
-4. Bring your own editor
-5. Markdown/plain-text based
+2. Minimalist
+3. Bring your own editor
+4. Markdown/plain-text based
 
-![The Draftman2 App Window](images/draftman2_appwindow.png)
+<a href='images/draftman2_appwindow.png'><img alt='The Draftman2 App Window' src='images/draftman2_appwindow_sm.png' border='0' /></a>
 
+<div align='center'>The Draftman2 App Window</div>
