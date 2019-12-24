@@ -1,2 +1,2 @@
-install_files/opt/draftman2/* opt
+install_files/opt/* opt
 install_files/usr/* usr
