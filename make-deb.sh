@@ -1,5 +1,6 @@
 #!/bin/bash
 
+make dist
 mkdir -p ./install_files/opt/draftman2
 mkdir -p ./install_files/usr/share/applications
 cp -r dist/* ./install_files/opt/draftman2/.
