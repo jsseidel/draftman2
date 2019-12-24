@@ -1,3 +1,8 @@
+draftman2 (2.0.1) bionic; urgency=medium
+
+  * Added support for remembering window state between launches
+
+ -- Joseph Spencer Seidel <jsseidel@fastmail.com>  Tue, 24 Dec 2019 11:43:00 -0500
 draftman2 (2.0.0) bionic; urgency=medium
 
   * Initial Release.
