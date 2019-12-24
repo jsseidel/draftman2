@@ -8,6 +8,7 @@ import gi
 gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk
 from pathlib import Path, PurePath
+from lib.AppWindowState import AppWindowState
 from lib.Message import Message
 import re
 import sys
@@ -39,6 +40,7 @@ class Project:
         self.__include_text = False
         self.__include_text_entry = ''
         self.__skip_first = False
+        self.app_window_state = AppWindowState()
 
     def __validate_project(self, path):
         p = Path(path)
@@ -89,6 +91,13 @@ class Project:
 
             if 'includeDirectoryTitlesCompile' in project:
                 self.__include_directory_titles = project['includeDirectoryTitlesCompile']
+            if 'appWindow' in project:
+                appWindowYaml = project['appWindow']
+                self.app_window_state.w = appWindowYaml['width']
+                self.app_window_state.h = appWindowYaml['height']
+                self.app_window_state.pane = appWindowYaml['pane']
+                self.app_window_state.maximized = appWindowYaml['maximized']
+                self.app_window_state.fullscreen = appWindowYaml['fullscreen']
 
     def name(self):
         return self.__name

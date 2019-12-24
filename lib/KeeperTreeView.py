@@ -24,12 +24,13 @@ class KeeperTreeView:
     COL_PIXBUF=0
     COL_TYPE=1
     COL_ID=2
-    COL_NAME=3
-    COL_COMPILE=4
-    COL_SCENES=5
-    COL_SCENES_RUNNING=6
-    COL_WORDS=7
-    COL_WORDS_RUNNING=8
+    COL_INIT_EXPAND=3
+    COL_NAME=4
+    COL_COMPILE=5
+    COL_SCENES=6
+    COL_SCENES_RUNNING=7
+    COL_WORDS=8
+    COL_WORDS_RUNNING=9
 
     def __init__(self, builder, project):
         self.__app_window = builder.get_object('appWindow')
@@ -75,6 +76,15 @@ class KeeperTreeView:
         # A hidden id column
         col_type = Gtk.TreeViewColumn('ID', Gtk.CellRendererText(),
                 text=KeeperTreeView.COL_ID)
+        col_type.set_sizing(Gtk.TreeViewColumnSizing.AUTOSIZE)
+        col_type.set_resizable(False)
+        col_type.set_reorderable(False)
+        col_type.set_visible(False)
+        self.__treeview.append_column(col_type)
+
+        # A hidden initial expansion column
+        col_type = Gtk.TreeViewColumn('INIT_EXPAND', Gtk.CellRendererText(),
+                text=KeeperTreeView.COL_INIT_EXPAND)
         col_type.set_sizing(Gtk.TreeViewColumnSizing.AUTOSIZE)
         col_type.set_resizable(False)
         col_type.set_reorderable(False)
@@ -235,6 +245,23 @@ class KeeperTreeView:
             p = p / filename
             self.backup(str(p))
 
+        # Do auto expansion of rows
+        store = self.__tree_model.get_tree_store()
+        tree_iter = store.get_iter_first()
+        self.__auto_expand(store, tree_iter)
+
+    def __auto_expand(self, store, tree_iter):
+        while tree_iter is not None:
+            expanded = store[tree_iter][KeeperTreeView.COL_INIT_EXPAND]
+            if expanded:
+                path = store.get_path(tree_iter)
+                self.__treeview.expand_row(path, False)
+
+            if store.iter_has_child(tree_iter):
+                self.__auto_expand(store, store.iter_children(tree_iter))
+
+            tree_iter = store.iter_next(tree_iter)
+
     def add_item(self, name, item_type, item_id, as_child):
         (model, tree_iter) = self.__treeview.get_selection().get_selected()
         self.__tree_model.insert_at(tree_iter, name, item_type, item_id,
@@ -269,6 +296,8 @@ class KeeperTreeView:
             out_str = out_str + "%s  id: '%s'\n" % (indent, item_id)
             out_str = out_str + '%s  compile: %s\n' % (indent, item_compile)
             if store.iter_has_child(tree_iter):
+                out_str = out_str + '%s  expanded: %s\n' % (indent,
+                        self.__treeview.row_expanded(store.get_path(tree_iter)))
                 out_str = out_str + '%s  contents:\n' % indent
                 child_iter = store.iter_children(tree_iter)
                 out_str = self.__tree_to_yaml(store, child_iter, indent + "  ", out_str)
@@ -291,6 +320,12 @@ class KeeperTreeView:
         yaml = "%s  includeTextEntryCompile: '%s'\n" % (yaml,
                 self.__project.include_text_entry())
         yaml = "%s  skipFirst: %s\n" % (yaml, self.__project.skip_first())
+        yaml = "%s  appWindow:\n" % yaml
+        yaml = "%s    width: %d\n" % (yaml, self.__project.app_window_state.w)
+        yaml = "%s    height: %d\n" % (yaml, self.__project.app_window_state.h)
+        yaml = "%s    pane: %d\n" % (yaml, self.__project.app_window_state.pane)
+        yaml = "%s    maximized: %s\n" % (yaml, self.__project.app_window_state.maximized)
+        yaml = "%s    fullscreen: %s\n" % (yaml, self.__project.app_window_state.fullscreen)
         return yaml
 
     def save(self):

@@ -16,7 +16,7 @@ from lib.Project import Project
 class KeeperTreeModel:
 
     def __init__(self):
-        self.__store = Gtk.TreeStore(GdkPixbuf.Pixbuf, str, str, str, bool, int, int, int, int)
+        self.__store = Gtk.TreeStore(GdkPixbuf.Pixbuf, str, str, bool, str, bool, int, int, int, int)
 
     def __get_icon_for_type_or_name(self, item_type, item_name):
         icon_size = 24
@@ -38,9 +38,13 @@ class KeeperTreeModel:
             if 'contents' in item:
                 contents_size = len(item['contents'])
 
+            init_expanded = False
+            if 'expanded' in item:
+                init_expanded = item['expanded']
+
             parent = self.__store.append(parent_row,
                     [self.__get_icon_for_type_or_name(item['type'],
-                        item['title']), item['type'], item['id'],
+                        item['title']), item['type'], item['id'], init_expanded,
                         item['title'], item['compile'], 0, 0, 0, 0])
 
             if 'contents' in item:
@@ -72,12 +76,12 @@ class KeeperTreeModel:
         if not as_child:
             self.__store.insert_after(None, tree_iter,
                 [self.__get_icon_for_type_or_name(item_type, name),
-                    item_type, item_id, name, True, 0, 0, 0, 0])
+                    item_type, item_id, False, name, True, 0, 0, 0, 0])
         else:
             # Inserting as a child. We find the last sibling and insert after it.
             self.__store.insert_after(tree_iter, self.__find_last_child_of_iter(self.__store,
                 tree_iter), [self.__get_icon_for_type_or_name(item_type,
-                    name), item_type, item_id, name, True, 0, 0, 0, 0])
+                    name), item_type, item_id, False, name, True, 0, 0, 0, 0])
 
     def remove(self, tree_iter):
         self.__store.remove(tree_iter)

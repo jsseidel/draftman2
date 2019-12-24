@@ -6,7 +6,7 @@ consistency of the state of the running instance of draftman.
 """
 import gi
 gi.require_version('Gtk', '3.0')
-from gi.repository import Gtk
+from gi.repository import Gtk, Gdk
 
 import os
 
@@ -35,14 +35,9 @@ class App:
         self.__keeper_treeview = self.__builder.get_object("treeViewKeeper")
         self.__project = Project()
 
-        # App window state
-        self.__app_window_state = AppWindowState()
-        (w, h, p) = self.__app_window_state.load_keyfile()
-        self.__app_window.resize(w, h)
-        self.__pane.set_position(p)
-
         # Signals
         self.__app_window.connect("size-allocate", self.__on_size_allocate)
+        self.__app_window.connect("window-state-event", self.__on_window_state_event)
         self.__pane.connect("notify::position", self.__on_pane_position)
 
         draftman2rc = Path.home() / '.draftman2rc'
@@ -53,6 +48,13 @@ class App:
             p = Path(last_project)
             if p.exists():
                 self.__project.open(str(p))
+                if self.__project.app_window_state.is_valid():
+                    if self.__project.app_window_state.maximized:
+                        self.__app_window.maximize()
+                    else:
+                        self.__app_window.resize(self.__project.app_window_state.w,
+                                self.__project.app_window_state.h)
+                    self.__pane.set_position(self.__project.app_window_state.pane)
 
         self.__keeper_treeview = KeeperTreeView(self.__builder, self.__project)
         self.__keeper_treeview.refresh()
@@ -69,18 +71,20 @@ class App:
     def onDestroy(self, *args):
         self.save_last()
         self.__keeper_treeview.save()
-        self.__app_window_state.save_keyfile()
         Gtk.main_quit()
 
     # Signal handlers
     #
     #
     def __on_size_allocate(self, widget, allocation):
-        self.__app_window_state.set_width_height(allocation.width,
-                allocation.height)
+        (self.__project.app_window_state.w, self.__project.app_window_state.h) = self.__app_window.get_size()
 
     def __on_pane_position(self, widget, gparam):
-        self.__app_window_state.set_pane_position(widget.get_property(gparam.name))
+        self.__project.app_window_state.pane = widget.get_property(gparam.name)
+
+    def __on_window_state_event(self, widget, event):
+        self.__project.app_window_state.maximized = (event.new_window_state & Gdk.WindowState.MAXIMIZED) != 0
+        self.__project.app_window_state.fullscreen = (event.new_window_state & Gdk.WindowState.FULLSCREEN) != 0
 
     # Menu and Button Handlers
     #
@@ -90,7 +94,6 @@ class App:
     def onQuit(self, *args):
         self.save_last()
         self.__keeper_treeview.save()
-        self.__app_window_state.save_keyfile()
         Gtk.main_quit()
 
     # User selected add file
