@@ -11,6 +11,7 @@ from gi.repository import Gtk
 import os
 
 from datetime import datetime
+from lib.AppWindowState import AppWindowState
 from lib.KeeperFileOpsLinux import KeeperFileOpsLinux
 from lib.Project import Project
 from lib.PreferencesDialog import PreferencesDialog
@@ -32,8 +33,19 @@ class App:
         self.__builder.add_from_file('draftman2.glade')
         self.__builder.connect_signals(self)
         self.__app_window = self.__builder.get_object("appWindow")
+        self.__pane = self.__builder.get_object("pane")
         self.__keeper_treeview = self.__builder.get_object("treeViewKeeper")
         self.__project = Project()
+
+        # App window state
+        self.__app_window_state = AppWindowState()
+        (w, h, p) = self.__app_window_state.load_keyfile()
+        self.__app_window.resize(w, h)
+        self.__pane.set_position(p)
+
+        # Signals
+        self.__app_window.connect("size-allocate", self.__on_size_allocate)
+        self.__pane.connect("notify::position", self.__on_pane_position)
 
         draftman2rc = Path.home() / '.draftman2rc'
         if draftman2rc.exists():
@@ -59,7 +71,18 @@ class App:
     def onDestroy(self, *args):
         self.save_last()
         self.__keeper_treeview.save()
+        self.__app_window_state.save_keyfile()
         Gtk.main_quit()
+
+    # Signal handlers
+    #
+    #
+    def __on_size_allocate(self, widget, allocation):
+        self.__app_window_state.set_width_height(allocation.width,
+                allocation.height)
+
+    def __on_pane_position(self, widget, gparam):
+        self.__app_window_state.set_pane_position(widget.get_property(gparam.name))
 
     # Menu and Button Handlers
     #
@@ -69,6 +92,7 @@ class App:
     def onQuit(self, *args):
         self.save_last()
         self.__keeper_treeview.save()
+        self.__app_window_state.save_keyfile()
         Gtk.main_quit()
 
     # User selected add file
