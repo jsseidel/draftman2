@@ -22,7 +22,10 @@ class AppWindowState:
         self._pane_position = p
 
     def load_keyfile(self):
-        return (920, 1414, 700)
+        self._app_width = 920
+        self._app_height = 1414
+        self._pane_position = 700
+        return (self._app_width, self._app_height, self._pane_position)
 
     def save_keyfile(self):
         print(self)
