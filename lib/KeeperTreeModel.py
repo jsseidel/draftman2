@@ -16,9 +16,9 @@ from lib.Project import Project
 class KeeperTreeModel:
 
     def __init__(self):
-        self.__store = Gtk.TreeStore(GdkPixbuf.Pixbuf, str, str, bool, str, bool, int, int, int, int)
+        self._store = Gtk.TreeStore(GdkPixbuf.Pixbuf, str, str, bool, str, bool, int, int, int, int)
 
-    def __get_icon_for_type_or_name(self, item_type, item_name):
+    def _get_icon_for_type_or_name(self, item_type, item_name):
         icon_size = 24
         if 'DRAFTMAN2_ICON_SIZE' in os.environ:
             icon_size = int(os.environ['DRAFTMAN2_ICON_SIZE'])
@@ -32,7 +32,7 @@ class KeeperTreeModel:
 
         return GdkPixbuf.Pixbuf.new_from_file_at_size("icon/file.svg", icon_size, icon_size)
 
-    def __add_item_list_to_store(self, parent_row, item_list):
+    def _add_item_list_to_store(self, parent_row, item_list):
         for item in item_list:
             contents_size = 0
             if 'contents' in item:
@@ -42,21 +42,21 @@ class KeeperTreeModel:
             if 'expanded' in item:
                 init_expanded = item['expanded']
 
-            parent = self.__store.append(parent_row,
-                    [self.__get_icon_for_type_or_name(item['type'],
+            parent = self._store.append(parent_row,
+                    [self._get_icon_for_type_or_name(item['type'],
                         item['title']), item['type'], item['id'], init_expanded,
                         item['title'], item['compile'], 0, 0, 0, 0])
 
             if 'contents' in item:
-                self.__add_item_list_to_store(parent, item['contents'])
+                self._add_item_list_to_store(parent, item['contents'])
 
     def clear(self):
-        self.__store.clear()
+        self._store.clear()
 
     def get_tree_store(self):
-        return self.__store
+        return self._store
 
-    def __find_last_child_of_iter(self, store, tree_iter):
+    def _find_last_child_of_iter(self, store, tree_iter):
         if tree_iter is not None:
             if store.iter_has_child(tree_iter):
                 child_iter = store.iter_children(tree_iter)
@@ -74,17 +74,17 @@ class KeeperTreeModel:
     def insert_at(self, tree_iter, name, item_type, item_id, as_child):
         # If not inserting as a child, insert after the selected sibling
         if not as_child:
-            self.__store.insert_after(None, tree_iter,
-                [self.__get_icon_for_type_or_name(item_type, name),
+            self._store.insert_after(None, tree_iter,
+                [self._get_icon_for_type_or_name(item_type, name),
                     item_type, item_id, False, name, True, 0, 0, 0, 0])
         else:
             # Inserting as a child. We find the last sibling and insert after it.
-            self.__store.insert_after(tree_iter, self.__find_last_child_of_iter(self.__store,
-                tree_iter), [self.__get_icon_for_type_or_name(item_type,
+            self._store.insert_after(tree_iter, self._find_last_child_of_iter(self._store,
+                tree_iter), [self._get_icon_for_type_or_name(item_type,
                     name), item_type, item_id, False, name, True, 0, 0, 0, 0])
 
     def remove(self, tree_iter):
-        self.__store.remove(tree_iter)
+        self._store.remove(tree_iter)
 
     def load_tree_store(self, project_path):
         rv = True
@@ -95,7 +95,7 @@ class KeeperTreeModel:
         try:
             with open(("%s/keeper.yaml" % project_path), "r") as stream:
                 keeper = yaml.safe_load(stream)
-                self.__add_item_list_to_store(None, keeper['keeper'])
+                self._add_item_list_to_store(None, keeper['keeper'])
 
         except Exception as e:
             rv = False

@@ -25,24 +25,24 @@ keeper:
 
 class Project:
     def __init__(self):
-        self.__name = ""
-        self.__project_path = ""
-        self.__keeper_path = ""
-        self.__notes_path = ""
-        self.__keeper_yaml = ""
-        self.__backup_path = ""
-        self.__backup_on_start = False
-        self.__editor = '/usr/bin/gedit'
-        self.__editor_args = ''
-        self.__include_titles = False
-        self.__include_directory_titles = False
-        self.__is_loaded = False
-        self.__include_text = False
-        self.__include_text_entry = ''
-        self.__skip_first = False
+        self._name = ""
+        self._project_path = ""
+        self._keeper_path = ""
+        self._notes_path = ""
+        self._keeper_yaml = ""
+        self._backup_path = ""
+        self._backup_on_start = False
+        self._editor = '/usr/bin/gedit'
+        self._editor_args = ''
+        self._include_titles = False
+        self._include_directory_titles = False
+        self._is_loaded = False
+        self._include_text = False
+        self._include_text_entry = ''
+        self._skip_first = False
         self.app_window_state = AppWindowState()
 
-    def __validate_project(self, path):
+    def _validate_project(self, path):
         p = Path(path)
         if not p.exists() or not p.is_dir():
             return (False, "%s either doesn't exist or isn't a directory." %
@@ -58,39 +58,39 @@ class Project:
 
         return (True, "OK")
 
-    def __load_prefs(self, path):
+    def _load_prefs(self, path):
         keeper = ""
-        with open(("%s/keeper.yaml" % self.__project_path), "r") as stream:
+        with open(("%s/keeper.yaml" % self._project_path), "r") as stream:
             keeper = yaml.safe_load(stream)
 
         project = keeper['project']
         if project is not None:
             if 'editor' in project:
-                self.__editor = project['editor']
+                self._editor = project['editor']
 
             if 'editorArgs' in project:
-                self.__editor_args = project['editorArgs']
+                self._editor_args = project['editorArgs']
 
             if 'backupPath' in project:
-                self.__backup_path = project['backupPath']
+                self._backup_path = project['backupPath']
 
             if 'backupOnStart' in project:
-                self.__backup_on_start = project['backupOnStart']
+                self._backup_on_start = project['backupOnStart']
 
             if 'includeTextCompile' in project:
-                self.__include_text = project['includeTextCompile']
+                self._include_text = project['includeTextCompile']
 
             if 'includeTextEntryCompile' in project:
-                self.__include_text_entry = project['includeTextEntryCompile']
+                self._include_text_entry = project['includeTextEntryCompile']
 
             if 'skipFirst' in project:
-                self.__skip_first = project['skipFirst']
+                self._skip_first = project['skipFirst']
 
             if 'includeTitlesCompile' in project:
-                self.__include_titles = project['includeTitlesCompile']
+                self._include_titles = project['includeTitlesCompile']
 
             if 'includeDirectoryTitlesCompile' in project:
-                self.__include_directory_titles = project['includeDirectoryTitlesCompile']
+                self._include_directory_titles = project['includeDirectoryTitlesCompile']
             if 'appWindow' in project:
                 appWindowYaml = project['appWindow']
                 self.app_window_state.w = appWindowYaml['width']
@@ -100,99 +100,99 @@ class Project:
                 self.app_window_state.fullscreen = appWindowYaml['fullscreen']
 
     def name(self):
-        return self.__name
+        return self._name
 
     def is_loaded(self):
-        return self.__is_loaded
+        return self._is_loaded
 
     def project_path(self):
-        return self.__project_path
+        return self._project_path
 
     def notes_path(self):
-        return self.__notes_path
+        return self._notes_path
 
     def keeper_yaml(self):
-        return self.__keeper_yaml
+        return self._keeper_yaml
 
     def keeper_path(self):
-        return self.__keeper_path
+        return self._keeper_path
 
     def backup_path(self):
-        return self.__backup_path
+        return self._backup_path
 
     def backup_on_start(self):
-        return self.__backup_on_start
+        return self._backup_on_start
 
     def editor(self):
-        return self.__editor
+        return self._editor
 
     def editor_args(self):
-        return self.__editor_args
+        return self._editor_args
 
     def include_titles(self):
-        return self.__include_titles
+        return self._include_titles
 
     def include_directory_titles(self):
-        return self.__include_directory_titles
+        return self._include_directory_titles
 
     def include_text(self):
-        return self.__include_text
+        return self._include_text
 
     def include_text_entry(self):
-        return self.__include_text_entry
+        return self._include_text_entry
 
     def skip_first(self):
-        return self.__skip_first
+        return self._skip_first
 
     def set_editor(self, editor):
-        self.__editor = editor
+        self._editor = editor
 
     def set_editor_args(self, editor_args):
-        self.__editor_args = editor_args
+        self._editor_args = editor_args
 
     def set_backup_path(self, backup_path):
-        self.__backup_path= backup_path
+        self._backup_path= backup_path
 
     def set_backup_on_start(self, backup_on_start):
-        self.__backup_on_start= backup_on_start
+        self._backup_on_start= backup_on_start
 
     def set_include_titles(self, include_titles):
-        self.__include_titles = include_titles
+        self._include_titles = include_titles
 
     def set_include_directory_titles(self, include_titles):
-        self.__include_directory_titles = include_titles
+        self._include_directory_titles = include_titles
 
     def set_include_text(self, include_text):
-        self.__include_text = include_text
+        self._include_text = include_text
 
     def set_include_text_entry(self, include_text_entry):
-        self.__include_text_entry = include_text_entry
+        self._include_text_entry = include_text_entry
 
     def set_skip_first(self, skip_first):
-        self.__skip_first = skip_first
+        self._skip_first = skip_first
 
     def open(self, path):
-        (rv, reason) = self.__validate_project(path)
+        (rv, reason) = self._validate_project(path)
         if not rv:
             return (rv, reason)
 
         p = PurePath(path)
-        self.__name = p.name
-        self.__project_path = p
-        self.__keeper_path = p / 'keeper'
-        self.__keeper_yaml = p / 'keeper.yaml'
-        self.__notes_path = p / 'notes'
-        self.__backup_path = p
-        self.__backup_on_start = False
-        self.__editor = '/usr/bin/gedit'
-        self.__editor_args = ''
-        self.__is_loaded = True
-        self.__include_titles = False
-        self.__include_text = False
-        self.__include_text_entry = ''
-        self.__skip_first = False
+        self._name = p.name
+        self._project_path = p
+        self._keeper_path = p / 'keeper'
+        self._keeper_yaml = p / 'keeper.yaml'
+        self._notes_path = p / 'notes'
+        self._backup_path = p
+        self._backup_on_start = False
+        self._editor = '/usr/bin/gedit'
+        self._editor_args = ''
+        self._is_loaded = True
+        self._include_titles = False
+        self._include_text = False
+        self._include_text_entry = ''
+        self._skip_first = False
 
-        self.__load_prefs(str(self.__keeper_yaml))
+        self._load_prefs(str(self._keeper_yaml))
 
         return (True, "OK")
 
@@ -228,21 +228,21 @@ class Project:
                 f.write(DEFAULT_NEW_PROJECT)
 
             p = PurePath(project_dir)
-            self.__name = p.name
-            self.__project_path = p
-            self.__keeper_path = p / 'keeper'
-            self.__keeper_yaml = p / 'keeper.yaml'
-            self.__notes_path = p / 'notes'
-            self.__backup_path = p
-            self.__backup_on_start = False
-            self.__editor = '/usr/bin/gedit'
-            self.__editor_args = ''
-            self.__is_loaded = True
-            self.__include_titles = False
-            self.__include_directory_titles = False
-            self.__include_text = False
-            self.__include_text_entry = ''
-            self.__skip_first = False
+            self._name = p.name
+            self._project_path = p
+            self._keeper_path = p / 'keeper'
+            self._keeper_yaml = p / 'keeper.yaml'
+            self._notes_path = p / 'notes'
+            self._backup_path = p
+            self._backup_on_start = False
+            self._editor = '/usr/bin/gedit'
+            self._editor_args = ''
+            self._is_loaded = True
+            self._include_titles = False
+            self._include_directory_titles = False
+            self._include_text = False
+            self._include_text_entry = ''
+            self._skip_first = False
 
             return (True, "OK")
         except Exception as e:
@@ -252,7 +252,7 @@ class Project:
         rv = True
         reason = "OK"
         try:
-            p = Path(self.__keeper_path)
+            p = Path(self._keeper_path)
             with open(str(p / ("%s" % file_name)), "w") as f:
                 f.write("Happy writing!\n\n")
         except Exception as e:
@@ -265,7 +265,7 @@ class Project:
         rv = True
         reason = "OK"
         try:
-            p = Path(self.__notes_path)
+            p = Path(self._notes_path)
             with open(str(p / ("%s" % file_name)), "w") as f:
                 f.write("# %s notes\n\nKeep track of notes here\n\n" % title)
         except Exception as e:

@@ -10,7 +10,7 @@ from gi.repository import Gtk
 
 class Message:
 
-    def __message(self, app_window, msg_title, msg, msg_type):
+    def _message(self, app_window, msg_title, msg, msg_type):
         dialog = Gtk.MessageDialog(app_window, 0, msg_type,
             Gtk.ButtonsType.OK, msg_title)
         dialog.format_secondary_text(msg)
@@ -18,13 +18,13 @@ class Message:
         dialog.destroy()
 
     def warning(self, app_window, msg_title, msg):
-        self.__message(app_window, msg_title, msg, Gtk.MessageType.WARNING)
+        self._message(app_window, msg_title, msg, Gtk.MessageType.WARNING)
 
     def error(self, app_window, msg_title, msg):
-        self.__message(app_window, msg_title, msg, Gtk.MessageType.ERROR)
+        self._message(app_window, msg_title, msg, Gtk.MessageType.ERROR)
 
     def info(self, app_window, msg_title, msg):
-        self.__message(app_window, msg_title, msg, Gtk.MessageType.INFO)
+        self._message(app_window, msg_title, msg, Gtk.MessageType.INFO)
 
     def confirm(self, app_window, msg_title, msg):
         dialog = Gtk.MessageDialog(app_window, 0, Gtk.MessageType.QUESTION,

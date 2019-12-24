@@ -9,11 +9,11 @@ from gi.repository import Gtk
 
 class OpenProjectDialog:
     def __init__(self, builder):
-        self.__app_window = builder.get_object('appWindow')
+        self._app_window = builder.get_object('appWindow')
 
     def run(self):
         dialog = Gtk.FileChooserDialog(
-                "Select project directory", self.__app_window,
+                "Select project directory", self._app_window,
             Gtk.FileChooserAction.SELECT_FOLDER,
             (Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL,
              "Select", Gtk.ResponseType.OK))
