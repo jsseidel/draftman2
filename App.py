@@ -28,8 +28,6 @@ class App:
         # Use a builder to create our objects from the glade
         # file.
         self.__builder = Gtk.Builder()
-        #self.__builder.add_from_file('%s/draftman2.glade' %
-        #        os.path.dirname(os.path.realpath(__file__)))
         self.__builder.add_from_file('draftman2.glade')
         self.__builder.connect_signals(self)
         self.__app_window = self.__builder.get_object("appWindow")
