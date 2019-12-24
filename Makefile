@@ -6,13 +6,18 @@ dist-build:
 	python3 cxfreeze_setup.py build --build-base build
 
 tgz: dist-build
-	mkdir -p draftman2_2.0.0_amd_linux
-	cp -r build/exe.linux-x86_64-3.6/* draftman2_2.0.0_amd_linux/.
-	tar cfz draftman2_2.0.0_amd_linux.tar.gz draftman2_2.0.0_amd_linux
-	rm -rf ./draftman2_2.0.0_amd_linux
+	mkdir -p draftman2_$(VERSION)_amd_linux
+	cp -r build/exe.linux-x86_64-3.6/* draftman2_$(VERSION)_amd_linux/.
+	tar cfz draftman2_$(VERSION)_amd_linux.tar.gz draftman2_$(VERSION)_amd_linux
+	rm -rf ./draftman2_$(VERSION)_amd_linux
 
 install: dist-build
 	python3 cxfreeze_setup.py install --prefix dist
+	rm -rf ./install_files
+	mkdir -p ./install_files/opt/draftman2
+	mkdir -p ./install_files/usr/share/applications
+	cp -r dist/lib/Draftman2-${VERSION}/* ./install_files/opt/draftman2/.
+	cp draftman2.desktop ./install_files/usr/share/applications/.
 
 uninstall:
 	sudo rm -rf /opt/draftman2
@@ -23,5 +28,5 @@ clean:
 	(cd docsbuild ; make clean)
 
 really-clean: clean
-	rm -rf install_files ./draftman2_2.0.0_amd_linux.tar.gz
+	rm -rf install_files ./draftman2_$(VERSION)* ../draftman2_$(VERSION)*
 
