@@ -1,7 +1,7 @@
 project:
   editor: '/usr/bin/gedit'
   editorArgs: ''
-  backupPath: '/home/draftman2'
+  backupPath: '/tmp'
   backupOnStart: False
   includeTitlesCompile: False
   includeDirectoryTitlesCompile: False
