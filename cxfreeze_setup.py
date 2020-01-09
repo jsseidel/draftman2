@@ -22,7 +22,7 @@ executables = [
 ]
 
 setup(name='Draftman2',
-      version = '2.0.1',
+      version = '2.0.2',
       description = 'foo',
       options = dict(build_exe = buildOptions),
       executables = executables)

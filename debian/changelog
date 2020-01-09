@@ -1,3 +1,9 @@
+draftman2 (2.0.2) bionic; urgency=medium
+
+  * Updated tutorial backup location and made minor wording changes to
+    tutorial
+
+ -- Joseph Spencer Seidel <jsseidel@fastmail.com>  Thu, 09 Jan 2019 10:31:00 -0500
 draftman2 (2.0.1) bionic; urgency=medium
 
   * Added support for remembering window state between launches
