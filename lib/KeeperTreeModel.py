@@ -33,22 +33,23 @@ class KeeperTreeModel:
         return GdkPixbuf.Pixbuf.new_from_file_at_size("icon/file.svg", icon_size, icon_size)
 
     def _add_item_list_to_store(self, parent_row, item_list):
-        for item in item_list:
-            contents_size = 0
-            if 'contents' in item:
-                contents_size = len(item['contents'])
+        if item_list is not None:
+            for item in item_list:
+                contents_size = 0
+                if 'contents' in item:
+                    contents_size = len(item['contents'])
 
-            init_expanded = False
-            if 'expanded' in item:
-                init_expanded = item['expanded']
+                init_expanded = False
+                if 'expanded' in item:
+                    init_expanded = item['expanded']
 
-            parent = self._store.append(parent_row,
-                    [self._get_icon_for_type_or_name(item['type'],
-                        item['title']), item['type'], item['id'], init_expanded,
-                        item['title'], item['compile'], 0, 0, 0, 0])
+                parent = self._store.append(parent_row,
+                        [self._get_icon_for_type_or_name(item['type'],
+                            item['title']), item['type'], item['id'], init_expanded,
+                            item['title'], item['compile'], 0, 0, 0, 0])
 
-            if 'contents' in item:
-                self._add_item_list_to_store(parent, item['contents'])
+                if 'contents' in item:
+                    self._add_item_list_to_store(parent, item['contents'])
 
     def clear(self):
         self._store.clear()

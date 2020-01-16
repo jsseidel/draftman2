@@ -326,18 +326,10 @@ class KeeperTreeView:
             store = self._tree_model.get_tree_store()
             tree_iter = store.get_iter_first()
             keeper_yaml = self._tree_to_yaml(store, tree_iter, "  ")
-            # If the keeper yaml is empty, this most likely means something
-            # catastrophic happened to the tree store, so we won't save
-            if keeper_yaml != '':
-                keeper_str = ("project:\n%s\nkeeper:\n%s\n" %
-                (self._project_settings_to_yaml(), keeper_yaml))
-                with open(self._project.keeper_yaml(), "w") as f:
-                    f.write(keeper_str)
-            else:
-                m = Message()
-                m.error(self._app_window, 'Keeper error', 'Oops, something '
-                        ' went wrong. Shutting down.')
-                sys.exit(1)
+            keeper_str = ("project:\n%s\nkeeper:\n%s\n" %
+                    (self._project_settings_to_yaml(), keeper_yaml))
+            with open(self._project.keeper_yaml(), "w") as f:
+                f.write(keeper_str)
 
     def _update_word_count_tree(self, store, tree_iter, words_running, scenes_running, files_running):
         while tree_iter is not None:
@@ -501,18 +493,19 @@ class KeeperTreeView:
         return "%s-%s.md" % (self._strip_name(item_name), item_id)
 
     def _save_notes(self, store, tree_iter):
-        item_type = store[tree_iter][KeeperTreeView.COL_TYPE]
-        text_view_buffer = self._text_view_notes.get_buffer()
-        item_id = store[tree_iter][KeeperTreeView.COL_ID]
-        item_name = store[tree_iter][KeeperTreeView.COL_NAME]
-        if item_name is None:
-            return
-        path = Path("%s/notes/%s" % (self._project.project_path(),
-            self._file_name(item_name, item_id)))
-        start_iter = text_view_buffer.get_start_iter()
-        end_iter = text_view_buffer.get_end_iter()
-        with open(str(path), "w") as f:
-            f.write(text_view_buffer.get_text(start_iter, end_iter, True))
+        if tree_iter is not None:
+            item_type = store[tree_iter][KeeperTreeView.COL_TYPE]
+            text_view_buffer = self._text_view_notes.get_buffer()
+            item_id = store[tree_iter][KeeperTreeView.COL_ID]
+            item_name = store[tree_iter][KeeperTreeView.COL_NAME]
+            if item_name is None:
+                return
+            path = Path("%s/notes/%s" % (self._project.project_path(),
+                self._file_name(item_name, item_id)))
+            start_iter = text_view_buffer.get_start_iter()
+            end_iter = text_view_buffer.get_end_iter()
+            with open(str(path), "w") as f:
+                f.write(text_view_buffer.get_text(start_iter, end_iter, True))
 
     def _save_last_sel(self):
         if self._last_sel is not None:
