@@ -165,14 +165,6 @@ class KeeperTreeView:
         self._label_status2.set_label("Scenes: 0")
         self._label_status3.set_label("Avg Words/File: 0")
 
-        if self._project.backup_on_start():
-            dt = datetime.now()
-            ts = dt.strftime('%Y%m%d_%H%M%S')
-            p = Path(self._project.backup_path())
-            filename = '%s-%s%s' % (self._project.name(), ts, '.zip')
-            p = p / filename
-            self.backup(str(p))
-
         self.sanity_check_editor()
 
         self.enable_items()
@@ -472,6 +464,7 @@ class KeeperTreeView:
 
     def backup(self, path):
         p = PurePath(self._project.project_path())
+        old_dir = os.getcwd()
         os.chdir(str(p.parent))
         result = subprocess.run(['zip', '-r', path, self._project.name()])
         m = Message()
@@ -479,6 +472,7 @@ class KeeperTreeView:
             m.error(self._app_window, 'Error creating backup', result.stderr)
         else:
             m.info(self._app_window, 'Backup created', '%s created successfully' % path)
+        os.chdir(old_dir)
 
     ###
     ##

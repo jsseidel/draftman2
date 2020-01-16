@@ -6,6 +6,7 @@ This class presents the user with an open project dialog
 import gi
 gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk
+import os
 
 class PreferencesDialog:
     def __init__(self, builder, project):

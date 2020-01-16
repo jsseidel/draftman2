@@ -10,6 +10,7 @@ from gi.repository import Gtk
 from pathlib import Path, PurePath
 from lib.AppWindowState import AppWindowState
 from lib.Message import Message
+import os
 import re
 import sys
 import yaml
@@ -118,13 +119,13 @@ class Project:
         return self._keeper_path
 
     def backup_path(self):
-        return self._backup_path
+        return os.path.expanduser(self._backup_path)
 
     def backup_on_start(self):
         return self._backup_on_start
 
     def editor(self):
-        return self._editor
+        return os.path.expanduser(self._editor)
 
     def editor_args(self):
         return self._editor_args

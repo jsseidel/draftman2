@@ -1,6 +1,6 @@
 name: draftman2
 base: core18
-version: '2.0.2'
+version: '2.0.3'
 summary: Draftman2 is a draft-management tool for writers
 description: |
   Draftman2 is an organizational tool for writers. Although designed with creative writers in mind, Draftman2 is useful for any long-form writing project.
@@ -31,7 +31,7 @@ parts:
       mkdir -p $SNAPCRAFT_PART_INSTALL/opt/draftman2/icon
       cp -r lib $SNAPCRAFT_PART_INSTALL/opt/draftman2/.
       cp -r 'Draftman2 Tutorial' $SNAPCRAFT_PART_INSTALL/opt/draftman2/.
-      cp -r App.py draftman2.py draftman2.glade $SNAPCRAFT_PART_INSTALL/opt/draftman2/.
+      cp -r App.py draftman2.py draftman2.glade draftman2_py_run $SNAPCRAFT_PART_INSTALL/opt/draftman2/.
       cp -r icon/draftman2.png icon/draftman2_sm.png icon/file.svg icon/directory.svg icon/trash.svg $SNAPCRAFT_PART_INSTALL/opt/draftman2/icon/.
     stage-packages:
       - git
@@ -67,5 +67,5 @@ parts:
 
 apps:
   draftman2:
-    command: bin/desktop-launch python3 $SNAP/opt/draftman2/draftman2.py
+    command: bash $SNAP/bin/desktop-launch $SNAP/opt/draftman2/draftman2_py_run
 
