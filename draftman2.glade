@@ -501,7 +501,8 @@
     <property name="version">2.0.3</property>
     <property name="copyright" translatable="yes">Copyright 2019, Spencer Seidel</property>
     <property name="comments" translatable="yes">Draftman2 is an application for managing first-draft manuscripts. It is designed to be minimalistic but useful.</property>
-    <property name="website">https://github.com/jsseidel/draftman2</property>
+    <property name="website">https://jsseidel.github.io/draftman2/</property>
+    <property name="website_label" translatable="yes">Documentation</property>
     <property name="authors">Spencer Seidel</property>
     <property name="logo">icon/draftman2_sm.png</property>
     <property name="license_type">mit-x11</property>

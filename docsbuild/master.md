@@ -1,5 +1,6 @@
 ```include
 about.md
+bugs.md
 quickstart.md
 installing.md
 keeper.md
