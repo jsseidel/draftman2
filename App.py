@@ -58,9 +58,18 @@ class App:
 
         self._keeper_treeview = KeeperTreeView(self._builder, self._project)
         self._keeper_treeview.refresh()
-        self._app_window.set_title("Draftman2: %s" % self._project.name())
+        self._set_window_title()
         self._app_window.show_all()
         Gtk.main()
+
+    def _set_window_title(self):
+        title = "Draftman2"
+        if self._project.name() != '':
+            title = '%s: %s' % (title, self._project.name())
+        self._app_window.set_title(title)
+
+    def _clear_window_title(self):
+        self._app_window.set_title('')
 
     def save_last(self):
         if self._project.project_path() != "":
@@ -131,6 +140,7 @@ class App:
                 self.save_last()
                 self._keeper_treeview.save()
                 self._keeper_treeview.clear_all()
+                self._clear_window_title()
 
             (rv, reason) = self._project.new(project_directory, project_name)
             if not rv:
@@ -140,6 +150,7 @@ class App:
                         (project_directory, reason))
                 return
 
+            self._set_window_title()
             self._keeper_treeview.refresh()
             self._keeper_treeview.enable_items()
 
@@ -152,6 +163,7 @@ class App:
                 self.save_last()
                 self._keeper_treeview.save()
                 self._keeper_treeview.clear_all()
+                self._clear_window_title()
 
             (rv, reason) = self._project.open(project_directory)
             if not rv:
@@ -161,6 +173,7 @@ class App:
                         reason))
                 return
 
+            self._set_window_title()
             self._keeper_treeview.refresh()
             self._keeper_treeview.enable_items()
 
