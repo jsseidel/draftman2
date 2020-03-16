@@ -58,6 +58,7 @@ class App:
 
         self._keeper_treeview = KeeperTreeView(self._builder, self._project)
         self._keeper_treeview.refresh()
+        self._app_window.set_title("Draftman2: %s" % self._project.name())
         self._app_window.show_all()
         Gtk.main()
 
