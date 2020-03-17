@@ -1,6 +1,6 @@
 name: draftman2
 base: core18
-version: '2.0.3'
+version: '2.0.4'
 summary: Draftman2 is a draft-management tool for writers
 description: |
   Draftman2 is an organizational tool for writers. Although designed with creative writers in mind, Draftman2 is useful for any long-form writing project.

@@ -1,16 +1,21 @@
+draftman2 (2.0.4) bionic; urgency=medium
+
+  * Made window show current project in the title bar
+
+ -- Joseph Spencer Seidel <jsseidel@fastmail.com>  Mon, 16 Mar 2020 19:13:00 -0500
 draftman2 (2.0.3) bionic; urgency=medium
 
   * Fixed tilde expansion in preferences dialog
   * Fixed bug that made 2 backups when launched if backups on startup
     preferences option was ticked
 
- -- Joseph Spencer Seidel <jsseidel@fastmail.com>  Thu, 16 Jan 2019 14:45:00 -0500
+ -- Joseph Spencer Seidel <jsseidel@fastmail.com>  Thu, 16 Jan 2020 14:45:00 -0500
 draftman2 (2.0.2) bionic; urgency=medium
 
   * Updated tutorial backup location and made minor wording changes to
     tutorial
 
- -- Joseph Spencer Seidel <jsseidel@fastmail.com>  Thu, 09 Jan 2019 10:31:00 -0500
+ -- Joseph Spencer Seidel <jsseidel@fastmail.com>  Thu, 09 Jan 2020 10:31:00 -0500
 draftman2 (2.0.1) bionic; urgency=medium
 
   * Added support for remembering window state between launches
