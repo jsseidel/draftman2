@@ -498,7 +498,7 @@
     <property name="icon">icon/draftman2.png</property>
     <property name="type_hint">dialog</property>
     <property name="program_name">Glade</property>
-    <property name="version">2.0.4</property>
+    <property name="version">2.0.5</property>
     <property name="copyright" translatable="yes">Copyright 2019, Spencer Seidel</property>
     <property name="comments" translatable="yes">Draftman2 is an application for managing first-draft manuscripts. It is designed to be minimalistic but useful.</property>
     <property name="website">https://jsseidel.github.io/draftman2/</property>

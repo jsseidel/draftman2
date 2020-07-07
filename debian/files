@@ -1,2 +1,3 @@
-draftman2_2.0.4_amd64.buildinfo text optional
-draftman2_2.0.4_amd64.deb text optional
+draftman2-dbgsym_2.0.5_amd64.ddeb debug optional automatic=yes
+draftman2_2.0.5_amd64.buildinfo text optional
+draftman2_2.0.5_amd64.deb text optional

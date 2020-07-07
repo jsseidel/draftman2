@@ -7,7 +7,7 @@ dist-build:
 
 tgz: dist-build
 	mkdir -p draftman2_$(VERSION)_amd_linux
-	cp -r build/exe.linux-x86_64-3.6/* draftman2_$(VERSION)_amd_linux/.
+	cp -r build/exe.linux-x86_64-*/* draftman2_$(VERSION)_amd_linux/.
 	tar cfz draftman2_$(VERSION)_amd_linux.tar.gz draftman2_$(VERSION)_amd_linux
 	rm -rf ./draftman2_$(VERSION)_amd_linux
 
