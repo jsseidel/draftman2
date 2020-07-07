@@ -36,6 +36,7 @@ class KeeperTreeView:
         self._app_window = builder.get_object('appWindow')
         self._project = project
         self._treeview = builder.get_object('treeViewKeeper')
+        #self._treeview.set_level_indentation(5)
         self._tree_model = KeeperTreeModel()
         self._builder = builder
         self._label_status1 = builder.get_object('labelStatus1')
