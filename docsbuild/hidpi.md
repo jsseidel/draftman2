@@ -1,20 +1,26 @@
 # HiDPI
 
-The only elements in Draftman2 affected by HiDPI currently should be the icons associated with item types. Until a fix is put in place for this, you can control the size of these icons with an environment variable:
+HiDPI (2K and 4K) can affect the way the Draftman2 Keeper appears. You can
+adjust the appearance with 2 environment variables:
 
 ```
 DRAFTMAN2_ICON_SIZE=48
+DRAFTMAN2_TREE_INDENT=5
 ```
 
-Typically this line is added to the drafman2.desktop file, like:
+The first, `DRAFTMAN2_ICON_SIZE` determines how large or small the file, folder,
+and trash icons appear in the Keeper.
+
+The second, `DRAFTMAN2_TREE_INDENT` determines how much indentation happens at
+each level of the Keeper.
+
+You can either add these to your normal login environment or activate them upon
+launching Draftman2 in a `draftman2.desktop` file in Gnome-based distros or
+editing your application menu in KDE-based environments.
+
+In general, you launch Draftman2 like this, which is suitable for adding to the
+desktop file or a command field:
 
 ```
-Exec=DRAFTMAN2_ICON_SIZE=48 /opt/draftman2/draftman2
+DRAFTMAN2_ICON_SIZE=48 DRAFTMAN2_TREE_INDENT=10 /opt/draftman2/draftman2_run
 ```
-
-Then, copy the desktop file to your local directory:
-
-```
-cp /usr/share/applications/draftman2.desktop ~/.local/share/applications/.
-```
-
