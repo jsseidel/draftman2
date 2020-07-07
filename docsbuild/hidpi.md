@@ -8,18 +8,18 @@ DRAFTMAN2_ICON_SIZE=48
 DRAFTMAN2_TREE_INDENT=5
 ```
 
-The first, `DRAFTMAN2_ICON_SIZE` determines how large or small the file, folder,
+The first, `DRAFTMAN2_ICON_SIZE`, determines how large or small the file, folder,
 and trash icons appear in the Keeper.
 
-The second, `DRAFTMAN2_TREE_INDENT` determines how much indentation happens at
+The second, `DRAFTMAN2_TREE_INDENT`, determines how much indentation happens at
 each level of the Keeper.
 
 You can either add these to your normal login environment or activate them upon
 launching Draftman2 in a `draftman2.desktop` file in Gnome-based distros or
 editing your application menu in KDE-based environments.
 
-In general, you launch Draftman2 like this, which is suitable for adding to the
-desktop file or a command field:
+In other environments, you launch Draftman2 like this, with or without the environment
+variables, suitable for the command line or adding to the desktop file or a command field:
 
 ```
 DRAFTMAN2_ICON_SIZE=48 DRAFTMAN2_TREE_INDENT=10 /opt/draftman2/draftman2_run
