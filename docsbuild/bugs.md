@@ -5,3 +5,4 @@ issue, providing as much information as you can about how to reproduce the bug.
 
 [https://github.com/jsseidel/draftman2/issues](https://github.com/jsseidel/draftman2/issues)
 
+Or better yet, fix it yourself and give me a pull request!
