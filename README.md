@@ -4,11 +4,16 @@ A minimalist draft-management application for long-form writers, currently in be
 
 [https://jsseidel.github.io/draftman2/](https://jsseidel.github.io/draftman2/)
 
-# Hacking Draftman2
+# Running Draftman2
 
-## Prerequisites
+Draftman2 will run as is in Ubuntu 18.04/20.04 with no additional
+requirements:
 
-There is probably some overlap here but it doesn't seem to hurt anything.
+```
+./draftman2_py_run
+```
+
+On other distros, you might need to perform the equivalent of the following:
 
 ```
 cd draftman2
