@@ -1,7 +1,0 @@
-draftman2.glade
-VERSION
-snap/snapcraft.yaml
-debian/changelog
-debian/files
-cxfreeze_setup.py
-draftman2.desktop

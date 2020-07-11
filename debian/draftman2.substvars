@@ -1,3 +1,0 @@
-shlibs:Depends=draftman2, libbz2-1.0, libc6 (>= 2.29), libcairo-gobject2 (>= 1.12.16), libcairo2 (>= 1.10.0), libexpat1 (>= 2.1~beta3), libffi7 (>= 3.3~20180313), libgirepository-1.0-1 (>= 1.62.0-4~), libglib2.0-0 (>= 2.53.1), liblzma5 (>= 5.1.1alpha+20120614), libmpdec2, libreadline8 (>= 7.0~beta), libssl1.1 (>= 1.1.1), zlib1g (>= 1:1.2.0)
-misc:Depends=
-misc:Pre-Depends=
