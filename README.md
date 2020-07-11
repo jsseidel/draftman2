@@ -1,12 +1,13 @@
 # draftman2
 
-A minimalist draft-management application for long-form writers, currently in beta release.
+A minimalist draft-management application I use to help me organize long writing
+projects. It may or may not be useful to others.
 
 [https://jsseidel.github.io/draftman2/](https://jsseidel.github.io/draftman2/)
 
 # Running Draftman2
 
-Draftman2 will run as is in Ubuntu 18.04/20.04 with no additional
+Draftman2 will run as-is in Ubuntu 18.04/20.04 with no additional
 requirements:
 
 ```
@@ -20,3 +21,4 @@ cd draftman2
 sudo apt install debhelper libgirepository1.0-dev gcc libcairo2-dev pkg-config python3-dev gir1.2-gtk-3.0 python3-gi python3-gi-cairo
 pip install -r requirements.txt
 ```
+
