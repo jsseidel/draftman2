@@ -33,39 +33,39 @@ parts:
       cp -r 'Draftman2 Tutorial' $SNAPCRAFT_PART_INSTALL/opt/draftman2/.
       cp -r App.py draftman2.py draftman2.glade draftman2_py_run $SNAPCRAFT_PART_INSTALL/opt/draftman2/.
       cp -r icon/draftman2.png icon/draftman2_sm.png icon/file.svg icon/directory.svg icon/trash.svg $SNAPCRAFT_PART_INSTALL/opt/draftman2/icon/.
-    stage-packages:
+    build-packages:
       - git
       - python3
+      - python3-pip
       - python3-gi
-
-  desktop-gtk3:
-    source: https://github.com/ubuntu/snapcraft-desktop-helpers.git
-    source-subdir: gtk
-    plugin: make
-    make-parameters: ["FLAVOR=gtk3"]
-    build-packages:
-      - build-essential
-      - libgtk-3-dev
+      - libgirepository1.0-dev
+      - gcc
+      - libcairo2-dev
+      - pkg-config
+      - python3-dev
+      - gir1.2-gtk-3.0
+      - python3-gi-cairo
+      - python3-setuptools
     stage-packages:
-      - libxkbcommon0  # XKB_CONFIG_ROOT
-      - ttf-ubuntu-font-family
-      - dmz-cursor-theme
-      - light-themes
-      - adwaita-icon-theme
-      - gnome-themes-standard
-      - shared-mime-info
-      - libgtk-3-0
-      - libgdk-pixbuf2.0-0
-      - libglib2.0-bin
-      - libgtk-3-bin
-      - unity-gtk3-module
-      - libappindicator3-1
-      - locales-all
-      - xdg-user-dirs
-      - ibus-gtk3
-      - libibus-1.0-5
+      - python3
+      - python3-pip
+      - python3-gi
+      - libgirepository1.0-dev
+      - gcc
+      - libcairo2-dev
+      - pkg-config
+      - python3-dev
+      - gir1.2-gtk-3.0
+      - python3-gi-cairo
+      - python3-setuptools
 
 apps:
   draftman2:
-    command: bash $SNAP/bin/desktop-launch $SNAP/opt/draftman2/draftman2_py_run
-
+    extensions:
+      - gnome-3-34
+    command: snap/command-chain/desktop-launch $SNAP/opt/draftman2/draftman2_py_run
+    plugs:
+      - desktop
+      - desktop-legacy
+      - x11
+      - home
