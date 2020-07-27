@@ -19,7 +19,7 @@ class KeeperTreeModel:
         self._store = Gtk.TreeStore(GdkPixbuf.Pixbuf, str, str, bool, str, bool, int, int, int, int)
 
     def _get_icon_for_type_or_name(self, item_type, item_name):
-        icon_size = 32
+        icon_size = 16
         if 'DRAFTMAN2_ICON_SIZE' in os.environ:
             icon_size = int(os.environ['DRAFTMAN2_ICON_SIZE'])
 
