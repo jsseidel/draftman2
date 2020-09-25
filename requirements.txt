@@ -1,5 +1,4 @@
 PyYAML==5.1.2
-wheel
 cx_Freeze
 pycairo
 PyGObject

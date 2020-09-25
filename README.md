@@ -14,11 +14,13 @@ requirements:
 ./draftman2_py_run
 ```
 
-On other distros, you might need to perform the equivalent of the following:
+On other distros, or if you use a virtual environment, you might need to
+perform the equivalent of the following:
 
 ```
+sudo apt install libgirepository1.0-dev gcc libcairo2-dev python3-dev gir1.2-gtk-3.0 python3-gi python3-gi-cairo
 cd draftman2
-sudo apt install debhelper libgirepository1.0-dev gcc libcairo2-dev pkg-config python3-dev gir1.2-gtk-3.0 python3-gi python3-gi-cairo
-pip install -r requirements.txt
+pip3 install wheel
+pip3 install -r requirements.txt
 ```
 
