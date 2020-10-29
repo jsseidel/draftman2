@@ -9,3 +9,4 @@ Terminal=false
 Type=Application
 StartupNotify=true
 Categories=GNOME;GTK;Office;
+StartupWMClass=draftman2.py
