@@ -21,10 +21,13 @@ class AddItemDialog:
         okButton.set_can_default(True)
         okButton.grab_default()
 
+
     def run(self):
         self._dialog.set_transient_for(self._app_window)
         self._dialog.set_modal(True)
         self._entry_add.set_text('')
+        # Give focus to the text box
+        self._entry_add.grab_focus_without_selecting()
         response = self._dialog.run()
         item_name = ''
         if response == Gtk.ResponseType.OK:

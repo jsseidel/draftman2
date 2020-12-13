@@ -288,7 +288,7 @@ class KeeperTreeView:
             item_compile = store[tree_iter][KeeperTreeView.COL_COMPILE]
 
             out_str = out_str + "%s- type: '%s'\n" % (indent, item_type)
-            out_str = out_str + "%s  title: '%s'\n" % (indent, item_title)
+            out_str = out_str + "%s  title: '%s'\n" % (indent, item_title.replace('\'', '\'\''))
             out_str = out_str + "%s  id: '%s'\n" % (indent, item_id)
             out_str = out_str + '%s  compile: %s\n' % (indent, item_compile)
             if store.iter_has_child(tree_iter):
