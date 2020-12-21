@@ -17,6 +17,7 @@ from lib.AddItemDialog import AddItemDialog
 from lib.KeeperTreeModel import KeeperTreeModel
 from lib.KeeperPopupMenu import KeeperPopupMenu
 from lib.Message import Message
+from lib.ImportFileDialog import ImportFileDialog
 from lib.KeeperFileOpsLinux import KeeperFileOpsLinux
 from pathlib import Path, PurePath, PurePosixPath
 
@@ -201,12 +202,11 @@ class KeeperTreeView:
 
         # Menus
         self._builder.get_object('menuAddFile').set_sensitive(l)
-        self._builder.get_object('menuAddFileAtRoot').set_sensitive(l)
-        self._builder.get_object('menuAddDirectoryAtRoot').set_sensitive(l)
         self._builder.get_object('menuCompile').set_sensitive(l)
         self._builder.get_object('menuBackup').set_sensitive(l)
         self._builder.get_object('menuRefresh').set_sensitive(l)
         self._builder.get_object('menuPreferences').set_sensitive(l)
+        self._builder.get_object('menuImportFile').set_sensitive(l)
 
         b = (l and (item_type == 'directory' or item_type == None))
         self._builder.get_object('menuAddDirectory').set_sensitive(b)
@@ -246,6 +246,11 @@ class KeeperTreeView:
         tree_iter = store.get_iter_first()
         self._auto_expand(store, tree_iter)
 
+    def _is_something_selected(self):
+        selection = self._treeview.get_selection()
+        (model, tree_iter) = selection.get_selected()
+        return (tree_iter is not None)
+
     def _auto_expand(self, store, tree_iter):
         while tree_iter is not None:
             expanded = store[tree_iter][KeeperTreeView.COL_INIT_EXPAND]
@@ -260,9 +265,10 @@ class KeeperTreeView:
 
     def add_item(self, name, item_type, item_id, as_child):
         (model, tree_iter) = self._treeview.get_selection().get_selected()
-        self._tree_model.insert_at(tree_iter, name, item_type, item_id,
+        rv = self._tree_model.insert_at(tree_iter, name, item_type, item_id,
                 as_child)
         self.save()
+        return rv
 
     def remove_item(self, tree_iter):
         self._tree_model.remove(tree_iter)
@@ -650,8 +656,8 @@ class KeeperTreeView:
     # These are not private because our App uses them to handle the
     # app menu signals
     def on_add_file(self, *args):
-        aid = AddItemDialog(self._builder)
-        (response, name) = aid.run()
+        aid = AddItemDialog(self._builder, self._is_something_selected())
+        (response, name, add_at_root) = aid.run()
         if response == Gtk.ResponseType.OK:
             dt = datetime.now()
             item_id = dt.strftime('%Y%m%d_%H%M%S')
@@ -662,7 +668,11 @@ class KeeperTreeView:
             (rv, reason) = self._project.write_new_note(name, self._file_name(name,
                 item_id))
             if rv:
-                self.add_item(name, 'file', item_id, True)
+                if add_at_root:
+                    self._tree_model.insert_at(None, name, 'file', item_id, False)
+                    self.save()
+                else:
+                    self.add_item(name, 'file', item_id, True)
             else:
                 m = Message()
                 m.error(self._app_window, 'Keeper error', 'Could not add'
@@ -670,19 +680,37 @@ class KeeperTreeView:
 
             self.update_word_counts()
 
-    def on_add_file_at_root(self, *args):
-        aid = AddItemDialog(self._builder)
-        (response, name) = aid.run()
+    def _import_file(self, path, to_name, to_item_id):
+        # Copy the path file to the new file
+        new_file_path = self._project.get_path(self._file_name(to_name, to_item_id))
+        with open(new_file_path, "w") as new_file:
+            with open(path, "r") as old_file:
+                for line in old_file.readlines():
+                    new_file.write(line)
+
+    def on_import_file(self, *args):
+        ifd = ImportFileDialog(self._builder, self._is_something_selected())
+        (response, path, add_at_root) = ifd.run()
         if response == Gtk.ResponseType.OK:
+            name = os.path.basename(path)
             dt = datetime.now()
             item_id = dt.strftime('%Y%m%d_%H%M%S')
+            selection = self._treeview.get_selection()
+            (model, tree_iter) = selection.get_selected()
             (rv, reason) = self._project.write_new_file(name, self._file_name(name,
                 item_id))
             (rv, reason) = self._project.write_new_note(name, self._file_name(name,
                 item_id))
             if rv:
-                self._tree_model.insert_at(None, name, 'file', item_id, False)
-                self.save()
+                if add_at_root:
+                    self._tree_model.insert_at(None, name, 'file', item_id, False)
+                else:
+                    self.add_item(name, 'file', item_id, True)
+
+                self._import_file(path, name, item_id)
+
+                if add_at_root:
+                    self.save()
             else:
                 m = Message()
                 m.error(self._app_window, 'Keeper error', 'Could not add'
@@ -691,8 +719,8 @@ class KeeperTreeView:
             self.update_word_counts()
 
     def on_add_directory(self, *args):
-        aid = AddItemDialog(self._builder)
-        (response, name) = aid.run()
+        aid = AddItemDialog(self._builder, self._is_something_selected())
+        (response, name, add_at_root) = aid.run()
         if response == Gtk.ResponseType.OK:
             dt = datetime.now()
             item_id = dt.strftime('%Y%m%d_%H%M%S')
@@ -701,23 +729,11 @@ class KeeperTreeView:
             (rv, reason) = self._project.write_new_note(name,
                     self._file_name(name, item_id))
             if rv:
-                self.add_item(name, 'directory', item_id, True)
-            else:
-                m = Message()
-                m.error(self._app_window, 'Keeper error', 'Could not add'
-                        'directory note:\n\n%s' % reason)
-
-    def on_add_directory_at_root(self, *args):
-        aid = AddItemDialog(self._builder)
-        (response, name) = aid.run()
-        if response == Gtk.ResponseType.OK:
-            dt = datetime.now()
-            item_id = dt.strftime('%Y%m%d_%H%M%S')
-            (rv, reason) = self._project.write_new_note(name,
-                    self._file_name(name, item_id))
-            if rv:
-                self._tree_model.insert_at(None, name, 'directory', item_id, False)
-                self.save()
+                if add_at_root:
+                    self._tree_model.insert_at(None, name, 'directory', item_id, False)
+                    self.save()
+                else:
+                    self.add_item(name, 'directory', item_id, True)
             else:
                 m = Message()
                 m.error(self._app_window, 'Keeper error', 'Could not add'

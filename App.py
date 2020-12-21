@@ -114,13 +114,13 @@ class App:
     def onAddFileAtRoot(self, *args):
         self._keeper_treeview.on_add_file_at_root(args)
 
+    # User selected import file
+    def onImportMarkdownFile(self, *args):
+        self._keeper_treeview.on_import_file(args)
+
     # User selected add directory
     def onAddDirectory(self, *args):
         self._keeper_treeview.on_add_directory(args)
-
-    # User selected add root directory
-    def onAddDirectoryAtRoot(self, *args):
-        self._keeper_treeview.on_add_directory_at_root(args)
 
     # User selected edit file
     def onEditFile(self, *args):
