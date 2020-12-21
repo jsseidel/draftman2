@@ -17,6 +17,7 @@ from lib.AddItemDialog import AddItemDialog
 from lib.KeeperTreeModel import KeeperTreeModel
 from lib.KeeperPopupMenu import KeeperPopupMenu
 from lib.Message import Message
+from lib.ImportFileDialog import ImportFileDialog
 from lib.KeeperFileOpsLinux import KeeperFileOpsLinux
 from pathlib import Path, PurePath, PurePosixPath
 
@@ -682,6 +683,63 @@ class KeeperTreeView:
                 item_id))
             if rv:
                 self._tree_model.insert_at(None, name, 'file', item_id, False)
+                self.save()
+            else:
+                m = Message()
+                m.error(self._app_window, 'Keeper error', 'Could not add'
+                        'file:\n\n%s' % reason)
+
+            self.update_word_counts()
+
+    def on_import_file(self, *args):
+        ifd = ImportFileDialog(self._builder)
+        (response, path) = ifd.run()
+        if response == Gtk.ResponseType.OK:
+            name = os.path.basename(path)
+            dt = datetime.now()
+            item_id = dt.strftime('%Y%m%d_%H%M%S')
+            selection = self._treeview.get_selection()
+            (model, tree_iter) = selection.get_selected()
+            (rv, reason) = self._project.write_new_file(name, self._file_name(name,
+                item_id))
+            (rv, reason) = self._project.write_new_note(name, self._file_name(name,
+                item_id))
+            if rv:
+                self.add_item(name, 'file', item_id, True)
+
+                # Copy the path file to the new file
+                new_file_path = self._project.get_path(self._file_name(name, item_id))
+                with open(new_file_path, "w") as new_file:
+                    with open(path, "r") as old_file:
+                        for line in old_file.readlines():
+                            new_file.write(line)
+            else:
+                m = Message()
+                m.error(self._app_window, 'Keeper error', 'Could not add'
+                        'file:\n\n%s' % reason)
+
+            self.update_word_counts()
+
+    def on_import_file_at_root(self, *args):
+        ifd = ImportFileDialog(self._builder)
+        (response, path) = ifd.run()
+        if response == Gtk.ResponseType.OK:
+            name = os.path.basename(path)
+            dt = datetime.now()
+            item_id = dt.strftime('%Y%m%d_%H%M%S')
+            (rv, reason) = self._project.write_new_file(name, self._file_name(name,
+                item_id))
+            (rv, reason) = self._project.write_new_note(name, self._file_name(name,
+                item_id))
+            if rv:
+                self._tree_model.insert_at(None, name, 'file', item_id, False)
+
+                # Copy the path file to the new file
+                new_file_path = self._project.get_path(self._file_name(name, item_id))
+                with open(new_file_path, "w") as new_file:
+                    with open(path, "r") as old_file:
+                        for line in old_file.readlines():
+                            new_file.write(line)
                 self.save()
             else:
                 m = Message()
