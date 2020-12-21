@@ -75,12 +75,12 @@ class KeeperTreeModel:
     def insert_at(self, tree_iter, name, item_type, item_id, as_child):
         # If not inserting as a child, insert after the selected sibling
         if not as_child:
-            self._store.insert_after(None, tree_iter,
+            return self._store.insert_after(None, tree_iter,
                 [self._get_icon_for_type_or_name(item_type, name),
                     item_type, item_id, False, name, True, 0, 0, 0, 0])
         else:
             # Inserting as a child. We find the last sibling and insert after it.
-            self._store.insert_after(tree_iter, self._find_last_child_of_iter(self._store,
+            return self._store.insert_after(tree_iter, self._find_last_child_of_iter(self._store,
                 tree_iter), [self._get_icon_for_type_or_name(item_type,
                     name), item_type, item_id, False, name, True, 0, 0, 0, 0])
 
