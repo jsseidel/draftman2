@@ -19,6 +19,7 @@ from lib.KeeperPopupMenu import KeeperPopupMenu
 from lib.Message import Message
 from lib.ImportFileDialog import ImportFileDialog
 from lib.KeeperFileOpsLinux import KeeperFileOpsLinux
+from lib.CopyItem import CopyItem
 from pathlib import Path, PurePath, PurePosixPath
 
 class KeeperTreeView:
@@ -161,6 +162,8 @@ class KeeperTreeView:
         # A popover menu for right clicks in treeview
         self._popup = KeeperPopupMenu()
         self._popup.connect_add(self.on_add_file, self.on_add_directory)
+        self._popup.connect_copy(self.on_copy)
+        self._popup.connect_paste(self.on_paste)
         self._popup.connect_delete(self.on_delete)
         self._popup.connect_delete_all(self.on_delete_all)
         self._popup.connect_edit(self.on_edit_file)
@@ -172,7 +175,70 @@ class KeeperTreeView:
 
         self.sanity_check_editor()
 
+        self._copy_item = CopyItem()
+
         self.enable_items()
+
+    def _has_item_copied(self):
+        return self._copy_item.has_sel()
+
+    def _can_paste_into(self, paste_iter):
+        copied_iter = self._copy_item.get()
+        if copied_iter == None:
+            return False
+        store = self._tree_model.get_tree_store()
+        copied_path = store.get_path(copied_iter)
+        paste_path = store.get_path(paste_iter)
+
+        # Can't paste into self
+        if copied_path == paste_path:
+            return False
+
+        return True
+
+    def _is_copied_item_in_selected_tree(self):
+        store = self._tree_model.get_tree_store()
+        (model, tree_iter) = self._treeview.get_selection().get_selected()
+        copied_iter = self._copy_item.get()
+        if copied_iter == None:
+            return False
+        copied_path = store.get_path(copied_iter)
+
+        if store.get_path(tree_iter) == copied_path:
+            return True
+
+        if store.iter_has_child(tree_iter):
+            child_iter = store.iter_children(tree_iter)
+            while child_iter is not None:
+                child_path = store.get_path(child_iter)
+                if child_path == copied_path:
+                    return True
+                child_iter = store.iter_next(child_iter)
+
+        return False
+
+    def _is_pasted_item_in_copied_tree(self, paste_iter):
+        store = self._tree_model.get_tree_store()
+        copied_iter = self._copy_item.get()
+        if copied_iter == None:
+            return False
+        copied_path = store.get_path(copied_iter)
+        if paste_iter == None:
+            return False
+        pasted_path = store.get_path(paste_iter)
+
+        if pasted_path == copied_path:
+            return True
+
+        if store.iter_has_child(copied_iter):
+            child_iter = store.iter_children(copied_iter)
+            while child_iter is not None:
+                child_path = store.get_path(child_iter)
+                if str(child_path) in str(pasted_path):
+                    return True
+                child_iter = store.iter_next(child_iter)
+
+        return False
 
     def sanity_check_editor(self):
         # Sanity check the editor
@@ -636,12 +702,12 @@ class KeeperTreeView:
                 item_type = model[tree_iter][KeeperTreeView.COL_TYPE]
                 has_children = model.iter_has_child(tree_iter)
 
-                menu = self._popup.get_menu_for_type(item_type, has_children)
+                menu = self._popup.get_menu_for_type(item_type, has_children, self._has_item_copied(), (self._can_paste_into(tree_iter) and not self._is_pasted_item_in_copied_tree(tree_iter)))
                 menu.show_all()
                 menu.popup_at_pointer(event)
             else:
                 select = self._treeview.get_selection().unselect_all()
-                menu = self._popup.get_menu_for_type(None, False)
+                menu = self._popup.get_menu_for_type(None, False, self._has_item_copied(), True)
                 menu.show_all()
                 menu.popup_at_pointer(event)
         elif event.button == 1:
@@ -680,9 +746,33 @@ class KeeperTreeView:
 
             self.update_word_counts()
 
+    def _copy_keeper_item(self, item_type, name, src_item_id, dst_item_id):
+        rv1 = False
+        rv2 = False
+        if item_type == 'file':
+            src_file_path = self._project.get_keeper_path(self._file_name(name, src_item_id))
+            dst_file_path = self._project.get_keeper_path(self._file_name(name, dst_item_id))
+            with open(dst_file_path, "w") as dst_file:
+                with open(src_file_path, "r") as src_file:
+                    for line in src_file.readlines():
+                        dst_file.write(line)
+                    rv1 = True
+        else:
+            rv1 = True
+
+        src_notes_path = self._project.get_notes_path(self._file_name(name, src_item_id))
+        dst_notes_path = self._project.get_notes_path(self._file_name(name, dst_item_id))
+        with open(dst_notes_path, "w") as dst_file:
+            with open(src_notes_path, "r") as src_file:
+                for line in src_file.readlines():
+                    dst_file.write(line)
+                rv2 = True
+
+        return (rv1 and rv2)
+
     def _import_file(self, path, to_name, to_item_id):
         # Copy the path file to the new file
-        new_file_path = self._project.get_path(self._file_name(to_name, to_item_id))
+        new_file_path = self._project.get_keeper_path(self._file_name(to_name, to_item_id))
         with open(new_file_path, "w") as new_file:
             with open(path, "r") as old_file:
                 for line in old_file.readlines():
@@ -788,6 +878,62 @@ class KeeperTreeView:
                 self._delete_self_and_child_files(child_iter)
                 child_iter = store.iter_next(child_iter)
 
+    def on_copy(self, *args):
+        selection = self._treeview.get_selection()
+        (model, tree_iter) = selection.get_selected()
+        self._copy_item.set(tree_iter)
+
+    def _paste_item(self, copied_iter, paste_iter):
+        store = self._tree_model.get_tree_store()
+        dt = datetime.now()
+        paste_item_id = dt.strftime('%Y%m%d_%H%M%S')
+
+        copy_from_path = self.iter_to_project_path(copied_iter)
+        copied_item_id = self._tree_model.get_tree_store()[copied_iter][KeeperTreeView.COL_ID]
+        copied_item_name = self._tree_model.get_tree_store()[copied_iter][KeeperTreeView.COL_NAME]
+        copied_item_type = self._tree_model.get_tree_store()[copied_iter][KeeperTreeView.COL_TYPE]
+
+        if copied_item_type == 'file':
+            self._tree_model.insert_at(paste_iter, copied_item_name, 'file', paste_item_id, (paste_iter is not None))
+            rv = self._copy_keeper_item('file', copied_item_name, copied_item_id, paste_item_id)
+            if not rv:
+                m = Message()
+                m.error(self._app_window, 'Keeper error', 'Could not copy file %s' % copied_item_name)
+        else:
+            new_iter = self._tree_model.insert_at(paste_iter, copied_item_name, 'directory', paste_item_id, (paste_iter is not None))
+            rv = self._copy_keeper_item('directory', copied_item_name, copied_item_id, paste_item_id)
+            if not rv:
+                m = Message()
+                m.error(self._app_window, 'Keeper error', 'Could not copy directory notes %s' % copied_item_name)
+
+            if store.iter_has_child(copied_iter):
+                child_iter = store.iter_children(copied_iter)
+                while child_iter is not None:
+                    self._paste_item(child_iter, new_iter)
+                    child_iter = store.iter_next(child_iter)
+
+    def on_paste(self, *args):
+        store = self._tree_model.get_tree_store()
+        selection = self._treeview.get_selection()
+        (model, tree_iter) = selection.get_selected()
+
+        self._paste_item(self._copy_item.get(), tree_iter)
+        if tree_iter is not None:
+            self._treeview.expand_row(store.get_path(tree_iter), False)
+        self.update_word_counts()
+        self.save()
+
+    def _find_a_trash(self):
+        store = self._tree_model.get_tree_store()
+        tree_iter = store.get_iter_first()
+        while tree_iter is not None:
+            item_type = self._tree_model.get_tree_store()[tree_iter][KeeperTreeView.COL_TYPE]
+            item_name = self._tree_model.get_tree_store()[tree_iter][KeeperTreeView.COL_NAME]
+            if item_type == 'directory' and item_name == 'Trash':
+                return tree_iter
+            tree_iter = store.iter_next(tree_iter)
+        return None
+
     def on_delete(self, *args):
         selection = self._treeview.get_selection()
         (model, tree_iter) = selection.get_selected()
@@ -798,6 +944,9 @@ class KeeperTreeView:
             m = Message()
             if m.confirm(self._app_window, 'Confirm', 'Are you sure you want '
                     'to permenantly delete %s?' % item_name):
+                # Clear out a copied item if it matches what is being deleted
+                if self._is_copied_item_in_selected_tree():
+                    self._copy_item.clear()
                 self._delete_self_and_child_files(tree_iter)
                 self.remove_item(tree_iter)
         else:
@@ -826,6 +975,9 @@ class KeeperTreeView:
 
                 for p in reversed(paths):
                     itr = model.get_iter(p)
+                    # Clear out a copied item if it matches what is being deleted
+                    if self._copy_item.get() == itr:
+                        self._copy_item.clear()
                     model.remove(itr)
         else:
             m = Message()

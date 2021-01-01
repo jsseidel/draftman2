@@ -249,8 +249,12 @@ class Project:
         except Exception as e:
             return (False, "Something went wrong creating %s:\n%s" % (str(project_dir), str(e)))
 
-    def get_path(self, file_name):
+    def get_keeper_path(self, file_name):
         p = Path(self._keeper_path)
+        return str(p / ("%s" % file_name))
+
+    def get_notes_path(self, file_name):
+        p = Path(self._notes_path)
         return str(p / ("%s" % file_name))
 
     def write_new_file(self, title, file_name):
