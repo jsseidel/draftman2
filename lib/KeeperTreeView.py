@@ -713,7 +713,7 @@ class KeeperTreeView:
                 menu.popup_at_pointer(event)
             else:
                 select = self._treeview.get_selection().unselect_all()
-                menu = self._popup.get_menu_for_type(None, False, self._has_item_copied(), True)
+                menu = self._popup.get_menu_for_type(None, False, self._has_item_copied(), True, False)
                 menu.show_all()
                 menu.popup_at_pointer(event)
         elif event.button == 1:
