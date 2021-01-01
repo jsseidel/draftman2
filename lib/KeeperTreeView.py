@@ -935,6 +935,50 @@ class KeeperTreeView:
         return None
 
     def on_delete(self, *args):
+        store = self._tree_model.get_tree_store()
+        trash_iter = self._find_a_trash()
+        if trash_iter is None:
+            self._permanently_delete('No Trash found. You can create a new one by adding a directory and naming it Trash.')
+            return
+
+        selection = self._treeview.get_selection()
+        (model, tree_iter) = selection.get_selected()
+        self._last_sel = None
+
+        # The user might be trying to delete a Trash
+        if store.get_path(trash_iter) == store.get_path(tree_iter):
+            self._permanently_delete('Deleting Trash. You can create a new one by adding a directory and naming it Trash.')
+            return
+
+        if tree_iter is not None:
+            path = self.iter_to_project_path(tree_iter)
+            item_name = self._tree_model.get_tree_store()[tree_iter][KeeperTreeView.COL_NAME]
+            m = Message()
+            if m.confirm(self._app_window, 'Confirm', 'Are you sure you want '
+                    'to move "%s" to the Trash?' % item_name):
+                # Clear out a copied item if it matches what is being deleted
+                if self._is_copied_item_in_selected_tree():
+                    self._copy_item.clear()
+
+                # First copy the selection to the trash
+                self._paste_item(tree_iter, trash_iter)
+
+                # Now do the deletion from the keeper
+                self._delete_self_and_child_files(tree_iter)
+                self.remove_item(tree_iter)
+
+                self.update_word_counts()
+                self.save()
+        else:
+            m = Message()
+            m.error(self._app_window, 'Keeper error', 'Nothing to delete.'
+                    ' Please report.')
+
+        self.update_word_counts()
+
+    def _permanently_delete(self, add_msg=''):
+        if add_msg != '':
+            add_msg = "%s " % add_msg
         selection = self._treeview.get_selection()
         (model, tree_iter) = selection.get_selected()
         self._last_sel = None
@@ -942,8 +986,8 @@ class KeeperTreeView:
             path = self.iter_to_project_path(tree_iter)
             item_name = self._tree_model.get_tree_store()[tree_iter][KeeperTreeView.COL_NAME]
             m = Message()
-            if m.confirm(self._app_window, 'Confirm', 'Are you sure you want '
-                    'to permenantly delete %s?' % item_name):
+            if m.confirm(self._app_window, 'Confirm', '%sAre you sure you want '
+                    'to permenantly delete "%s"?' % (add_msg, item_name)):
                 # Clear out a copied item if it matches what is being deleted
                 if self._is_copied_item_in_selected_tree():
                     self._copy_item.clear()
