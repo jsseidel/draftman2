@@ -188,6 +188,8 @@ class KeeperTreeView:
             return False
         store = self._tree_model.get_tree_store()
         copied_path = store.get_path(copied_iter)
+        if paste_iter == None:
+            return True
         paste_path = store.get_path(paste_iter)
 
         # Can't paste into self
@@ -278,6 +280,8 @@ class KeeperTreeView:
         self._builder.get_object('menuAddDirectory').set_sensitive(b)
         b = (l and item_type == 'file')
         self._builder.get_object('menuEdit').set_sensitive(b)
+        self._builder.get_object('menuCopy').set_sensitive(tree_iter is not None)
+        self._builder.get_object('menuPaste').set_sensitive((self._can_paste_into(tree_iter) and not self._is_pasted_item_in_copied_tree(tree_iter)))
         b = (l and item_type != None)
         self._builder.get_object('menuDelete').set_sensitive(b)
 
@@ -700,9 +704,11 @@ class KeeperTreeView:
                 selection = self._treeview.get_selection()
                 (model, tree_iter) = selection.get_selected()
                 item_type = model[tree_iter][KeeperTreeView.COL_TYPE]
+                item_name = model[tree_iter][KeeperTreeView.COL_NAME]
                 has_children = model.iter_has_child(tree_iter)
+                is_trash = (item_type == 'directory' and item_name == 'Trash')
 
-                menu = self._popup.get_menu_for_type(item_type, has_children, self._has_item_copied(), (self._can_paste_into(tree_iter) and not self._is_pasted_item_in_copied_tree(tree_iter)))
+                menu = self._popup.get_menu_for_type(item_type, has_children, self._has_item_copied(), (self._can_paste_into(tree_iter) and not self._is_pasted_item_in_copied_tree(tree_iter)), is_trash)
                 menu.show_all()
                 menu.popup_at_pointer(event)
             else:
@@ -882,6 +888,7 @@ class KeeperTreeView:
         selection = self._treeview.get_selection()
         (model, tree_iter) = selection.get_selected()
         self._copy_item.set(tree_iter)
+        self.enable_items()
 
     def _paste_item(self, copied_iter, paste_iter):
         store = self._tree_model.get_tree_store()
@@ -922,6 +929,7 @@ class KeeperTreeView:
             self._treeview.expand_row(store.get_path(tree_iter), False)
         self.update_word_counts()
         self.save()
+        self.enable_items()
 
     def _find_a_trash(self):
         store = self._tree_model.get_tree_store()
