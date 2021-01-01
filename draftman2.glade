@@ -60,6 +60,7 @@
                         <property name="use_underline">True</property>
                         <property name="use_stock">True</property>
                         <signal name="activate" handler="onQuit" swapped="no"/>
+                        <accelerator key="q" signal="activate"/>
                       </object>
                     </child>
                   </object>
@@ -503,7 +504,7 @@
     <property name="icon">icon/draftman2.png</property>
     <property name="type_hint">dialog</property>
     <property name="program_name">Glade</property>
-    <property name="version">2.0.7</property>
+    <property name="version">2.0.8</property>
     <property name="copyright" translatable="yes">Copyright 2021, Spencer Seidel</property>
     <property name="comments" translatable="yes">Draftman2 is an application for managing first-draft manuscripts. It is designed to be minimalistic but useful.</property>
     <property name="website">https://jsseidel.github.io/draftman2/</property>
