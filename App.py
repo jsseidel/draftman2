@@ -126,6 +126,14 @@ class App:
     def onEditFile(self, *args):
         self._keeper_treeview.on_edit_file(args)
 
+    # User selected copy
+    def onCopy(self, *args):
+        self._keeper_treeview.on_copy(args)
+
+    # User selected paste
+    def onPaste(self, *args):
+        self._keeper_treeview.on_paste(args)
+
     # User selected delete
     def onDelete(self, *args):
         self._keeper_treeview.on_delete(args)

@@ -32,7 +32,7 @@ class KeeperPopupMenu:
     def enable(b):
         self._popup.set_sensitive(False)
 
-    def get_menu_for_type(self, item_type, has_children, has_sel, can_paste):
+    def get_menu_for_type(self, item_type, has_children, has_sel, can_paste, is_trash):
         if item_type == 'file':
             self._menuItemAddFile.set_sensitive(True)
             self._menuItemEditFile.set_sensitive(True)
@@ -40,7 +40,7 @@ class KeeperPopupMenu:
             self._menuItemPaste.set_sensitive(has_sel and can_paste)
             self._menuItemAddDirectory.set_sensitive(False)
             self._menuItemDelete.set_sensitive(True)
-            self._menuItemDeleteAll.set_sensitive(has_children)
+            self._menuItemDeleteAll.set_sensitive(has_children and is_trash)
         elif item_type == 'directory':
             self._menuItemAddFile.set_sensitive(True)
             self._menuItemEditFile.set_sensitive(False)
@@ -48,7 +48,7 @@ class KeeperPopupMenu:
             self._menuItemPaste.set_sensitive(has_sel and can_paste)
             self._menuItemAddDirectory.set_sensitive(True)
             self._menuItemDelete.set_sensitive(True)
-            self._menuItemDeleteAll.set_sensitive(has_children)
+            self._menuItemDeleteAll.set_sensitive(has_children and is_trash)
         else:
             self._menuItemAddFile.set_sensitive(True)
             self._menuItemEditFile.set_sensitive(False)
