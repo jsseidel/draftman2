@@ -20,7 +20,7 @@ An icon designates what type of object the row represents:
 
 1. A file icon represents a text file in your project. (Files can contain other files -- see Advanced/Project Structure for more information.)
 2. A folder icon represents a folder in your project. Folders contain files and other folders.
-3. A trashcan icon is created whenever you create a new folder with the name "Trash." Other than that, it behaves exactly as a normal folder would.
+3. A trashcan icon is created whenever you create a new folder with the name "Trash." Trash folders can only be deleted by copying them into another Trash folder and emptying with a right click. You can permanently delete items in a Trash folder by right-clicking them and confirming.
 
 #### Name
 
