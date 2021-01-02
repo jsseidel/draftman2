@@ -16,6 +16,8 @@ from lib.counts import word_count, scene_count
 from lib.AddItemDialog import AddItemDialog
 from lib.KeeperTreeModel import KeeperTreeModel
 from lib.KeeperPopupMenu import KeeperPopupMenu
+from lib.KeeperTrashPopupMenu import KeeperTrashPopupMenu
+from lib.KeeperTrashDeletePopupMenu import KeeperTrashDeletePopupMenu
 from lib.Message import Message
 from lib.ImportFileDialog import ImportFileDialog
 from lib.KeeperFileOpsLinux import KeeperFileOpsLinux
@@ -165,8 +167,15 @@ class KeeperTreeView:
         self._popup.connect_copy(self.on_copy)
         self._popup.connect_paste(self.on_paste)
         self._popup.connect_delete(self.on_delete)
-        self._popup.connect_delete_all(self.on_delete_all)
         self._popup.connect_edit(self.on_edit_file)
+
+        # A popover menu for right clicks in treeview
+        self._trash_popup = KeeperTrashPopupMenu()
+        self._trash_popup.connect_delete_all(self.on_delete_all)
+
+        # A popover menu for right clicks in treeview
+        self._trash_delete_popup = KeeperTrashDeletePopupMenu()
+        self._trash_delete_popup.connect_delete_all(self._permanently_delete)
 
         # Set labels
         self._label_status1.set_label("Words: 0")
@@ -239,6 +248,18 @@ class KeeperTreeView:
                 if str(child_path) in str(pasted_path):
                     return True
                 child_iter = store.iter_next(child_iter)
+
+        return False
+
+    def _is_in_a_trash(self, item_iter):
+        store = self._tree_model.get_tree_store()
+        check_iter = store.get_iter_first()
+        while check_iter is not None:
+            check_type = self._tree_model.get_tree_store()[check_iter][KeeperTreeView.COL_TYPE]
+            check_name = self._tree_model.get_tree_store()[check_iter][KeeperTreeView.COL_NAME]
+            if check_type == 'directory' and check_name == 'Trash' and store.is_ancestor(check_iter, item_iter):
+                return True
+            check_iter = store.iter_next(check_iter)
 
         return False
 
@@ -706,11 +727,19 @@ class KeeperTreeView:
                 item_type = model[tree_iter][KeeperTreeView.COL_TYPE]
                 item_name = model[tree_iter][KeeperTreeView.COL_NAME]
                 has_children = model.iter_has_child(tree_iter)
-                is_trash = (item_type == 'directory' and item_name == 'Trash')
+                can_paste = (self._can_paste_into(tree_iter) and not self._is_pasted_item_in_copied_tree(tree_iter))
+                is_in_trash = self._is_in_a_trash(tree_iter)
 
-                menu = self._popup.get_menu_for_type(item_type, has_children, self._has_item_copied(), (self._can_paste_into(tree_iter) and not self._is_pasted_item_in_copied_tree(tree_iter)), is_trash)
-                menu.show_all()
-                menu.popup_at_pointer(event)
+                menu = None
+                if item_type == 'directory' and item_name == 'Trash':
+                    menu = self._trash_popup.get_menu(has_children)
+                elif is_in_trash:
+                    menu = self._trash_delete_popup.get_menu()
+                else:
+                    menu = self._popup.get_menu_for_type(item_type, has_children, self._has_item_copied(), can_paste, is_in_trash)
+                if menu is not None:
+                    menu.show_all()
+                    menu.popup_at_pointer(event)
             else:
                 select = self._treeview.get_selection().unselect_all()
                 menu = self._popup.get_menu_for_type(None, False, self._has_item_copied(), True, False)
@@ -751,6 +780,9 @@ class KeeperTreeView:
                         'file:\n\n%s' % reason)
 
             self.update_word_counts()
+            if tree_iter is not None:
+                store = self._tree_model.get_tree_store()
+                self._treeview.expand_row(store.get_path(tree_iter), False)
 
     def _copy_keeper_item(self, item_type, name, src_item_id, dst_item_id):
         rv1 = False
@@ -900,24 +932,17 @@ class KeeperTreeView:
         copied_item_name = self._tree_model.get_tree_store()[copied_iter][KeeperTreeView.COL_NAME]
         copied_item_type = self._tree_model.get_tree_store()[copied_iter][KeeperTreeView.COL_TYPE]
 
-        if copied_item_type == 'file':
-            self._tree_model.insert_at(paste_iter, copied_item_name, 'file', paste_item_id, (paste_iter is not None))
-            rv = self._copy_keeper_item('file', copied_item_name, copied_item_id, paste_item_id)
-            if not rv:
-                m = Message()
-                m.error(self._app_window, 'Keeper error', 'Could not copy file %s' % copied_item_name)
-        else:
-            new_iter = self._tree_model.insert_at(paste_iter, copied_item_name, 'directory', paste_item_id, (paste_iter is not None))
-            rv = self._copy_keeper_item('directory', copied_item_name, copied_item_id, paste_item_id)
-            if not rv:
-                m = Message()
-                m.error(self._app_window, 'Keeper error', 'Could not copy directory notes %s' % copied_item_name)
+        new_iter = self._tree_model.insert_at(paste_iter, copied_item_name, copied_item_type, paste_item_id, (paste_iter is not None))
+        rv = self._copy_keeper_item(copied_item_type, copied_item_name, copied_item_id, paste_item_id)
+        if not rv:
+            m = Message()
+            m.error(self._app_window, 'Keeper error', 'Could not copy %s %s' % (copied_item_type, copied_item_name))
 
-            if store.iter_has_child(copied_iter):
-                child_iter = store.iter_children(copied_iter)
-                while child_iter is not None:
-                    self._paste_item(child_iter, new_iter)
-                    child_iter = store.iter_next(child_iter)
+        if store.iter_has_child(copied_iter):
+            child_iter = store.iter_children(copied_iter)
+            while child_iter is not None:
+                self._paste_item(child_iter, new_iter)
+                child_iter = store.iter_next(child_iter)
 
     def on_paste(self, *args):
         store = self._tree_model.get_tree_store()
@@ -984,9 +1009,11 @@ class KeeperTreeView:
 
         self.update_word_counts()
 
-    def _permanently_delete(self, add_msg=''):
-        if add_msg != '':
-            add_msg = "%s " % add_msg
+    def _permanently_delete(self, add_msg=None):
+        if not isinstance(add_msg, str):
+            add_msg = ''
+        elif add_msg != '':
+            add_msg = '%s ' % add_msg
         selection = self._treeview.get_selection()
         (model, tree_iter) = selection.get_selected()
         self._last_sel = None
