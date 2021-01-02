@@ -43,13 +43,15 @@ class KeeperTreeModel:
                 if 'expanded' in item:
                     init_expanded = item['expanded']
 
-                parent = self._store.append(parent_row,
+                new_row = self._store.append(parent_row,
                         [self._get_icon_for_type_or_name(item['type'],
-                            item['title']), item['type'], item['id'], init_expanded,
-                            item['title'], item['compile'], 0, 0, 0, 0])
+                            item['title']), item['type'], item['id'],
+                            init_expanded, item['title'], item['compile'], 0,
+                            0, 0, 0])
 
                 if 'contents' in item:
-                    self._add_item_list_to_store(parent, item['contents'])
+                    self._add_item_list_to_store(new_row, item['contents'])
+
 
     def clear(self):
         self._store.clear()

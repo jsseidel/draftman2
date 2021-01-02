@@ -1000,7 +1000,10 @@ class KeeperTreeView:
                 self._delete_self_and_child_files(tree_iter)
                 self.remove_item(tree_iter)
 
-                self.update_word_counts()
+                # Mark all the files in the trash as not-included in the
+                # compile
+                self._set_compile_cells(store, store.iter_children(trash_iter), False)
+
                 self.save()
         else:
             m = Message()
