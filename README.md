@@ -1,7 +1,8 @@
 # draftman2
 
 A minimalist draft-management application I use to help me organize long writing
-projects. It may or may not be useful to others.
+projects. It may or may not be useful to others. Draftman2 is BETA software, so if
+you decide to try it, be sure to turn on backups.
 
 [https://jsseidel.github.io/draftman2/](https://jsseidel.github.io/draftman2/)
 
